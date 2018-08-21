@@ -186,6 +186,15 @@ class checkOrder_module extends api_admin implements api_interface {
 			if (empty($goods)) {
 				return new ecjia_error('addgoods_error', '该商品不存在或已下架');
 			}
+			//该商品对应店铺是否被锁定
+			if (!empty($goods['goods_id'])) {
+				$store_id 		= Ecjia\App\Cart\StoreStatus::GetStoreId($goods['goods_id']);
+				$store_status 	= Ecjia\App\Cart\StoreStatus::GetStoreStatus($store_id);
+				if ($store_status == '2') {
+					return new ecjia_error('store_locked', '对不起，该商品所属的店铺已锁定！');
+				}
+			}
+			
 			$result = addto_cart($goods['goods_id'], $addgoods['number'], $goods_spec, 0, 0, 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['price'] : 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['weight'] : 0, $flow_type);
 			//挂单继续添加商品
 			if (!empty($pendorder_id) && !empty($result)) {
