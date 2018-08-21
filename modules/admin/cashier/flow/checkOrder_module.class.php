@@ -65,8 +65,8 @@ class checkOrder_module extends api_admin implements api_interface {
         
         $device = $this->device;
 		RC_Loader::load_app_func('global','cart');
-		RC_Loader::load_app_func('cart','cart');
-		RC_Loader::load_app_func('cashdesk','cart');
+// 		RC_Loader::load_app_func('cart','cart');
+// 		RC_Loader::load_app_func('cashdesk','cart');
 		RC_Loader::load_app_func('admin_order','orders');
 		RC_Loader::load_app_func('admin_bonus','bonus');
 		$db_cart = RC_Loader::load_app_model('cart_model', 'cart');
@@ -148,7 +148,7 @@ class checkOrder_module extends api_admin implements api_interface {
 				$_SESSION['user_rank']	= 0;
 				$_SESSION['discount']	= 1;
 			}
-			recalculate_price($device);
+			cart_cashdesk::recalculate_price($device);
 		}
 		
 		/* 取得购物类型 */
@@ -195,7 +195,7 @@ class checkOrder_module extends api_admin implements api_interface {
 				}
 			}
 			
-			$result = addto_cart($goods['goods_id'], $addgoods['number'], $goods_spec, 0, 0, 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['price'] : 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['weight'] : 0, $flow_type);
+			$result = cart_cashdesk::addto_cart($goods['goods_id'], $addgoods['number'], $goods_spec, 0, 0, 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['price'] : 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['weight'] : 0, $flow_type);
 			//挂单继续添加商品
 			if (!empty($pendorder_id) && !empty($result)) {
 				RC_DB::table('cart')->where('rec_id', $result)->update(array('pendorder_id' => $pendorder_id));
@@ -207,7 +207,7 @@ class checkOrder_module extends api_admin implements api_interface {
 		//编辑购物车商品
 		if (!empty($updategoods)) {
 			//$result = updatecart($updategoods);
-			$result = flow_update_cart(array($updategoods['rec_id'] => $updategoods['number']));
+			$result = cart_cashdesk::flow_update_cart(array($updategoods['rec_id'] => $updategoods['number']));
 		}
 		//删除购物车商品
 		if (!empty($deletegoods)) {
@@ -223,14 +223,14 @@ class checkOrder_module extends api_admin implements api_interface {
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, array(), $pendorder_id); // 取得商品列表，计算合计
 		
 		/* 取得订单信息*/
-		$order = flow_order_info();
+		$order = cart_cashdesk::flow_order_info();
 		/* 计算折扣 */
 		if ($flow_type != CART_EXCHANGE_GOODS && $flow_type != CART_GROUP_BUY_GOODS) {
-			$discount = compute_discount();
+			$discount = cart_cashdesk::compute_discount();
 			$favour_name = empty($discount['name']) ? '' : join(',', $discount['name']);
 		}
 		/* 计算订单的费用 */
-		$total = cashdesk_order_fee($order, $cart_goods);
+		$total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods);
 	
 // 		/* 取得支付列表 */
 // 		$cod_fee    = 0;
