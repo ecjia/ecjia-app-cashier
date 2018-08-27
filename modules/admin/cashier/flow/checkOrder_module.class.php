@@ -90,8 +90,8 @@ class checkOrder_module extends api_admin implements api_interface {
 		}
 		
 // 		$addgoods = array(
-// 			'goods_sn' 	=> 'ECS000409',
-// 			'number'	=> 1,
+// 			'goods_sn' 	=> 'ECS001311',
+// 			'number'	=> 2,
 // 		);
 // 		$user = array(
 // 				'user_id' => '1024',
@@ -195,7 +195,7 @@ class checkOrder_module extends api_admin implements api_interface {
 				}
 			}
 			
-			$result = cart_cashdesk::addto_cart($goods['goods_id'], $addgoods['number'], $goods_spec, 0, 0, 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['price'] : 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['weight'] : 0, $flow_type);
+			$result = cart_cashdesk::addto_cart($goods['goods_id'], $addgoods['number'], $goods_spec, 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['price'] : 0, strlen($addgoods['goods_sn']) == 7 ? $addgoods['weight'] : 0, $flow_type);
 			//挂单继续添加商品
 			if (!empty($pendorder_id) && !empty($result)) {
 				RC_DB::table('cart')->where('rec_id', $result)->update(array('pendorder_id' => $pendorder_id));
@@ -206,7 +206,6 @@ class checkOrder_module extends api_admin implements api_interface {
 		}
 		//编辑购物车商品
 		if (!empty($updategoods)) {
-			//$result = updatecart($updategoods);
 			$result = cart_cashdesk::flow_update_cart(array($updategoods['rec_id'] => $updategoods['number']));
 		}
 		//删除购物车商品
