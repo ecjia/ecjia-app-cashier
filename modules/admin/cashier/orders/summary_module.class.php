@@ -55,13 +55,13 @@ class summary_module  extends api_admin implements api_interface {
 										 ->where(RC_DB::raw('cr.action'), '=', 'billing')
 										 ->where(RC_DB::raw('oi.pay_status'), PS_PAYED)
 										 ->where(RC_DB::raw('cr.mobile_device_id'), $_SESSION['device_id'])
-										 ->selectRaw($field)->first();
+										 ->select(RC_DB::raw($field))->first();
 		//验单
 		$result_checkorder  = $dbview_checkorder->where(RC_DB::raw('cr.store_id'), $_SESSION['store_id'])
 												->where(RC_DB::raw('cr.action'), '=', 'check_order')
 												->where(RC_DB::raw('oi.pay_status'), PS_PAYED)
 												->where(RC_DB::raw('cr.mobile_device_id'), $_SESSION['device_id'])
-												->selectRaw($field)->first();
+												->select(RC_DB::raw($field))->first();
 		
 		//收款，订单数据来源买单表quickpay_orders；且ordertype为cashdesk-receipt的
 		$field_receipt = 'count(qo.order_id) as count,
@@ -72,7 +72,7 @@ class summary_module  extends api_admin implements api_interface {
 												->where(RC_DB::raw('qo.order_type'), '=', 'cashdesk-receipt')
 												->where(RC_DB::raw('qo.pay_status'), Ecjia\App\Quickpay\Status::PAID)
 												->where(RC_DB::raw('cr.mobile_device_id'), $_SESSION['device_id'])
-												->selectRaw($field_receipt)->first();
+												->select(RC_DB::raw($field_receipt))->first();
 		
 		$stats_result = array(
 				'billing'		=> array(
