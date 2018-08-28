@@ -72,6 +72,15 @@ class mh_bulk_goods extends ecjia_merchant {
 		
 // 		RC_Style::enqueue_style('goods', RC_App::apps_url('statics/styles/goods.css', __FILE__), array());
 		RC_Script::enqueue_script('mh_bulk_goods_list', RC_App::apps_url('statics/js/mh_bulk_goods_list.js', __FILE__));
+		RC_Script::enqueue_script('mh_bulk_goods_info', RC_App::apps_url('statics/js/mh_bulk_goods_info.js', __FILE__));
+		RC_Script::localize_script('mh_bulk_goods_info', 'js_lang', RC_Lang::get('cashier::bulk_goods.js_lang'));
+		
+		$goods_list_jslang = array(
+				'user_rank_list'	=> Ecjia\App\Cashier\BulkGoods::get_rank_list(),
+				'marketPriceRate'	=> ecjia::config('market_price_rate'),
+				'integralPercent'	=> ecjia::config('integral_percent'),
+		);
+		RC_Script::localize_script( 'mh_bulk_goods_info', 'admin_goodsList_lang', $goods_list_jslang );
 		
 		RC_Loader::load_app_func('merchant_goods', 'goods');
 		
@@ -391,7 +400,7 @@ class mh_bulk_goods extends ecjia_merchant {
 		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('散装商品列表'));
 		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_bulk_goods/init'), 'text' => '散装商品列表'));
 	
-		$merchant_cat = merchant_cat_list(0, 0, true, 2, false);		//店铺分类
+		
 		$this->assign('ur_here', '基本信息');
 		
 		$goods = array(
@@ -409,7 +418,7 @@ class mh_bulk_goods extends ecjia_merchant {
 				'market_price'			=> 0,
 				'integral'				=> 0,
 				'goods_number'			=> 0,
-				'weight_stock'			=> 0.000,
+				'weight_stock'			=> 1000.000,
 				'warn_number'			=> 1,
 				'promote_start_date'	=> RC_Time::local_date('Y-m-d'),
 				'promote_end_date'		=> RC_Time::local_date('Y-m-d', RC_Time::local_strtotime('+1 month')),
@@ -419,15 +428,18 @@ class mh_bulk_goods extends ecjia_merchant {
 		);
 	
 		/* 商品名称样式 */
-		$goods_name_style = isset($goods['goods_name_style']) ? $goods['goods_name_style'] : '';
+		//$goods_name_style = isset($goods['goods_name_style']) ? $goods['goods_name_style'] : '';
 	
 		$this->assign('goods', $goods);
-		$this->assign('goods_name_color', $goods_name_style);
+		//$this->assign('goods_name_color', $goods_name_style);
 	
 		$this->assign('unit_list', Ecjia\App\Cashier\BulkGoods::unit_list());
 		$this->assign('user_rank_list', Ecjia\App\Cashier\BulkGoods::get_rank_list());
-	
-	
+		$this->assign('limit_days_unit', Ecjia\App\Cashier\BulkGoods::limit_days_unit_list());
+		
+		$merchant_cat = merchant_cat_list(0, 0, true, 2, false);		//店铺分类
+		$this->assign('merchant_cat', $merchant_cat);
+		
 		$volume_price_list = '';
 		if (isset($_GET['goods_id'])) {
 			$volume_price_list = Ecjia\App\Cashier\BulkGoods::get_volume_price_list($_GET['goods_id']);
@@ -436,9 +448,151 @@ class mh_bulk_goods extends ecjia_merchant {
 			$volume_price_list = array('0' => array('number' => '', 'price' => ''));
 		}
 		$this->assign('volume_price_list', $volume_price_list);
-		$this->assign('form_action', RC_Uri::url('cashier/mh_bulk_good/insert'));
+		$this->assign('form_action', RC_Uri::url('cashier/mh_bulk_goods/insert'));
 	
 		$this->display('bulk_goods_info.dwt');
+	}
+	
+	/**
+	 * 插入商品
+	 */
+	public function insert() {
+		// 检查权限
+		$this->admin_priv('mh_bulk_goods_update', ecjia::MSGTYPE_JSON);
+	
+		
+		$goods_sn = trim($_POST['goods_sn']);
+		if (empty($goods_sn)) {
+			return $this->showmessage('请填写商品货号！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		//商品货号
+		if (!empty($goods_sn)) {
+			//散装商品货号为7位
+			$goods_sn_length = strlen($goods_sn);
+			if ($goods_sn_length != 7) {
+				return $this->showmessage('散装商品货号必须为7位', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			}
+			/* 检查货号是否重复 */
+			$count = RC_DB::table('goods')->where('goods_sn', $_POST['goods_sn'])->count();
+			if ($count > 0) {
+				return $this->showmessage('您输入的货号已存在，请换一个', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			}
+			$scales_sn = substr($goods_sn, 0, 2);
+			$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);//商家所有电子秤编码
+			if (!in_array($scales_sn, $cashdesk_scales_sn_arr)) {
+				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为电子秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			}
+		}
+	
+		/* 处理商品数据 */
+		$shop_price 	= !empty($_POST['shop_price']) 		? $_POST['shop_price'] 				: 0;
+		$market_price 	= !empty($_POST['market_price']) && is_numeric($_POST['market_price']) ? $_POST['market_price'] : 0;
+		$promote_price 	= !empty($_POST['promote_price']) 	? floatval($_POST['promote_price']) : 0;
+		$is_promote 	= empty($promote_price) 			? 0 								: 1;
+
+		$promote_start_date = ($is_promote && !empty($_POST['promote_start_date'])) ? RC_Time::local_strtotime($_POST['promote_start_date']) 	: 0;
+		$promote_end_date 	= ($is_promote && !empty($_POST['promote_end_date'])) 	? RC_Time::local_strtotime($_POST['promote_end_date']) 		: 0;
+		$weight_stock		= !empty($_POST['weight_stock']) && is_numeric($_POST['weight_stock']) ? $_POST['goods_weight'] : 0.000;
+		$weight_unit		= !empty($_POST['weight_unit']) && is_numeric($_POST['weight_unit']) ? $_POST['weight_unit'] : 1;
+		
+		$cost_price 	= !empty($_POST['cost_price']) && is_numeric($_POST['cost_price']) ? $_POST['cost_price'] : 0.00;
+		$generate_date 	= !empty($_POST['generate_date'])? trim($_POST['generate_date']) : '';
+		$limit_days 	= !empty($_POST['limit_days'])? $_POST['limit_days'] : '';
+		$expiry_date 	= !empty($_POST['expiry_date'])? $_POST['expiry_date'] : '';
+		
+		$is_on_sale 	= !empty($_POST['is_on_sale']) 		? 1 : 0;
+		$is_alone_sale 	= !empty($_POST['is_alone_sale']) 	? 1 : 0;
+
+		$goods_number 	= !empty($_POST['goods_number']) 	? $_POST['goods_number'] 	: 0;
+		$warn_number 	= !empty($_POST['warn_number'])		? $_POST['warn_number'] 	: 0;
+
+		$goods_name 		= isset($_POST['goods_name']) 		? htmlspecialchars($_POST['goods_name']) 		: '';
+		$merchant_cat_id 	= empty($_POST['merchant_cat_id']) 	? '' 	: intval($_POST['merchant_cat_id']);
+
+		if (empty($merchant_cat_id)) {
+			return $this->showmessage('请选择店铺商品分类', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+
+		if (empty($goods_name)) {
+			return $this->showmessage(RC_Lang::get('goods::goods.goods_name_null'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+	
+		/* 入库 */
+		$data = array(
+				'goods_name'            => rc_stripslashes($goods_name),
+				'goods_name_style'      => '',
+				'goods_sn'              => $goods_sn,
+				'cat_id'                => 0,				//平台分类id
+				'merchant_cat_id'		=> $merchant_cat_id,	//店铺分类id
+				'brand_id'              => 0,
+				'shop_price'            => $shop_price,
+				'market_price'          => $market_price,
+				'is_promote'            => $is_promote,
+				'promote_price'         => $promote_price,
+				'promote_start_date'    => $promote_start_date,
+				'promote_end_date'      => $promote_end_date,
+				'keywords'              => $_POST['keywords'],
+				'goods_brief'           => $_POST['goods_brief'],
+				'seller_note'           => $_POST['seller_note'],
+				'goods_weight'          => 0.000,
+				'goods_number'          => 1000,
+				'warn_number'           => $warn_number,
+				'integral'              => $_POST['integral'],
+				'store_best'            => 0,
+				'store_new'             => 0,
+				'store_hot'             => 0,
+				'is_on_sale'            => $is_on_sale,
+				'is_alone_sale'         => $is_alone_sale,
+				'is_shipping'           => 0,
+				'add_time'              => RC_Time::gmtime(),
+				'last_update'           => RC_Time::gmtime(),
+				'goods_type'            => 0,
+				'suppliers_id'          => 0,
+				'review_status'         => 3,
+				'store_id'				=> $_SESSION['store_id'],
+				'extension_code'		=> 'bulk',
+		);
+		
+		$goods_id = RC_DB::table('goods')->insertGetId($data);
+
+		/* 记录日志 */
+		ecjia_merchant::admin_log($goods_name, 'add', 'goods');
+		/* 处理会员价格 */
+		if (isset($_POST['user_rank']) && isset($_POST['user_price'])) {
+			Ecjia\App\Cashier\BulkGoods::handle_member_price($goods_id, $_POST['user_rank'], $_POST['user_price']);
+			/*释放指定商品不同会员等级价格缓存*/
+			$cache_goods_user_rank_prices_key = 'goods_user_rank_prices_'.$goods_id. '-' . $shop_price;
+			$cache_user_rank_prices_id = sprintf('%X', crc32($cache_goods_user_rank_prices_key));
+			$orm_member_price_db = RC_Model::model('goods/orm_member_price_model');
+			$orm_member_price_db->delete_cache_item($cache_user_rank_prices_id);
+		}
+	
+		/* 处理优惠价格 */
+		if (isset($_POST['volume_number']) && isset($_POST['volume_price'])) {
+			$temp_num = array_count_values($_POST['volume_number']);
+			foreach ($temp_num as $v) {
+				if ($v > 1) {
+					return $this->showmessage(RC_Lang::get('goods::goods.volume_number_continuous'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+				}
+			}
+			Ecjia\App\Cashier\BulkGoods::handle_volume_price($goods_id, $_POST['volume_number'], $_POST['volume_price']);
+		}
+	
+		/* 释放app缓存*/
+		$orm_goods_db = RC_Model::model('goods/orm_goods_model');
+		$goods_cache_array = $orm_goods_db->get_cache_item('goods_list_cache_key_array');
+		if (!empty($goods_cache_array)) {
+			foreach ($goods_cache_array as $val) {
+				$orm_goods_db->delete_cache_item($val);
+			}
+			$orm_goods_db->delete_cache_item('goods_list_cache_key_array');
+		}
+		/*释放商品基本信息缓存*/
+		$cache_goods_basic_info_key = 'goods_basic_info_'.$goods_id;
+		$cache_basic_info_id = sprintf('%X', crc32($cache_goods_basic_info_key));
+		$orm_goods_db->delete_cache_item($cache_basic_info_id);
+		
+		return $this->showmessage('添加散装商品成功！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/mh_bulk_goods/edit', array('goods_id' => $goods_id))));
 	}
 	
 	/**

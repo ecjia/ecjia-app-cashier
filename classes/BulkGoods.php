@@ -54,9 +54,24 @@ class BulkGoods
 	}
 	
 	/**
+	 * 取得保质期单位列表
+	 *
+	 * @return array 保质期单位列表
+	 */
+	public static function limit_days_unit_list() {
+		$arr = array(
+				'1' =>	'天',
+				'2' =>	'月',
+				'3'	=>  '年'
+		);
+	
+		return $arr;
+	}
+	
+	/**
 	 * 获取用户等级列表数组
 	 */
-	function get_rank_list() {
+	public static function get_rank_list() {
 	
 		return RC_DB::table('user_rank')->orderBy('min_points', 'asc')->get();
 	}
@@ -72,7 +87,7 @@ class BulkGoods
 	 *
 	 * @return 优惠价格列表
 	 */
-	function get_volume_price_list($goods_id, $price_type = '1') {
+	public static function get_volume_price_list($goods_id, $price_type = '1') {
 		$res = RC_DB::table('volume_price')
 		->select('volume_number', 'volume_price')
 		->where('goods_id', $goods_id)
@@ -92,5 +107,88 @@ class BulkGoods
 			}
 		}
 		return $volume_price;
+	}
+	
+	
+	/**
+	 * 获取用户等级列表数组
+	 */
+	public static function get_scales_sn_arr($store_id=0) {
+		$arr = [];
+		if ($store_id) {
+			$arr = RC_DB::table('cashdesk_scales')->where('store_id', $store_id)->lists('scale_sn');
+		}
+		return $arr;
+	}
+	
+	/**
+	 * 保存某商品的会员价格
+	 *
+	 * @param int $goods_id
+	 *            商品编号
+	 * @param array $rank_list
+	 *            等级列表
+	 * @param array $price_list
+	 *            价格列表
+	 * @return void
+	 */
+	public static function handle_member_price($goods_id, $rank_list, $price_list) {
+		/* 循环处理每个会员等级 */
+		if (!empty($rank_list)) {
+			foreach ($rank_list as $key => $rank) {
+				/* 会员等级对应的价格 */
+				$price = $price_list [$key];
+				// 插入或更新记录
+				$count = RC_DB::table('member_price')->where('goods_id', $goods_id)->where('user_rank', $rank)->count();
+	
+				if ($count) {
+					/* 如果会员价格是小于0则删除原来价格，不是则更新为新的价格 */
+					if ($price < 0) {
+						RC_DB::table('member_price')->where('goods_id', $goods_id)->where('user_rank', $rank)->delete();
+					} else {
+						$data = array(
+								'user_price' => $price
+						);
+						RC_DB::table('member_price')->where('goods_id', $goods_id)->where('user_rank', $rank)->update($data);
+					}
+				} else {
+					if ($price == -1) {
+						$sql = '';
+					} else {
+						$data = array(
+								'goods_id' 		=> $goods_id,
+								'user_rank' 	=> $rank,
+								'user_price' 	=> $price
+						);
+						RC_DB::table('member_price')->insert($data);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 保存某商品的优惠价格
+	 * @param   int $goods_id 商品编号
+	 * @param   array $number_list 优惠数量列表
+	 * @param   array $price_list 价格列表
+	 * @return  void
+	 */
+	public static function handle_volume_price($goods_id, $number_list, $price_list) {
+		RC_DB::table('volume_price')->where('price_type', 1)->where('goods_id', $goods_id)->delete();
+		/* 循环处理每个优惠价格 */
+		foreach ($price_list AS $key => $price) {
+			/* 价格对应的数量上下限 */
+			$volume_number = $number_list[$key];
+			if (!empty($price)) {
+				$data = array(
+						'price_type'	=> 1,
+						'goods_id'		=> $goods_id,
+						'volume_number' => $volume_number,
+						'volume_price'  => $price,
+				);
+				RC_DB::table('volume_price')->insert($data);
+			}
+		}
 	}
 }

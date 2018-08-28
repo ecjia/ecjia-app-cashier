@@ -3,7 +3,7 @@
 
 <!-- {block name="footer"} -->
 <script type="text/javascript">
-	ecjia.merchant.goods_info.init();
+	ecjia.merchant.bulk_goods_info.init();
 </script>
 <!-- {/block} -->
 
@@ -38,7 +38,7 @@
 	                		<div class="form-group m_t10">
 		              			<label class="control-label col-lg-2">商品名称：</label>
 		              			<div class="controls col-lg-7">
-		                            <input class="form-control" name="goods_name" type="text" value="{$goods.goods_name|escape}" style="color:{$goods_name_color};"/>
+		                            <input class="form-control" name="goods_name" type="text" value="{$goods.goods_name|escape}"/>
 		                 		</div>
                            		<span class="input-must">{lang key='system::system.require_field'}</span>
 		              		</div>
@@ -47,7 +47,9 @@
 	              				<label class="control-label col-lg-2">商品货号：</label>
 	              				<div class="col-lg-7">
 	                            	<input class="form-control" name="goods_sn" type="text" value="{$goods.goods_sn|escape}" />
+	                            	<span class="help-block">散装商品货号共7位，前2位必须填写电子秤编码</span>
 	                          	</div>
+	                          	<span class="input-must m_l15">{lang key='system::system.require_field'}</span>
 	              			</div>
 	              			<div class="form-group">
 	              				<label class="control-label col-lg-2">本店售价：</label>
@@ -61,82 +63,72 @@
 	              			</div>
 		              			
 	              			<div class="form-group">
-	              				<label class="control-label col-lg-2">{lang key='goods::goods.lab_market_price'}</label>
+	              				<label class="control-label col-lg-2">市场售价：</label>
 	              				<div class="col-lg-7">
 	                            	<input class="form-control" name="market_price" type="text" value="{$goods.market_price}" />
 	                          	</div>
 	                          	<div class="col-lg-2 p_l0">
-		                          	<button class="btn btn-primary" type="button" data-toggle="integral_market_price">{lang key='goods::goods.integral_market_price'}</button>
+		                          	<button class="btn btn-primary" type="button" data-toggle="integral_market_price">取整数</button>
 								</div>
 	              			</div>
-		              			
-	              			<div class="form-group">
-	              				<label class="control-label col-lg-2">{lang key='goods::goods.lab_goods_number'}</label>
-	              				<div class="controls col-lg-7">
-	                            	<input class="form-control" name="goods_number" type="text" value="{$goods.goods_number}" />
-	                          	</div>
-	                          	<span class="input-must">{lang key='system::system.require_field'}</span>
-	              			</div>
-		              			
-	              			<div class="form-group">
-	              				<label class="control-label col-lg-2">{lang key='goods::goods.lab_warn_number'}</label>
-	              				<div class="col-lg-7">
-	                            	<input class="form-control" name="warn_number" type="text" value="{$goods.warn_number}" />
-	                          	</div>
-	              			</div>
 		              		
-	              			<div class="form-group">
-	              				<label class="control-label col-lg-2">{lang key='goods::goods.lab_goods_weight'}</label>
+		              		<div class="form-group">
+	              				<label class="control-label col-lg-2">库存重量：</label>
 	              				<div class="col-lg-7">
-	                            	<input class="form-control" name="goods_weight" type="text" value="{$goods.goods_weight_by_unit}" />
+	                            	<input class="form-control" name="weight_stock" type="text" value="{$goods.weight_stock}" />
 	                          	</div>
 	                          	<div class="col-lg-2 p_l0">
 		                          	<select name="weight_unit" class="form-control">
 										<!-- {html_options options=$unit_list selected=$weight_unit} -->
 									</select>
 								</div>
+								<span class="input-must m_l15">{lang key='system::system.require_field'}</span>
 	              			</div>
-		              			
-		              		<div class="form-group">
-		            			<label class="control-label col-lg-2">{lang key='goods::goods.label_as_goods'}</label>
-		              			<div class="col-lg-10">
-		              				<div class="checkbox">
-                                       	<input id="is_alone_sale" type="checkbox" name="is_alone_sale" value="1" {if $goods.is_alone_sale}checked{/if}>
-                                   		<label for="is_alone_sale">{lang key='goods::goods.alone_sale'}</label>
-                                 	</div>
-		              			</div>
-		         			</div>
-		              			
-		              		<div class="form-group">
-		              			<label class="control-label col-lg-2">{lang key='goods::goods.lab_is_free_shipping'}</label>
-		              			<div class="col-lg-10">
-		              				<div class="checkbox">
-                                    	<input id="is_shipping" type="checkbox" name="is_shipping" value="1" {if $goods.is_shipping}checked{/if}>
-                                    	<label for="is_shipping">{lang key='goods::goods.free_shipping'}</label>
-                                    </div>
-		                   		</div>
-		              		</div>
+	              			
+	              			<div class="form-group">
+	              				<label class="control-label col-lg-2">警告重量：</label>
+	              				<div class="col-lg-7">
+	                            	<input class="form-control" name="warn_number" type="text" value="{$goods.warn_number}" />
+	                          	</div>
+	              			</div>
 		              			
 							<div class="panel-group" id="accordionOne">
 					            <div class="panel panel-info">
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionOne" href="#collapseOne" class="accordion-toggle">
 					                    	<span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.seo'}</h4>
+					                        <h4 class="panel-title">特殊属性</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseOne" class="panel-collapse collapse in">
 					                	<div class="panel-body">
 										 	<div class="form-group">
-					              				<label class="control-label col-lg-2 p_l0">{lang key='goods::goods.label_keywords'}</label>
+					              				<label class="control-label col-lg-2 p_l0">进货价：</label>
 					              				<div class="col-lg-9 p_l0">
-					                            	<input class="form-control" name="keywords" type="text" value="{$goods.keywords|escape}" />
+					                            	<input class="form-control" name="cost_price" type="text" value="{$goods.cost_price}" />
 					                          	</div>
 					              			</div>
-					              			<div class="form-group m_b0">
-					              				<label class="control-label col-lg-2 p_l0">{lang key='goods::goods.lab_goods_brief'}</label>
+					              			<div class="form-group">
+					              				<label class="control-label col-lg-2 p_l0">生产日期：</label>
 					              				<div class="col-lg-9 p_l0">
-					                            	<textarea class="form-control" name="goods_brief" cols="40" rows="3">{$goods.goods_brief|escape}</textarea>
+					                            	<input class="form-control date" name="generate_date" type="text" value="{$goods.generate_date}" />
+					                          	</div>
+					              			</div>
+					              			<div class="form-group">
+					              				<label class="control-label col-lg-2 p_l0">保质期：</label>
+					              				<div class="col-lg-7 p_l0">
+					                            	<input class="form-control" name="limit_days" type="text" value="{$goods.limit_days}" />
+					                          	</div>
+				                          		<div class="col-lg-2 p_l0">
+						                          	<select name="limit_days_unit" class="form-control">
+														<!-- {html_options options=$limit_days_unit selected=$limit_days_unit} -->
+													</select>
+												</div>
+					              			</div>
+					              			<div class="form-group">
+					              				<label class="control-label col-lg-2 p_l0">到期日期：</label>
+					              				<div class="col-lg-9 p_l0">
+					                            	<input class="form-control date" name="expiry_date" type="text" value="{$goods.expiry_date}" />
 					                          	</div>
 					              			</div>
 				              			</div>
@@ -149,13 +141,13 @@
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseTwo" class="accordion-toggle">
 					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.remark_info'}</h4>
+					                        <h4 class="panel-title">备注信息</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseTwo" class="panel-collapse collapse in">
 					                	<div class="panel-body">
 					              			<div class="form-group m_b0">
-					              				<label class="control-label col-lg-2 p_l0">{lang key='goods::goods.lab_seller_note'}</label>
+					              				<label class="control-label col-lg-2 p_l0">商家备注：</label>
 					              				<div class="col-lg-9 p_l0">
 					                            	<textarea class="form-control" name="seller_note" cols="40" rows="3">{$goods.seller_note}</textarea>
 					                          	</div>
@@ -172,41 +164,22 @@
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseThree" class="accordion-toggle">
 					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.issue'}</h4>
+					                        <h4 class="panel-title">发布</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseThree" class="panel-collapse collapse in">
 					                	<div class="panel-body">
 					              			<div class="form-group">
-					              				<label class="control-label col-lg-3">{lang key='goods::goods.lab_is_on_sale'}</label>
+					              				<label class="control-label col-lg-3">上架：</label>
 					              				<div class="checkbox">
                                          			<input id="is_on_sale" type="checkbox" name="is_on_sale" value="1" {if $goods.is_on_sale}checked{/if}>
-                                           			<label for="is_on_sale">{lang key='goods::goods.on_sale_desc'}</label>
-                                           		</div>
-				                          	</div>
-				                          	
-				                          	<div class="form-group">
-					              				<label class="control-label col-lg-3">{lang key='goods::goods.lab_intro'}</label>
-					              				<div class="col-lg-9 p_l0">
-					              					<div class="checkbox">
-					                  					<input id="is_best" type="checkbox" name="is_best" value="1" {if $goods.store_best}checked{/if}>
-					                  					<label for="is_best">{lang key='goods::goods.is_best'}</label>
-					                      				
-					                      				<input id="is_new" type="checkbox" name="is_new" value="1" {if $goods.store_new}checked{/if}>
-					                      				<label for="is_new">{lang key='goods::goods.is_new'}</label>
-					                      				
-					                      				<input id="is_hot" type="checkbox" name="is_hot" value="1" {if $goods.store_hot}checked{/if}>
-					                      				<label for="is_hot">{lang key='goods::goods.is_hot'}</label>
-					                      			</div>
+                                           			<label for="is_on_sale">打勾表示允许销售，否则不允许销售。</label>
                                            		</div>
 				                          	</div>
 				                          	
 				                          	<div class="form-group m_b0">
 				                          		<label class="control-label {if $goods.goods_id}col-lg-5{else}col-lg-6{/if}">
-				                          			<button class="btn btn-info" type="submit">{if $goods.goods_id}{lang key='goods::goods.update'}{else}{lang key='goods::goods.next_step'}{/if}</button>
-				                          			{if $step}
-				                          			<button class="btn btn-info complete m_l5" type="submit" data-url='{url path="goods/merchant/edit"}' data-complete="1">直接完成</button>
-													{/if}
+				                          			<button class="btn btn-info" type="submit">{if $goods.goods_id}更新{else}完成{/if}</button>
 													<input type="hidden" id="type" value="{$link.type}" />
 													<input type="hidden" name="goods_id" value="{$goods.goods_id}" />
 				                          		</label>
@@ -221,18 +194,11 @@
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseFour" class="accordion-toggle">
 					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.category'}</h4>
+					                        <h4 class="panel-title">商品分类</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseFour" class="panel-collapse collapse in">
 					                	<div class="panel-body">
-					                		<div class="form-group p_l15 m_b10">
-		                                     	<label>所属平台商品分类：</label>{$cat_html}<br/>
-		                                     	{if $goods.goods_id}
-		                                     	<a class="data-pjax" href="{$select_cat}&goods_id={$goods.goods_id}">重新选择平台分类</a>
-		                                     	{/if}
-						                	</div>
-						                	
 						                	<div class="form-group p_l15 p_r15 m_b0">
 		                                     	<label>选择店铺商品分类</label>
 		                                     	<span class="input-must m_l10">{lang key='system::system.require_field'}</span>
@@ -247,59 +213,19 @@
 				              		</div>
 					 			</div>
 							</div>
-								
-			        		<div class="panel-group">
-				        		<div class="panel panel-info">
-					                <div class="panel-heading">
-					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseSix" class="accordion-toggle">
-					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.goods_image'}</h4>
-					                    </a>
-					                </div>
-					                <div id="collapseSix" class="panel-collapse collapse in">
-				              			<div class="panel-body">
-	                                        <label>{lang key='goods::goods.lab_picture'}</label>
-	                                    	<div class="accordion-group">
-		                                    	<div class="accordion-body in collapse" id="goods_info_area_img">
-													<div class="accordion-inner">
-														<div class="control-group">
-															<div class="ecjiaf-db">
-																<div class="goods_img">
-																	<span {if $goods.goods_img}class="btn fileupload-btn preview-img" style="background-image: url({$goods.goods_img});"{else}class="btn fileupload-btn"{/if}>
-																		<span class="fileupload-exists"><i class="glyphicon glyphicon-plus"></i></span>
-																	</span>
-																	<input class="hide" type="file" name="goods_img" onchange="ecjia.merchant.goods_info.previewImage(this)" />
-																</div>
-																<div class="thumb_img{if !$goods.goods_thumb} hide{/if}">
-																	<label class="ecjiaf-db">{lang key='goods::goods.goods_thumb'}</label>
-																	<span {if $goods.goods_img}class="btn fileupload-btn preview-img" style="background-image: url({$goods.goods_thumb});"{else}class="btn fileupload-btn"{/if}>
-																		<span class="fileupload-exists"><i class="fontello-icon-plus"></i></span>
-																	</span>
-																	<input class="hide" type="file" name="thumb_img" onchange="ecjia.merchant.goods_info.previewImage(this)" />
-																</div>
-																<div><span class="help-inline">{lang key='goods::goods.thumb_img_notice'}</span></div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-	                                    </div>
-			              			</div>
-				        		</div>
-			        		</div>
-								
+					
 							<div class="panel-group">
 					            <div class="panel panel-info">
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseSeven" class="collapsed accordion-toggle">
 					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.promote_price'}</h4>
+					                        <h4 class="panel-title">折扣、促销价格</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseSeven" class="panel-collapse collapse">
 				              			<div class="panel-body mt_15">
 				              				{if $user_rank_list}
-	                                        <label>{lang key='goods::goods.lab_user_price'}</label>
+	                                        <label>会员价格：</label>
 	                                        <!-- {foreach from=$user_rank_list item=user_rank} -->
 											<div class="m_l30">
 												<span class="f_l w80 text-left l_h30">{$user_rank.rank_name|truncate:"10":".."}</span>
@@ -315,11 +241,11 @@
 
 											<!-- {foreach from=$volume_price_list item=volume_price name="volume_price_tab"} -->
 											<div class="m_l30 goods-span row m_t5">
-												<span class="l_h30 f_l">{lang key='goods::goods.volume_number'}</span>
+												<span class="l_h30 f_l">优惠数量</span>
 												<div class="col-lg-4">
 	                                            	<input class="form-control" type="text" name="volume_number[]" value="{$volume_price.number}"/>
 	                                          	</div>
-												<span class="l_h30 f_l">{lang key='goods::goods.volume_price'}</span>
+												<span class="l_h30 f_l">优惠价格</span>
 												
 												<div class="col-lg-4">
 													<input class="form-control" type="text" name="volume_price[]" value="{$volume_price.price}"/>
@@ -338,7 +264,7 @@
 												
 											</div>
 											<!-- {/foreach} -->
-											<a class="m_l5 l_h30 add_volume_price" href="javascript:;">{lang key='goods::goods.add_promote_price'}</a>
+											<a class="m_l5 l_h30 add_volume_price" href="javascript:;">添加优惠价格</a>
 											<span class="help-block">购买数量达到优惠数量时享受的优惠价格</span>
 	                                    </div>
 			              			</div>
@@ -350,7 +276,7 @@
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseEight" class="collapsed accordion-toggle">
 					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.promotion_info'}</h4>
+					                        <h4 class="panel-title">促销信息</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseEight" class="panel-collapse collapse">
@@ -358,7 +284,7 @@
 	                                        <div class="form-group">
 					              				<div class="control-label col-lg-4 p_r5">
 					              					<input id="is_promote" class="toggle_promote l_h30" type="checkbox" name="is_promote" value="1" {if $goods.is_promote}checked{/if} />
-					              					<label for="is_promote"><span class="ecjiaf-fs2">{lang key='goods::goods.lab_promote_price'}</span></label>
+					              					<label for="is_promote"><span class="ecjiaf-fs2">促销价：</span></label>
 					              				</div>
 					              				<div class="col-lg-6 p_l0">
 					                          		<input class="form-control" type="text" id="promote_1" name="promote_price" value="{$goods.promote_price}" size="20"{if !$goods.is_promote} disabled{/if} />
@@ -366,7 +292,7 @@
 					              			</div>
 					              			
 					              			<div class="form-group">
-					              				<label class="control-label col-lg-4">{lang key='goods::goods.lab_promote_date'}</label>
+					              				<label class="control-label col-lg-4">促销日期：</label>
 					              				<div class="col-lg-8 p_l0">
 					              					<div class="col-lg-5 p_l0 p_r0">
 					                          			<input class="form-control date" type="text" name="promote_start_date" size="12" value="{$goods.promote_start_date}" />
@@ -389,18 +315,18 @@
 					                <div class="panel-heading">
 					                    <a data-toggle="collapse" data-parent="#accordionTwo" href="#collapseNine" class="collapsed accordion-toggle">
 					                        <span class="glyphicon"></span>
-					                        <h4 class="panel-title">{lang key='goods::goods.integral_about'}</h4>
+					                        <h4 class="panel-title">积分相关</h4>
 					                    </a>
 					                </div>
 					                <div id="collapseNine" class="panel-collapse collapse">
 				              			<div class="panel-body mt_15">
 	                                        <div class="form-group">
-					              				<label class="control-label col-lg-5">{lang key='goods::goods.lab_integral'}</label>
+					              				<label class="control-label col-lg-5">积分购买金额：</label>
 					              				<div class="col-lg-6">
 					                          		<input class="form-control" type="text" name="integral" value="{$goods.integral}" size="20" data-toggle="parseint_input" />
 					                          	</div>
 					              			</div>
-					              			<p class="help-block">{lang key='goods::goods.notice_integral'}</p>
+					              			<p class="help-block">(此处需填写金额)购买该商品时最多可以使用积分的金额'</p>
 	                                    </div>
 			              			</div>
 				        		</div>
