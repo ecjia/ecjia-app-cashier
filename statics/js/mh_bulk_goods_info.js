@@ -5,10 +5,63 @@
         	$(".date").datepicker({
 				format: "yyyy-mm-dd"
 			});
+        	//获取截止日期
+        	$(".generate-date").blur(function(){
+         		 var $this = $(this);
+         		 var url = $this.attr('action');
+                 var generate_date = $this.val();
+                 if (generate_date) {
+                	 $('input[name="generatedate"]').val(generate_date);
+                 }
+                 var limitday = $('input[name="limitdays"]').val();
+                 var unit = $('input[name="dayunit"]').val();
+                 var data = {
+             		  produce_date:generate_date,
+             		  limit_days: limitday,
+             		  limit_unit: unit
+                 }
+                 if (generate_date && limitday && unit) {
+                 	  $.post(url, data, function (data) {
+       	      			if (data.state == 'error') {
+       	                 ecjia.admin.showmessage(data);
+       	                } 
+       	               	if (data.status == 1) {
+       	               		$('input[name="expiry_date"]').val(data.expiry_date);
+       	               	}
+       	            }, 'json');
+                 }
+              });
+        	//获取截止日期
+        	$(".limitday").blur(function(){
+        		 var $this = $(this);
+        		 var url = $this.attr('action');
+                 var limitday = $this.val();
+                 var unit = $('input[name="dayunit"]').val();
+                 var generate_date = $('input[name="generatedate"]').val();
+                 if (limitday) {
+               	  	$('input[name="limitdays"]').val(limitday);
+                 }
+                 var data = {
+              		   produce_date:generate_date,
+              		   limit_days: limitday,
+              		   limit_unit: unit
+                 }
+                 if (generate_date && limitday && unit) {
+              	   $.post(url, data, function (data) {
+    	      			 if (data.state == 'error') {
+    	                 	ecjia.admin.showmessage(data);
+    	                 } 
+    	               	 if (data.status == 1) {
+    	               		$('input[name="expiry_date"]').val(data.expiry_date);
+    	               	 }
+    	             }, 'json');
+                 }
+             });
         	app.bulk_goods_info.set_allprice_note();
         	app.bulk_goods_info.add_volume_price();
         	app.bulk_goods_info.toggle_promote();
             app.bulk_goods_info.marketPriceSetted();
+            app.bulk_goods_info.expire_date();
             app.bulk_goods_info.submit_info();
         },
         marketPriceSetted: function() {
@@ -72,7 +125,35 @@
 				$(this).is(":checked") == true ? $('#promote_1').prop('disabled', false) : $('#promote_1').attr('disabled', true);
 			})
 		},
-
+		
+		//获取截止日期
+		expire_date: function () {
+        	$('select[name="limit_days_unit"]').off('change').on('change', function () {
+          		   var $this = $(this);
+                   var url = $this.attr('action');
+                   var unit = $this.val();
+                   var limit_day = $('input[name="limitdays"]').val();
+                   var generate_date = $('input[name="generatedate"]').val();
+                   
+                   $('input[name="dayunit"]').val(unit);
+                   
+                   var data = {
+                		   produce_date:generate_date,
+                		   limit_days: limit_day,
+                		   limit_unit: unit
+                   }
+                   if (generate_date && limit_day && unit) {
+                	   $.post(url, data, function (data) {
+      	      			 if (data.state == 'error') {
+      	                 	ecjia.admin.showmessage(data);
+      	                 } 
+      	               	 if (data.status == 1) {
+      	               		$('input[name="expiry_date"]').val(data.expiry_date);
+      	               	 }
+      	             }, 'json');
+                   }
+               });
+        },        
 		submit_info: function() {
 			$('button[type="submit"]').on('click', function() {
 				$form = $('form[name="theForm"]');
@@ -121,13 +202,6 @@
 						$form.ajaxSubmit({
 							dataType: "json",
 							success: function(data) {
-//								var bool = $('.complete').attr('data-complete');
-//								if (bool == 1) {
-//									var pjaxurl = $('.complete').attr('data-url');
-//									var url = pjaxurl + '&goods_id=' + data.goods_id;
-//									app.goods_info.complete(url);
-//									return false;
-//								}
 								if (data.message) {
 									ecjia.merchant.showmessage(data);
 								} else {

@@ -111,24 +111,26 @@
 					              			<div class="form-group">
 					              				<label class="control-label col-lg-2 p_l0">生产日期：</label>
 					              				<div class="col-lg-9 p_l0">
-					                            	<input class="form-control date" name="generate_date" type="text" value="{$goods.generate_date}" />
+					                            	<input class="form-control date generate-date" name="generate_date" action='{url path="cashier/mh_bulk_goods/get_expire_date"}' type="text" value="{$goods.generate_date}" />
 					                          	</div>
 					              			</div>
 					              			<div class="form-group">
 					              				<label class="control-label col-lg-2 p_l0">保质期：</label>
 					              				<div class="col-lg-7 p_l0">
-					                            	<input class="form-control" name="limit_days" type="text" value="{$goods.limit_days}" />
+					                            	<input class="form-control limitday" name="limit_days" action='{url path="cashier/mh_bulk_goods/get_expire_date"}' type="text" value="{$goods.limitdays}" />
 					                          	</div>
 				                          		<div class="col-lg-2 p_l0">
-						                          	<select name="limit_days_unit" class="form-control">
-														<!-- {html_options options=$limit_days_unit selected=$limit_days_unit} -->
+						                          	<select name="limit_days_unit" class="form-control day-unit" action='{url path="cashier/mh_bulk_goods/get_expire_date"}'>
+														<!-- {foreach from=$limit_days_unit key=key item=val} -->
+														<option value="{$key}" {if $goods.limitday_unit eq $key}selected{/if}>{$val}</option>
+														<!-- {/foreach} -->
 													</select>
 												</div>
 					              			</div>
 					              			<div class="form-group">
 					              				<label class="control-label col-lg-2 p_l0">到期日期：</label>
 					              				<div class="col-lg-9 p_l0">
-					                            	<input class="form-control date" name="expiry_date" type="text" value="{$goods.expiry_date}" />
+					                            	<input class="form-control date" name="expiry_date" type="text" value="{$goods.expiry_date}"/>
 					                          	</div>
 					              			</div>
 				              			</div>
@@ -180,7 +182,9 @@
 				                          	<div class="form-group m_b0">
 				                          		<label class="control-label {if $goods.goods_id}col-lg-5{else}col-lg-6{/if}">
 				                          			<button class="btn btn-info" type="submit">{if $goods.goods_id}更新{else}完成{/if}</button>
-													<input type="hidden" id="type" value="{$link.type}" />
+													<input type="hidden" name="generatedate" value="{if $goods.generate_date}{$goods.generate_date}{/if}"/>
+													<input type="hidden" name="limitdays" value="{if $goods.limitdays}{$goods.limitdays}{/if}"/>
+													<input type="hidden" name="dayunit" value="{if $goods.limitday_unit}{$goods.limitday_unit}{else}1{/if}"/>
 													<input type="hidden" name="goods_id" value="{$goods.goods_id}" />
 				                          		</label>
 				                          	</div>

@@ -191,4 +191,53 @@ class BulkGoods
 			}
 		}
 	}
+	
+	/**
+	 * 取得某商品的会员价格列表
+	 *
+	 * @param int $goods_id
+	 *            商品编号
+	 * @return array 会员价格列表 user_rank => user_price
+	 */
+	public static function get_member_price_list($goods_id) {
+		/* 取得会员价格 */
+		$data = RC_DB::table('member_price')->select('user_rank', 'user_price')->where('goods_id', $goods_id)->get();
+	
+		$price_list = array();
+		if (!empty($data)) {
+			foreach ($data as $row) {
+				$price_list[$row ['user_rank']] = $row ['user_price'];
+			}
+		}
+		return $price_list;
+	}
+	
+	/**
+	 * 取得某商品到期日期
+	 *
+	 * @param string $generate_date  i
+	 * @param  int $limit_days
+	 * @param  int $limit_days_unit      
+	 * @return string
+	 */
+	public static function expiry_date($generate_date = '', $limit_days = 0, $limit_days_unit = 0) {
+		$exppire_date = '';
+		$expiry_date_str =  RC_Time::local_strtotime($generate_date);
+		if ($limit_days_unit == '1') {
+			$str = "+".$limit_days ." day";
+			$d = RC_Time::local_strtotime($str, $expiry_date_str);
+			$exppire_date = RC_Time::local_date('Y-m-d', $d);
+		} elseif ($limit_days_unit == '2') {
+			$str = "+".$limit_days ." month";
+			$d = RC_Time::local_strtotime($str, $expiry_date_str);
+			$exppire_date = RC_Time::local_date('Y-m-d', $d);
+		} else {
+			$limit_month = $limit_days * 12;
+			$str = "+".$limit_month ." month";
+			$d = RC_Time::local_strtotime($str, $expiry_date_str);
+			$exppire_date = RC_Time::local_date('Y-m-d', $d);
+		}
+		return $exppire_date;
+	}
+	
 }
