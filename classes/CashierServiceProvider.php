@@ -9,7 +9,7 @@ class CashierServiceProvider extends  AppParentServiceProvider
     
     public function boot()
     {
-        $this->package('ecjia/app-cashier');
+        $this->package('ecjia/app-cashier', null, dirname(__DIR__));
     }
     
     public function register()
