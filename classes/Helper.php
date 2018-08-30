@@ -57,6 +57,7 @@ class Helper
      */
     public static function assign_adminlog_content() {
         ecjia_admin_log::instance()->add_object('bulk_goods', '散装商品');
+        ecjia_admin_log::instance()->add_object('scales', '电子秤');
         
 	    ecjia_admin_log::instance()->add_action('batch_move_cat', '批量转移分类');
 	    ecjia_admin_log::instance()->add_action('batch_on', '批量上架');

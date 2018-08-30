@@ -75,10 +75,9 @@ class cashdesk_scales extends ecjia_merchant {
 
         RC_Script::enqueue_script('jquery.toggle.buttons', RC_Uri::admin_url('statics/lib/toggle_buttons/jquery.toggle.buttons.js'));
         RC_Style::enqueue_style('bootstrap-toggle-buttons', RC_Uri::admin_url('statics/lib/toggle_buttons/bootstrap-toggle-buttons.css'));
-//         RC_Script::enqueue_script('migrate', RC_App::apps_url('statics/js/migrate.js', __FILE__) , array() , false, true);
-
-//         RC_Loader::load_app_func('merchant');
-//         Ecjia\App\Merchant\Helper::assign_adminlog_content();
+        
+        RC_Script::enqueue_script('mh_cashdesk_scales', RC_App::apps_url('statics/js/mh_cashdesk_scales.js', __FILE__));
+        Ecjia\App\Cashier\Helper::assign_adminlog_content();
 
         ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤', RC_Uri::url('cashier/cashdesk_scales/init')));
         ecjia_merchant_screen::get_current_screen()->set_parentage('merchant', 'merchant/cashdesk_scales.php');
@@ -88,7 +87,7 @@ class cashdesk_scales extends ecjia_merchant {
 	 * 店铺电子秤列表
 	 */
 	public function init() {
-		$this->admin_priv('mh_cashdesk_scales');
+		$this->admin_priv('mh_scales_manage');
 
 		ecjia_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤'));
 		$this->assign('app_url', RC_App::apps_url('statics', __FILE__));
@@ -101,6 +100,40 @@ class cashdesk_scales extends ecjia_merchant {
         $this->assign('form_action', RC_Uri::url('merchant/merchant/update'));
 
 		$this->display('cashdesk_scales_list.dwt');
+	}
+	
+	/**
+	 * 电子秤是否抹零切换
+	 */
+	public function toggle_wipezero() {
+		$this->admin_priv('mh_scales_update', ecjia::MSGTYPE_JSON);
+		
+		$id = intval($_POST['id']);
+		$is_wipezero = intval($_POST['val']);
+	
+		$data = array(
+				'wipezero' 	=> $is_wipezero,
+		);
+		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
+	
+		return $this->showmessage('已成功切状态', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+	}
+	
+	/**
+	 * 电子秤是否保留分位切换
+	 */
+	public function toggle_reserve_quantile() {
+		$this->admin_priv('mh_scales_update', ecjia::MSGTYPE_JSON);
+	
+		$id = intval($_POST['id']);
+		$is_reserve_quantile = intval($_POST['val']);
+		
+		$data = array(
+				'reserve_quantile' 	=> $is_reserve_quantile,
+		);
+		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
+	
+		return $this->showmessage('已成功切状态', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
 	}
 	
 	/**

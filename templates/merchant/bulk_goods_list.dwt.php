@@ -90,7 +90,7 @@
 		                <li><a class="batch-trash-btn" data-toggle="ecjiabatch" data-idClass=".checkbox:checked" data-url="{$form_action}&type=trash&page={$smarty.get.page}" data-msg="您确定要把选中的商品放入回收站吗？" data-noSelectMsg="请选择要移至回收站的商品" href="javascript:;"><i class="fa fa-archive"></i>移至回收站</a></li>
 						<li><a class="batch-sale-btn" data-toggle="ecjiabatch" data-idClass=".checkbox:checked" data-url="{$form_action}&type=on_sale&page={$smarty.get.page}" data-msg="您确定要把选中的商品上架吗？" data-noSelectMsg="请选择要上架的商品" href="javascript:;"><i class="fa fa-arrow-circle-o-up"></i>上架</a></li>
 						<li><a class="batch-notsale-btn" data-toggle="ecjiabatch" data-idClass=".checkbox:checked" data-url="{$form_action}&type=not_on_sale&page={$smarty.get.page}" data-msg="您确定要把选中的商品下架吗？" data-noSelectMsg="请选择要下架的商品" href="javascript:;"><i class="fa fa-arrow-circle-o-down"></i>下架</a></li>
-						<li><a class="batch-move-btn" data-name="move_cat" data-move="data-operatetype" href="javascript:;"><i class="fa fa-mail-forward"></i> {lang key='goods::goods.move_to'}</a></li>
+						<li><a class="batch-move-btn" data-name="move_cat" data-move="data-operatetype" href="javascript:;"><i class="fa fa-mail-forward"></i> 转移到分类</a></li>
 		           	</ul>
 				</div>
 				
@@ -138,7 +138,7 @@
 									<br/>
 									<div class="edit-list">
 										<a class="data-pjax" href='{url path="cashier/mh_bulk_goods/edit" args="goods_id={$goods.goods_id}"}'>{lang key='system::system.edit'}</a>&nbsp;|&nbsp;
-										<a class="ajaxremove ecjiafc-red" data-toggle="ajaxremove" data-msg="您确定要把该商品放入回收站吗？" href='{url path="goods/merchant/remove" args="id={$goods.goods_id}"}'>{lang key='system::system.drop'}</a>
+										<a class="ajaxremove ecjiafc-red" data-toggle="ajaxremove" data-msg="您确定要把该商品放入回收站吗？" href='{url path="cashier/mh_bulk_goods/remove" args="id={$goods.goods_id}"}'>{lang key='system::system.drop'}</a>
 									</div>
 								</td>	
 								<td>

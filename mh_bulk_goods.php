@@ -873,6 +873,35 @@ class mh_bulk_goods extends ecjia_merchant {
 	}
 	
 	/**
+	 * 散装商品放入回收站
+	 */
+	public function remove() {
+		$this->admin_priv('mh_bulk_goods_update', ecjia::MSGTYPE_JSON);
+	
+		$goods_id = intval($_GET['id']);
+		$goods_name = RC_DB::table('goods')->where('goods_id', $goods_id)->pluck('goods_name');
+	
+		RC_DB::table('goods')->where('goods_id', $goods_id)->where('store_id', $_SESSION['store_id'])->update(array('is_delete' => 1));
+		 
+		/* 释放app缓存*/
+		$orm_goods_db = RC_Model::model('goods/orm_goods_model');
+		$goods_cache_array = $orm_goods_db->get_cache_item('goods_list_cache_key_array');
+		if (!empty($goods_cache_array)) {
+			foreach ($goods_cache_array as $val) {
+				$orm_goods_db->delete_cache_item($val);
+			}
+			$orm_goods_db->delete_cache_item('goods_list_cache_key_array');
+		}
+		/*释放商品基本信息缓存*/
+		$cache_goods_basic_info_key = 'goods_basic_info_'.$goods_id;
+		$cache_basic_info_id = sprintf('%X', crc32($cache_goods_basic_info_key));
+		$orm_goods_db->delete_cache_item($cache_basic_info_id);
+	
+		ecjia_merchant::admin_log(addslashes($goods_name), 'trash', 'bulk_goods');
+		return $this->showmessage(RC_Lang::get('goods::goods.trash_goods_ok'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
+	}
+	
+	/**
 	 * 获取商品到期日期
 	 */
 	public function get_expire_date() {
