@@ -16,13 +16,18 @@
 	<strong>温馨提示：</strong>收银台，自主购物区，支持称重后产生的条形码识别，识别的内容包含商品信息，称重金额，数量（称重金额/单价）等。
 </div>
 
-
-<div class="row">
-	<div class="col-lg-12">
-		<h2 class="page-header">
-		<!-- {if $ur_here}{$ur_here}{/if} -->
-		</h2>
-	</div>
+<div class="page-header">
+	<div class="pull-left">
+		<h2><!-- {if $ur_here}{$ur_here}{/if} --></h2>
+  	</div>
+  	<div class="pull-right">
+  		{if $action_link}
+		<a href="{$action_link.href}" class="btn btn-primary data-pjax">
+			<i class="fa fa-plus"></i> {$action_link.text}
+		</a>
+		{/if}
+  	</div>
+  	<div class="clearfix"></div>
 </div>
 
 <div class="row">
@@ -48,7 +53,12 @@
 								<td>
 		                           {$list.scale_sn}
 		                        </td>
-								<td>{if $list.barcode_mode eq '1'}金额模式{elseif $list.barcode_mode eq '2'}重量模式{else $list.barcode_mode eq '3'}重量模式+金额模式{/if}</td>
+								<td class="hide-edit-area">
+									{if $list.barcode_mode eq '1'}金额模式{elseif $list.barcode_mode eq '2'}重量模式{else $list.barcode_mode eq '3'}重量模式+金额模式{/if}
+									<div class="edit-list">
+										<a class="data-pjax" href='{url path="cashier/cashdesk_scales/edit" args="id={$list.id}"}'>{lang key='system::system.edit'}</a>
+									</div>
+								</td>
 								<td>{if $list.date_format eq '1'}yyyy-mm-dd{else}yyyy.mm.dd{/if}</td>
 								<td>{if $list.weight_unit eq '1'}克{else}千克{/if}</td>
 								<td>{if $list.weight_unit eq '1'}克/元{else}千克/元{/if}</td>

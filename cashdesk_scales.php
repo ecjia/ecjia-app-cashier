@@ -52,34 +52,20 @@ defined('IN_ECJIA') or exit('No permission resources.');
 class cashdesk_scales extends ecjia_merchant {
 	public function __construct() {
 		parent::__construct();
+		
+		Ecjia\App\Cashier\Helper::assign_adminlog_content();
+		
         RC_Script::enqueue_script('jquery-form');
 		RC_Script::enqueue_script('smoke');
         RC_Style::enqueue_style('uniform-aristo');
-        // 自定义JS
-//         RC_Script::enqueue_script('merchant_info', RC_App::apps_url('statics/js/merchant_info.js', __FILE__) , array() , false, true);
-//         RC_Script::enqueue_script('photoswipe', RC_App::apps_url('statics/lib/photoswipe/js/photoswipe.min.js', __FILE__) , array() , false, true);
-//         RC_Script::enqueue_script('photoswipe-ui', RC_App::apps_url('statics/lib/photoswipe/js/photoswipe-ui-default.min.js', __FILE__) , array() , false, true);
-//         RC_Style::enqueue_style('photoswipe', RC_App::apps_url('statics/lib/photoswipe/css/photoswipe.css', __FILE__), array());
-//         RC_Style::enqueue_style('default-skin', RC_App::apps_url('statics/lib/photoswipe/css/default-skin/default-skin.css', __FILE__), array());
-        // 页面css样式
-//         RC_Style::enqueue_style('merchant', RC_App::apps_url('statics/css/merchant.css', __FILE__), array());
-        
-//         RC_Style::enqueue_style('merchant_template', RC_App::apps_url('statics/css/merchant_template.css', __FILE__), array());
-        // input file 长传
-//         RC_Style::enqueue_style('bootstrap-fileupload', RC_App::apps_url('statics/assets/bootstrap-fileupload/bootstrap-fileupload.css', __FILE__), array());
-//         RC_Script::enqueue_script('bootstrap-fileupload', RC_App::apps_url('statics/assets/bootstrap-fileupload/bootstrap-fileupload.js', __FILE__), array(), false, true);
-
-        // 时间区间
-//         RC_Style::enqueue_style('range', RC_App::apps_url('statics/css/range.css', __FILE__), array());
-//         RC_Script::enqueue_script('jquery-range', RC_App::apps_url('statics/js/jquery.range.js', __FILE__), array(), false, true);
 
         RC_Script::enqueue_script('jquery.toggle.buttons', RC_Uri::admin_url('statics/lib/toggle_buttons/jquery.toggle.buttons.js'));
         RC_Style::enqueue_style('bootstrap-toggle-buttons', RC_Uri::admin_url('statics/lib/toggle_buttons/bootstrap-toggle-buttons.css'));
         
         RC_Script::enqueue_script('mh_cashdesk_scales', RC_App::apps_url('statics/js/mh_cashdesk_scales.js', __FILE__));
-        Ecjia\App\Cashier\Helper::assign_adminlog_content();
+        RC_Script::localize_script('mh_cashdesk_scales', 'js_lang', RC_Lang::get('cashier::bulk_goods.js_lang'));
 
-        ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤', RC_Uri::url('cashier/cashdesk_scales/init')));
+        ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤管理', RC_Uri::url('cashier/cashdesk_scales/init')));
         ecjia_merchant_screen::get_current_screen()->set_parentage('merchant', 'merchant/cashdesk_scales.php');
 	}
 
@@ -93,6 +79,7 @@ class cashdesk_scales extends ecjia_merchant {
 		$this->assign('app_url', RC_App::apps_url('statics', __FILE__));
 
 		$this->assign('ur_here', '电子秤');
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/add'), 'text' => '添加电子秤'));
         
       	$scales_list = $this->scales_list();
       	
@@ -100,6 +87,133 @@ class cashdesk_scales extends ecjia_merchant {
         $this->assign('form_action', RC_Uri::url('merchant/merchant/update'));
 
 		$this->display('cashdesk_scales_list.dwt');
+	}
+	
+	/**
+	 * 添加电子秤
+	 */
+	public function add() {
+		// 检查权限
+		$this->admin_priv('mh_scales_update');
+	
+		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表'));
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/init'), 'text' => '电子秤列表'));
+	
+		$this->assign('ur_here', '添加电子秤');
+	
+		$this->assign('form_action', RC_Uri::url('cashier/cashdesk_scales/insert'));
+	
+		$this->display('cashdesk_scales_info.dwt');
+	}
+	
+	/**
+	 * 添加电子秤数据处理
+	 */
+	public function insert() {
+		// 检查权限
+		$this->admin_priv('mh_scales_update', ecjia::MSGTYPE_JSON);
+		
+		$barcode_mode 		= !empty($_POST['barcode_mode'])  ? $_POST['barcode_mode'] : 1;
+		$scale_sn 			= !empty($_POST['scale_sn'])  ? trim($_POST['scale_sn']) : '';
+		$date_format 		= !empty($_POST['date_format'])  ? $_POST['date_format'] : 1;
+		$weight_unit 		= !empty($_POST['weight_unit'])  ? $_POST['weight_unit'] : 1;
+		$price_unit 		= !empty($_POST['price_unit'])  ? $_POST['price_unit'] : 1;
+		$wipezero 			= $_POST['wipezero'];
+		$reserve_quantile 	= $_POST['reserve_quantile'];
+		
+		if (empty($scale_sn)) {
+			return $this->showmessage('请输入电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		//电子秤码是否重复
+		$count = RC_DB::table('cashdesk_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->count();
+		if ($count > 0) {
+			return $this->showmessage('电子秤码已存在，请重新输入！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		$scale_sn_length = strlen($scale_sn);
+		if ($scale_sn_length != 2) {
+			return $this->showmessage('请输入2位数的电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		$data = array(
+				'barcode_mode' 		=> $barcode_mode,
+				'scale_sn'	   		=> $scale_sn,
+				'date_format'		=> $date_format,
+				'weight_unit'		=> $weight_unit,
+				'price_unit'		=> $price_unit,
+				'wipezero'			=> $wipezero,
+				'reserve_quantile'	=> $reserve_quantile
+		);
+		
+		$id = RC_DB::table('cashdesk_scales')->insertGetId($data);
+	
+		/* 记录日志 */
+		ecjia_merchant::admin_log('电子秤码'.$scale_sn, 'add', 'scales');
+		return $this->showmessage('添加电子秤成功！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/cashdesk_scales/edit', array('id' => $id))));
+	}
+	
+	/**
+	 * 编辑电子秤
+	 */
+	public function edit() {
+		$this->admin_priv('mh_scales_update');
+	
+		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表', RC_Uri::url('cashier/cashdesk_scales/init')));
+		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表'));
+	
+		$this->assign('ur_here', '编辑电子秤');
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/init'), 'text' => '电子秤列表'));
+		$id = $_GET['id'];
+		/* 电子秤信息 */
+		$scales_info = RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->first();
+	
+		$this->assign('scales_info', $scales_info);
+		$this->assign('id', $id);
+		
+		/* 显示商品信息页面 */
+		$this->assign('form_action', RC_Uri::url('cashier/cashdesk_scales/update'));
+		$this->display('cashdesk_scales_info.dwt');
+	}
+	
+	/**
+	 * 编辑散装商品数据处理
+	 */
+	public function update() {
+		$this->admin_priv('mh_scales_update', ecjia::MSGTYPE_JSON);
+	
+		$id = $_POST['id'];
+		$barcode_mode 		= !empty($_POST['barcode_mode'])  ? $_POST['barcode_mode'] : 1;
+		$scale_sn 			= !empty($_POST['scale_sn'])  ? trim($_POST['scale_sn']) : '';
+		$date_format 		= !empty($_POST['date_format'])  ? $_POST['date_format'] : 1;
+		$weight_unit 		= !empty($_POST['weight_unit'])  ? $_POST['weight_unit'] : 1;
+		$price_unit 		= !empty($_POST['price_unit'])  ? $_POST['price_unit'] : 1;
+		$wipezero 			= $_POST['wipezero'];
+		$reserve_quantile 	= $_POST['reserve_quantile'];
+		
+		if (empty($scale_sn)) {
+			return $this->showmessage('请输入电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		//电子秤码重复判断
+		$count = RC_DB::table('cashdesk_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->where('id', '!=', $id)->count();
+		if ($count > 0) {
+			return $this->showmessage('电子秤码已存在！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		$scale_sn_length = strlen($scale_sn);
+		if ($scale_sn_length != '2') {
+			return $this->showmessage('请输入2位数的电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+		}
+		$data = array(
+				'barcode_mode' 		=> $barcode_mode,
+				'scale_sn'	   		=> $scale_sn,
+				'date_format'		=> $date_format,
+				'weight_unit'		=> $weight_unit,
+				'price_unit'		=> $price_unit,
+				'wipezero'			=> $wipezero,
+				'reserve_quantile'	=> $reserve_quantile
+		);
+		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
+		/* 记录日志 */
+		ecjia_merchant::admin_log('电子秤码'.$scale_sn, 'edit', 'scales');
+		
+		return $this->showmessage('编辑电子秤成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/cashdesk_scales/edit', array('id' => $id))));
 	}
 	
 	/**
@@ -158,10 +272,6 @@ class cashdesk_scales extends ecjia_merchant {
 		
 		return array('list' => $data, 'page' => $page->show(2), 'desc' => $page->page_desc());
 	}
-	
-	
-	
-
 }
 
 //end

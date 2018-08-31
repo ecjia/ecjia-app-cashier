@@ -2,8 +2,19 @@
 ;(function (app, $) {
     app.cashdesk_scales = {
         init: function () {
+        	$('.info-toggle-button').toggleButtons({
+				label: {  
+                     enabled: "开启",  
+                     disabled: "关闭"  
+                },  
+                style: {
+                    enabled: "info",
+                    disabled: "success"
+                }
+            });
             app.cashdesk_scales.toggle_wipezero();
             app.cashdesk_scales.toggle_reserve_quantile();
+            app.cashdesk_scales.cashdesk_info();
         },
         toggle_wipezero: function() {
 			$('[data-trigger="toggle_wipezero"]').on('click', function(e) {
@@ -75,9 +86,33 @@
 					}
 				});
 			})
-		}
+		},
         
-        
+		cashdesk_info: function () {
+            var $form = $("form[name='theForm']");
+            var option = {
+    	            rules: {
+    	            	scale_sn: {
+    	                    required: true
+    	                }
+    	            },
+    	            messages: {
+    	            	scale_sn: {
+    	            		required: js_lang.scale_sn_required
+    	                }
+    	            },
+    	            submitHandler: function () {
+    	                $form.ajaxSubmit({
+    	                    dataType: "json",
+    	                    success: function (data) {
+    	                        ecjia.merchant.showmessage(data);
+    	                    }
+    	                });
+    	            }
+    	        }
+            var options = $.extend(ecjia.merchant.defaultOptions.validate, option);
+            $form.validate(options);
+		},
     };
     
 })(ecjia.merchant, jQuery);

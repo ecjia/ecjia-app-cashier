@@ -58,7 +58,7 @@ class cashier_merchant_purview_api extends Component_Event_Api {
         	array('action_name' => '散装商品更新', 'action_code' => 'mh_bulk_goods_update', 'relevance' => ''),
         		
         	array('action_name' => '电子秤管理', 'action_code' => 'mh_scales_manage', 'relevance' => ''),
-        	array('action_name' => '电子秤编辑', 'action_code' => 'mh_scales_update', 'relevance' => ''),
+        	array('action_name' => '电子秤更新', 'action_code' => 'mh_scales_update', 'relevance' => ''),
         );
         return $purviews;
     }
