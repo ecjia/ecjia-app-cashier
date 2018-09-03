@@ -5,7 +5,11 @@
 <script type="text/javascript">
 	ecjia.merchant.cashdesk_scales.init();
 </script>
-
+<style>
+.rewidth{
+	width:95px !important;
+}
+</style>
 <!-- {/block} -->
 
 <!-- {block name="home-content"} -->
@@ -83,7 +87,7 @@
 						<div class="form-group">
 							<label class="control-label col-lg-2">{t}抹零设置：{/t}</label>
 							<div class="controls col-lg-10">
-					            <div class="info-toggle-button">
+					            <div class="info-toggle-button rewidth">
 					                <input class="nouniform" name="wipezero" type="checkbox"  {if $scales_info.wipezero eq '1'}checked="checked"{/if}  value="1"/>
 					            </div>
 							</div>
@@ -92,7 +96,7 @@
 						<div class="form-group">
 							<label class="control-label col-lg-2">{t}分位保留：{/t}</label>
 							<div class="controls col-lg-10">
-					            <div class="info-toggle-button">
+					            <div class="info-toggle-button rewidth">
 					                <input class="nouniform" name="reserve_quantile" type="checkbox"  {if $scales_info.reserve_quantile eq '1'}checked="checked"{/if}  value="1"/>
 					            </div>
 							</div>
