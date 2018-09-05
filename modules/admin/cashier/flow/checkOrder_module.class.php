@@ -90,8 +90,9 @@ class checkOrder_module extends api_admin implements api_interface {
 		}
 		
 // 		$addgoods = array(
-// 			'goods_sn' 	=> 'ECS001311',
-// 			'number'	=> 2,
+// 			'goods_sn' 	=> '2112345',
+// 			'number'	=> 1,
+// 			'weight'	=> 1500
 // 		);
 // 		$user = array(
 // 				'user_id' => '1024',
@@ -225,17 +226,11 @@ class checkOrder_module extends api_admin implements api_interface {
 		$order = cart_cashdesk::flow_order_info();
 		/* 计算折扣 */
 		if ($flow_type != CART_EXCHANGE_GOODS && $flow_type != CART_GROUP_BUY_GOODS) {
-			$discount = cart_cashdesk::compute_discount();
+			$discount = cart_cashdesk::compute_discount(0 , array(), array(), 0, CART_CASHDESK_GOODS);
 			$favour_name = empty($discount['name']) ? '' : join(',', $discount['name']);
 		}
 		/* 计算订单的费用 */
-		$total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods);
-	
-// 		/* 取得支付列表 */
-// 		$cod_fee    = 0;
-// 		$payment_method = RC_Loader::load_app_class('payment_method', 'payment');
-// 		// 给货到付款的手续费加<span id>，以便改变配送的时候动态显示
-// 		$payment_list = $payment_method->available_payment_list(1, $cod_fee);
+		$total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, array(), array(), CART_CASHDESK_GOODS);
 		if (!empty($_SESSION['user_id'])) {
 			$user_info = user_info($_SESSION['user_id']);
 			if (is_ecjia_error($user_info)) {

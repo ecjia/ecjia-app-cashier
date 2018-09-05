@@ -704,7 +704,7 @@ class mh_bulk_goods extends ecjia_merchant {
 				'store_hot'					=> 0,
 				'is_on_sale'				=> $is_on_sale,
 				'is_alone_sale'		 		=> 1,
-				'is_shipping'		   		=> 1,
+				'is_shipping'		   		=> 0,
 				'last_update'		   		=> RC_Time::gmtime(),
 				'weight_stock'				=> $weight_stock,
 				'weight_unit'				=> $weight_unit,
@@ -823,7 +823,7 @@ class mh_bulk_goods extends ecjia_merchant {
 		$filter ['count'] 	= $filter_count;
 	
 		$row = $dbgoods
-		->select('goods_id', 'goods_name', 'goods_type', 'goods_sn', 'shop_price', 'goods_thumb', 'is_on_sale', 'store_best', 'store_new', 'store_hot', 'store_sort_order', 'goods_number', 'integral', 'review_status', 'weight_stock')
+		->select('goods_id', 'goods_name', 'goods_type', 'goods_sn', 'shop_price', 'goods_thumb', 'is_on_sale', 'store_best', 'store_new', 'store_hot', 'store_sort_order', 'goods_number', 'integral', 'review_status', 'weight_stock', 'weight_unit')
 		->orderBy($filter ['sort_by'], $filter['sort_order'])
 		->orderBy('goods_id', 'desc')
 		->take(10)
