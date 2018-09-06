@@ -90,9 +90,12 @@ class checkOrder_module extends api_admin implements api_interface {
 		}
 		
 // 		$addgoods = array(
-// 			'goods_sn' 	=> '2112345',
+// 			'goods_sn' 	=> 'ECS001311',
+// 			'number'	=> 3,
 // 			'number'	=> 1,
-// 			'weight'	=> 1500
+// 			'goods_sn'	=> '2112345',
+// 			'weight'	=> 1500,
+// 			'price'		=> 20
 // 		);
 // 		$user = array(
 // 				'user_id' => '1024',
@@ -153,15 +156,12 @@ class checkOrder_module extends api_admin implements api_interface {
 		}
 		
 		/* 取得购物类型 */
-		$flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
-		
-		
+		//$flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
 	    /*收银台商品购物车类型*/
-		$codes = array('8001', '8011');
-	    if (!empty($device) && in_array($device['code'], $codes)) {
-	    	$flow_type = CART_CASHDESK_GOODS;
-	    }
-	    
+		//$codes = array('8001', '8011');
+	    //if (!empty($device) && in_array($device['code'], $codes)) {
+	    //	$flow_type = CART_CASHDESK_GOODS;
+	    //}	    
 	    $flow_type = CART_CASHDESK_GOODS;
 	    
 		if (!empty($addgoods)) {

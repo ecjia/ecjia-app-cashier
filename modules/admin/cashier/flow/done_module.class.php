@@ -75,9 +75,13 @@ class done_module extends api_admin implements api_interface
     		$_SESSION['user_id'] = $_SESSION['cashdesk_temp_user_id'];
     	}
 
-        RC_Loader::load_app_func('cart','cart');
-        RC_Loader::load_app_func('cashdesk','cart');
+        //RC_Loader::load_app_func('cart','cart');
+        //RC_Loader::load_app_func('cashdesk','cart');
+        
         RC_Loader::load_app_func('admin_order','orders');
+        
+        RC_Loader::load_app_class('cart_goods_stock', 'cart', false);
+        RC_Loader::load_app_class('cart_cashdesk', 'cart', false);
         
         $device = $this->device;
         //获取所需购买购物车id  will.chen
@@ -91,11 +95,12 @@ class done_module extends api_admin implements api_interface
 		}
 		
         /* 取得购物类型 */
-        $flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
-        $codes = array('8001', '8011');
-        if (!empty($device) && in_array($device['code'], $codes)) {
-        	$flow_type = CART_CASHDESK_GOODS;
-        }
+        //$flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
+        //$codes = array('8001', '8011');
+        //if (!empty($device) && in_array($device['code'], $codes)) {
+        //	$flow_type = CART_CASHDESK_GOODS;
+        //}
+        
         $flow_type = CART_CASHDESK_GOODS;
         /* 检查购物车中是否有商品 */
 		$db_cart = RC_Loader::load_app_model('cart_model', 'cart');
@@ -121,12 +126,12 @@ class done_module extends api_admin implements api_interface
         /* 检查商品库存 */
         /* 如果使用库存，且下订单时减库存，则减少库存 */
         if (ecjia::config('use_storage') == '1' && ecjia::config('stock_dec_time') == SDT_PLACE) {
-			$cart_goods_stock = get_cart_goods($cart_id, $flow_type);
+			$cart_goods_stock = cart_goods_stock::get_cart_goods($cart_id, $flow_type);
             $_cart_goods_stock = array();
             foreach ($cart_goods_stock['goods_list'] as $value) {
                 $_cart_goods_stock[$value['rec_id']] = $value['goods_number'];
             }
-            $result = flow_cart_stock($_cart_goods_stock);
+            $result = cart_goods_stock::flow_cart_stock($_cart_goods_stock);
             if (is_ecjia_error($result)) {            	
             	return new ecjia_error('Inventory shortage', '库存不足');
             }
@@ -230,7 +235,7 @@ class done_module extends api_admin implements api_interface
             $user_info = user_info($user_id);
             
             // 查询用户有多少积分
-            $flow_points = flow_available_points($cart_id, $flow_type); // 该订单允许使用的积分
+            $flow_points = cart_goods_stock::flow_available_points($cart_id, $flow_type); // 该订单允许使用的积分
             $user_points = $user_info['pay_points']; // 用户的积分总数
             $order['integral'] = min($order['integral'], $user_points, $flow_points);
             if ($order['integral'] < 0) {
@@ -263,16 +268,13 @@ class done_module extends api_admin implements api_interface
         }
         
         /* 订单中的商品 */
-        RC_Loader::load_app_class('cart_cashdesk', 'cart', false);
         $cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id);
         if (empty($cart_goods)) {
-            //EM_Api::outPut(10002);
         	return new ecjia_error('no_goods_in_cart', '购物车中没有商品');
         }
         
         /* 检查商品总额是否达到最低限购金额 */
         if ($flow_type == CART_GENERAL_GOODS && cart_amount(true, CART_GENERAL_GOODS, $cart_id) < ecjia::config('min_goods_amount')) {
-            //EM_Api::outPut(10003);
         	return new ecjia_error('insufficient_balance', '您的余额不足以支付整个订单，请选择其他支付方式。');
         }
         
@@ -290,7 +292,7 @@ class done_module extends api_admin implements api_interface
         }
 
         /* 订单中的总额 *///$order['bonus_id']
-        $total = cashdesk_order_fee($order, $cart_goods, $consignee);
+        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee);
         RC_Logger::getlogger('info')->info(array('total',$total));
         $order['bonus']			= $total['bonus'];
         $order['goods_amount']	= $total['goods_price'];
@@ -299,7 +301,8 @@ class done_module extends api_admin implements api_interface
         $order['tax']			= $total['tax'];
         
         // 购物车中的商品能享受红包支付的总额
-        $discount_amout = compute_discount_amount($cart_id);
+        $discount_amout = cart_cashdesk::compute_discount_amount($cart_id);
+
         // 红包和积分最多能支付的金额为商品总额
         $temp_amout = $order['goods_amount'] - $discount_amout;
         if ($temp_amout <= 0) {
@@ -364,7 +367,6 @@ class done_module extends api_admin implements api_interface
         /* 插入订单表 */
         $order['order_sn'] = get_order_sn(); // 获取新订单号
         $db_order_info	= RC_Loader::load_app_model('order_info_model','orders');
-        
         $new_order_id	= $db_order_info->insert($order);
         $order['order_id'] = $new_order_id;
         
@@ -378,8 +380,7 @@ class done_module extends api_admin implements api_interface
 		$db_order_goods = RC_Loader::load_app_model('order_goods_model','orders');
         $db_goods_activity = RC_Loader::load_app_model('goods_activity_model','goods');
         
-        $shop_type = RC_Config::load_config('site', 'SHOP_TYPE');
-        $field = 'store_id, goods_id, goods_name, goods_sn, product_id, goods_number, market_price, goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id';
+        $field = 'store_id, goods_id, goods_name, goods_sn, product_id, goods_number, goods_buy_weight, market_price, goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id';
         
         $cart_w = array('rec_type' => $flow_type);
         if (!empty($cart_id)) {
@@ -396,20 +397,21 @@ class done_module extends api_admin implements api_interface
         if (!empty($data_row)) {
         	foreach ($data_row as $row) {
         		$arr = array(
-        				'order_id'		=> $new_order_id,
-        				'goods_id'		=> $row['goods_id'],
-        				'goods_name'	=> $row['goods_name'],
-        				'goods_sn'		=> $row['goods_sn'],
-        				'product_id'	=> $row['product_id'],
-        				'goods_number'	=> $row['goods_number'],
-        				'market_price'	=> $row['market_price'],
-        				'goods_price'	=> $row['goods_price'],
-        				'goods_attr'	=> $row['goods_attr'],
-        				'is_real'		=> $row['is_real'],
-        				'extension_code' => $row['extension_code'],
-        				'parent_id'		=> $row['parent_id'],
-        				'is_gift'		=> $row['is_gift'],
-        				'goods_attr_id' => $row['goods_attr_id'],
+        				'order_id'			=> $new_order_id,
+        				'goods_id'			=> $row['goods_id'],
+        				'goods_name'		=> $row['goods_name'],
+        				'goods_sn'			=> $row['goods_sn'],
+        				'product_id'		=> $row['product_id'],
+        				'goods_number'		=> $row['goods_number'],
+        				'goods_buy_weight'	=> $row['goods_buy_weight'],
+        				'market_price'		=> $row['market_price'],
+        				'goods_price'		=> $row['goods_price'],
+        				'goods_attr'		=> $row['goods_attr'],
+        				'is_real'			=> $row['is_real'],
+        				'extension_code' 	=> $row['extension_code'],
+        				'parent_id'			=> $row['parent_id'],
+        				'is_gift'			=> $row['is_gift'],
+        				'goods_attr_id' 	=> $row['goods_attr_id'],
         		);
         		
         		$db_order_goods->insert($arr);
@@ -438,7 +440,7 @@ class done_module extends api_admin implements api_interface
         
         /* 如果使用库存，且下订单时减库存，则减少库存 */
         if (ecjia::config('use_storage') == '1' && ecjia::config('stock_dec_time') == SDT_PLACE) {
-            $res = change_order_goods_storage($order['order_id'], true, SDT_PLACE);
+            $res = cart_goods_stock::change_order_goods_storage($order['order_id'], true, SDT_PLACE);
             if (is_ecjia_error($res)) {
             	return $res;
             }
@@ -466,40 +468,40 @@ class done_module extends api_admin implements api_interface
                 );
             }
             
-            if ($virtual_goods and $flow_type != CART_GROUP_BUY_GOODS) {
-                /* 虚拟卡发货 */
-                if (virtual_goods_ship($virtual_goods, $msg, $order['order_sn'], true)) {
-                    /* 如果没有实体商品，修改发货状态，送积分和红包 */
-                    $count = $db_order_goods->where(array('order_id' => $order['order_id'] , 'is_real' => 1))->count();
-               		if ($count <= 0) {
-                    /* 修改订单状态 */
-                        update_order($order['order_id'], array(
-                            'shipping_status' => SS_SHIPPED,
-                            'shipping_time' => RC_Time::gmtime()
-                        ));
+//             if ($virtual_goods and $flow_type != CART_GROUP_BUY_GOODS) {
+//                 /* 虚拟卡发货 */
+//                 if (virtual_goods_ship($virtual_goods, $msg, $order['order_sn'], true)) {
+//                     /* 如果没有实体商品，修改发货状态，送积分和红包 */
+//                     $count = $db_order_goods->where(array('order_id' => $order['order_id'] , 'is_real' => 1))->count();
+//                		if ($count <= 0) {
+//                     /* 修改订单状态 */
+//                         update_order($order['order_id'], array(
+//                             'shipping_status' => SS_SHIPPED,
+//                             'shipping_time' => RC_Time::gmtime()
+//                         ));
                         
-                        /* 如果订单用户不为空，计算积分，并发给用户；发红包 */
-                        if ($order['user_id'] > 0) {
-                            /* 取得用户信息 */
-                            $user = user_info($order['user_id']);
-                            /* 计算并发放积分 */
-                            $integral = integral_to_give($order);
-                            $options = array(
-                            		'user_id' =>$order['user_id'],
-                            		'rank_points' => intval($integral['rank_points']),
-                            		'pay_points' => intval($integral['custom_points']),
-                            		'change_desc' =>sprintf(RC_Lang::lang('order_gift_integral'), $order['order_sn'])
-                            );
-                            $result = RC_Api::api('user', 'account_change_log',$options);
-                            if (is_ecjia_error($result)) {
-                            	return new ecjia_error('fail_error', '处理失败');
-                            }
-                            /* 发放红包 */
-                            send_order_bonus($order['order_id']);
-                        }
-                    }
-                }
-            }
+//                         /* 如果订单用户不为空，计算积分，并发给用户；发红包 */
+//                         if ($order['user_id'] > 0) {
+//                             /* 取得用户信息 */
+//                             $user = user_info($order['user_id']);
+//                             /* 计算并发放积分 */
+//                             $integral = integral_to_give($order);
+//                             $options = array(
+//                             		'user_id' =>$order['user_id'],
+//                             		'rank_points' => intval($integral['rank_points']),
+//                             		'pay_points' => intval($integral['custom_points']),
+//                             		'change_desc' =>sprintf(RC_Lang::lang('order_gift_integral'), $order['order_sn'])
+//                             );
+//                             $result = RC_Api::api('user', 'account_change_log',$options);
+//                             if (is_ecjia_error($result)) {
+//                             	return new ecjia_error('fail_error', '处理失败');
+//                             }
+//                             /* 发放红包 */
+//                             send_order_bonus($order['order_id']);
+//                         }
+//                     }
+//                 }
+//             }
         }
         
         /*记录订单状态日志*/
@@ -509,7 +511,7 @@ class done_module extends api_admin implements api_interface
         OrderStatusLog::remind_pay(array('order_id' => $new_order_id));
         
         /* 清空购物车 */
-		clear_cart($flow_type, $cart_id);
+		cart_cashdesk::clear_cart($flow_type, $cart_id);
 		
         /* 插入支付日志 */
         $order['log_id'] = $payment_method->insert_pay_log($new_order_id, $order['order_amount'], PAY_ORDER);
@@ -532,37 +534,18 @@ class done_module extends api_admin implements api_interface
         
         $subject = $cart_goods[0]['goods_name'] . '等' . count($cart_goods) . '种商品';
         $out = array(
-            'order_sn' => $order['order_sn'],
-            'order_id' => $order['order_id'],
-            'order_info' => array(
-                'pay_code' => $payment_info['pay_code'],
-                'order_amount' => $order['order_amount'],
-                'order_id' => $order['order_id'],
-                'subject' => $subject,
-                'desc' => $subject,
-                'order_sn' => $order['order_sn']
+            'order_sn' 			=> $order['order_sn'],
+            'order_id' 			=> $order['order_id'],
+            'order_info' 		=> array(
+                						'pay_code' 		=> $payment_info['pay_code'],
+                						'order_amount'	=> $order['order_amount'],
+                						'order_id' 		=> $order['order_id'],
+                						'subject' 		=> $subject,
+                						'desc' 			=> $subject,
+                						'order_sn' 		=> $order['order_sn']
             )
         );
         
-        //订单分子订单 start
-//         $order_id = $order['order_id'];
-//         $adviser_log = array(
-//         		'adviser_id' => $_SESSION['adviser_id'],
-//         		'order_id'	 => $order_id,
-//         		'device_id'	 => $_SESSION['device_id'],
-//         		'type'   	 => 1,//收款
-//         		'add_time'	 => RC_Time::gmtime(),
-//         );
-//         $adviser_log_id = RC_Model::model('achievement/adviser_log_model')->insert($adviser_log);
-        
-//         $row = get_main_order_info($order_id);
-//         $order_info = get_main_order_info($order_id, 1);
-        
-//         $ru_id = explode(",", $order_info['all_ruId']['ru_id']);
-
-//         if(count($ru_id) > 1){
-//         	get_insert_order_goods_single($order_info, $row, $order_id);
-//         }
 		/*收银员订单操作记录*/
         $order_id = $order['order_id'];
         $device_info = RC_DB::table('mobile_device')->where('id', $_SESSION['device_id'])->first();
