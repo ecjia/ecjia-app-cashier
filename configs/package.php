@@ -13,6 +13,7 @@ return array(
 	'version' 		=> '1.18.0',					/* 版本号 */
 	'copyright' 	=> 'ECJIA Copyright 2014 ~ 2018.',
     'namespace'     => 'Ecjia\App\Cashier',
+    'provider'      => 'CashierServiceProvider',
 );
 
 // end
