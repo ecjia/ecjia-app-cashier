@@ -19,7 +19,7 @@ class summary_module  extends api_admin implements api_interface {
         $format_time	= RC_Time::local_date(ecjia::config('date_format'), $time);
         
         $codes = array('8001', '8011');
-        $device['code'] = '8001';
+      
         if (!in_array($device['code'], $codes)) {
         	return new ecjia_error('not_cashdesk_requst', '非收银台请求！');
         }
