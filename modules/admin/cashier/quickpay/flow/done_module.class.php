@@ -50,7 +50,7 @@ defined('IN_ECJIA') or exit('No permission resources.');
  * 收银台收款购物流结算
  * @author
  */
-class done_module extends api_admin implements api_interface {
+class admin_cashier_quickpay_flow_done_module extends api_admin implements api_interface {
     public function handleRequest(\Royalcms\Component\HttpKernel\Request $request) {
 		/**
          * goods_amount    //消费金额

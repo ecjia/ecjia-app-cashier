@@ -50,7 +50,7 @@ defined('IN_ECJIA') or exit('No permission resources.');
  * 商铺商品列表
  * @author will.chen
  */
-class list_module extends api_admin implements api_interface {
+class admin_cashier_merchant_goods_list_module extends api_admin implements api_interface {
     public function handleRequest(\Royalcms\Component\HttpKernel\Request $request) {	
     		
 		$filter = $this->requestData('filter', array());
