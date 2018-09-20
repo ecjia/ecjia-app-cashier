@@ -291,8 +291,8 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         }
 
         /* 订单中的总额 *///$order['bonus_id']
-        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee);
-        RC_Logger::getlogger('info')->info(array('total',$total));
+        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_id, CART_CASHDESK_GOODS);
+        
         $order['bonus']			= $total['bonus'];
         $order['goods_amount']	= $total['goods_price'];
         $order['discount']		= $total['discount'];

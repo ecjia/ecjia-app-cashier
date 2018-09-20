@@ -224,11 +224,6 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		
 		/* 取得订单信息*/
 		$order = cart_cashdesk::flow_order_info();
-		/* 计算折扣 */
-		if ($flow_type != CART_EXCHANGE_GOODS && $flow_type != CART_GROUP_BUY_GOODS) {
-			$discount = cart_cashdesk::compute_discount(0 , array(), array(), 0, CART_CASHDESK_GOODS);
-			$favour_name = empty($discount['name']) ? '' : join(',', $discount['name']);
-		}
 		/* 计算订单的费用 */
 		$total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, array(), array(), CART_CASHDESK_GOODS);
 		if (!empty($_SESSION['user_id'])) {
@@ -303,7 +298,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		$out['bonus'] 			= $bonus_list;//红包
 		$out['your_integral']	= $user_info['pay_points'];//用户可用积分
 		
-		$out['discount']		= number_format($discount['discount'], 2, '.', '');//用户享受折扣数
+		$out['discount']		= number_format($total['discount'], 2, '.', '');//用户享受折扣数
 		$out['discount_formated'] = $total['discount_formated'];
 				
 		if (!empty($out['payment_list'])) {
