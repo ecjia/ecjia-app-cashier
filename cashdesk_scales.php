@@ -140,7 +140,8 @@ class cashdesk_scales extends ecjia_merchant {
 				'weight_unit'		=> $weight_unit,
 				'price_unit'		=> $price_unit,
 				'wipezero'			=> $wipezero,
-				'reserve_quantile'	=> $reserve_quantile
+				'reserve_quantile'	=> $reserve_quantile,
+				'store_id'			=> $_SESSION['store_id']
 		);
 		
 		$id = RC_DB::table('cashdesk_scales')->insertGetId($data);
