@@ -118,8 +118,8 @@ class cashdesk_scales extends ecjia_merchant {
 		$date_format 		= !empty($_POST['date_format'])  ? $_POST['date_format'] : 1;
 		$weight_unit 		= !empty($_POST['weight_unit'])  ? $_POST['weight_unit'] : 1;
 		$price_unit 		= !empty($_POST['price_unit'])  ? $_POST['price_unit'] : 1;
-		$wipezero 			= $_POST['wipezero'];
-		$reserve_quantile 	= $_POST['reserve_quantile'];
+		$wipezero 			= empty($_POST['wipezero']) ? 0 : $_POST['wipezero'];
+		$reserve_quantile 	= empty($_POST['reserve_quantile']) ? 0 : $_POST['reserve_quantile'];
 		
 		if (empty($scale_sn)) {
 			return $this->showmessage('请输入电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
@@ -206,8 +206,8 @@ class cashdesk_scales extends ecjia_merchant {
 				'date_format'		=> $date_format,
 				'weight_unit'		=> $weight_unit,
 				'price_unit'		=> $price_unit,
-				'wipezero'			=> $wipezero,
-				'reserve_quantile'	=> $reserve_quantile
+				'wipezero'			=> empty($wipezero) ? 0 : $wipezero,
+				'reserve_quantile'	=> empty($reserve_quantile) ? 0 : $reserve_quantile
 		);
 		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
 		/* 记录日志 */
