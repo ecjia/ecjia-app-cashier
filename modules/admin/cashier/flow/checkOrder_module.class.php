@@ -300,7 +300,11 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		
 		$out['discount']		= number_format($total['discount'], 2, '.', '');//用户享受折扣数
 		$out['discount_formated'] = $total['discount_formated'];
-				
+
+		//当前收银员挂单数量
+		$pendorder_count = RC_DB::table('cashier_pendorder')->where('store_id', $_SESSION['store_id'])->where('cashier_user_id', $_SESSION['staff_id'])->count();
+		$out['pendorder_count'] = empty($pendorder_count) ? 0 : $pendorder_count;
+
 		if (!empty($out['payment_list'])) {
 			foreach ($out['payment_list'] as $key => $value) {
 				unset($out['payment_list'][$key]['pay_config']);
