@@ -56,17 +56,17 @@
 								<td class="hide-edit-area">
 									{if $list.barcode_mode eq '1'}金额模式{elseif $list.barcode_mode eq '2'}重量模式{else $list.barcode_mode eq '3'}重量模式+金额模式{/if}
 									<div class="edit-list">
-										<a class="data-pjax" href='{url path="cashier/cashdesk_scales/edit" args="id={$list.id}"}'>{lang key='system::system.edit'}</a>
+										<a class="data-pjax" href='{url path="cashier/mh_cashier_scales/edit" args="id={$list.id}"}'>{lang key='system::system.edit'}</a>
 									</div>
 								</td>
 								<td>{if $list.date_format eq '1'}yyyy-mm-dd{else}yyyy.mm.dd{/if}</td>
 								<td>{if $list.weight_unit eq '1'}克{else}千克{/if}</td>
 								<td>{if $list.weight_unit eq '1'}克/元{else}千克/元{/if}</td>
 								<td align="center">
-									<i class="cursor_pointer fa {if $list.wipezero}fa-check {else}fa-times{/if}" data-trigger="toggle_wipezero" data-url="{RC_Uri::url('cashier/cashdesk_scales/toggle_wipezero')}" refresh-url="{RC_Uri::url('cashier/cashdesk_scales/init')}" data-id="{$list.id}"></i>
+									<i class="cursor_pointer fa {if $list.wipezero}fa-check {else}fa-times{/if}" data-trigger="toggle_wipezero" data-url="{RC_Uri::url('cashier/mh_cashier_scales/toggle_wipezero')}" refresh-url="{RC_Uri::url('cashier/mh_cashier_scales/init')}" data-id="{$list.id}"></i>
 								</td>
 								<td align="center">
-									<i class="cursor_pointer fa {if $list.reserve_quantile}fa-check {else}fa-times{/if}" data-trigger="toggle_reserve_quantile" data-url="{RC_Uri::url('cashier/cashdesk_scales/toggle_reserve_quantile')}" refresh-url="{RC_Uri::url('cashier/cashdesk_scales/init')}" data-id="{$list.id}"></i>
+									<i class="cursor_pointer fa {if $list.reserve_quantile}fa-check {else}fa-times{/if}" data-trigger="toggle_reserve_quantile" data-url="{RC_Uri::url('cashier/mh_cashier_scales/toggle_reserve_quantile')}" refresh-url="{RC_Uri::url('cashier/mh_cashier_scales/init')}" data-id="{$list.id}"></i>
 								</td>
 							</tr>
 							<!-- {foreachelse} -->
@@ -75,7 +75,7 @@
 						</tbody>
 					</table>
 				</section>
-			<!-- {$quickpay_list.page} -->
+			<!-- {$scales_list.page} -->
 			</div>
 		</div>
 	</div>

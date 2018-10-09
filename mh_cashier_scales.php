@@ -49,7 +49,7 @@ defined('IN_ECJIA') or exit('No permission resources.');
 /**
  * 店铺电子秤
  */
-class cashdesk_scales extends ecjia_merchant {
+class mh_cashier_scales extends ecjia_merchant {
 	public function __construct() {
 		parent::__construct();
 		
@@ -65,7 +65,7 @@ class cashdesk_scales extends ecjia_merchant {
         RC_Script::enqueue_script('mh_cashdesk_scales', RC_App::apps_url('statics/js/mh_cashdesk_scales.js', __FILE__));
         RC_Script::localize_script('mh_cashdesk_scales', 'js_lang', RC_Lang::get('cashier::bulk_goods.js_lang'));
 
-        ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤管理', RC_Uri::url('cashier/cashdesk_scales/init')));
+        ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤管理', RC_Uri::url('cashier/mh_cashier_scales/init')));
         ecjia_merchant_screen::get_current_screen()->set_parentage('merchant', 'merchant/cashdesk_scales.php');
 	}
 
@@ -79,12 +79,11 @@ class cashdesk_scales extends ecjia_merchant {
 		$this->assign('app_url', RC_App::apps_url('statics', __FILE__));
 
 		$this->assign('ur_here', '电子秤');
-		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/add'), 'text' => '添加电子秤'));
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/add'), 'text' => '添加电子秤'));
         
       	$scales_list = $this->scales_list();
       	
 		$this->assign('scales_list', $scales_list);
-        $this->assign('form_action', RC_Uri::url('merchant/merchant/update'));
 
 		$this->display('cashdesk_scales_list.dwt');
 	}
@@ -97,11 +96,11 @@ class cashdesk_scales extends ecjia_merchant {
 		$this->admin_priv('mh_scales_update');
 	
 		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表'));
-		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/init'), 'text' => '电子秤列表'));
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/init'), 'text' => '电子秤列表'));
 	
 		$this->assign('ur_here', '添加电子秤');
 	
-		$this->assign('form_action', RC_Uri::url('cashier/cashdesk_scales/insert'));
+		$this->assign('form_action', RC_Uri::url('cashier/mh_cashier_scales/insert'));
 	
 		$this->display('cashdesk_scales_info.dwt');
 	}
@@ -148,7 +147,7 @@ class cashdesk_scales extends ecjia_merchant {
 	
 		/* 记录日志 */
 		ecjia_merchant::admin_log('电子秤码'.$scale_sn, 'add', 'scales');
-		return $this->showmessage('添加电子秤成功！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/cashdesk_scales/edit', array('id' => $id))));
+		return $this->showmessage('添加电子秤成功！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/mh_cashier_scales/edit', array('id' => $id))));
 	}
 	
 	/**
@@ -157,11 +156,11 @@ class cashdesk_scales extends ecjia_merchant {
 	public function edit() {
 		$this->admin_priv('mh_scales_update');
 	
-		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表', RC_Uri::url('cashier/cashdesk_scales/init')));
+		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表', RC_Uri::url('cashier/mh_cashier_scales/init')));
 		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表'));
 	
 		$this->assign('ur_here', '编辑电子秤');
-		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/init'), 'text' => '电子秤列表'));
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/init'), 'text' => '电子秤列表'));
 		$id = $_GET['id'];
 		/* 电子秤信息 */
 		$scales_info = RC_DB::table('cashier_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->first();
@@ -170,7 +169,7 @@ class cashdesk_scales extends ecjia_merchant {
 		$this->assign('id', $id);
 		
 		/* 显示商品信息页面 */
-		$this->assign('form_action', RC_Uri::url('cashier/cashdesk_scales/update'));
+		$this->assign('form_action', RC_Uri::url('cashier/mh_cashier_scales/update'));
 		$this->display('cashdesk_scales_info.dwt');
 	}
 	
@@ -214,7 +213,7 @@ class cashdesk_scales extends ecjia_merchant {
 		/* 记录日志 */
 		ecjia_merchant::admin_log('电子秤码'.$scale_sn, 'edit', 'scales');
 		
-		return $this->showmessage('编辑电子秤成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/cashdesk_scales/edit', array('id' => $id))));
+		return $this->showmessage('编辑电子秤成功', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/mh_cashier_scales/edit', array('id' => $id))));
 	}
 	
 	/**
