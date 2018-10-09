@@ -125,7 +125,7 @@ class cashdesk_scales extends ecjia_merchant {
 			return $this->showmessage('请输入电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		//电子秤码是否重复
-		$count = RC_DB::table('cashdesk_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->count();
+		$count = RC_DB::table('cashier_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->count();
 		if ($count > 0) {
 			return $this->showmessage('电子秤码已存在，请重新输入！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
@@ -144,7 +144,7 @@ class cashdesk_scales extends ecjia_merchant {
 				'store_id'			=> $_SESSION['store_id']
 		);
 		
-		$id = RC_DB::table('cashdesk_scales')->insertGetId($data);
+		$id = RC_DB::table('cashier_scales')->insertGetId($data);
 	
 		/* 记录日志 */
 		ecjia_merchant::admin_log('电子秤码'.$scale_sn, 'add', 'scales');
@@ -164,7 +164,7 @@ class cashdesk_scales extends ecjia_merchant {
 		$this->assign('action_link', array('href' => RC_Uri::url('cashier/cashdesk_scales/init'), 'text' => '电子秤列表'));
 		$id = $_GET['id'];
 		/* 电子秤信息 */
-		$scales_info = RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->first();
+		$scales_info = RC_DB::table('cashier_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->first();
 	
 		$this->assign('scales_info', $scales_info);
 		$this->assign('id', $id);
@@ -193,7 +193,7 @@ class cashdesk_scales extends ecjia_merchant {
 			return $this->showmessage('请输入电子秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		//电子秤码重复判断
-		$count = RC_DB::table('cashdesk_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->where('id', '!=', $id)->count();
+		$count = RC_DB::table('cashier_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->where('id', '!=', $id)->count();
 		if ($count > 0) {
 			return $this->showmessage('电子秤码已存在！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
@@ -210,7 +210,7 @@ class cashdesk_scales extends ecjia_merchant {
 				'wipezero'			=> empty($wipezero) ? 0 : $wipezero,
 				'reserve_quantile'	=> empty($reserve_quantile) ? 0 : $reserve_quantile
 		);
-		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
+		RC_DB::table('cashier_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
 		/* 记录日志 */
 		ecjia_merchant::admin_log('电子秤码'.$scale_sn, 'edit', 'scales');
 		
@@ -229,7 +229,7 @@ class cashdesk_scales extends ecjia_merchant {
 		$data = array(
 				'wipezero' 	=> $is_wipezero,
 		);
-		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
+		RC_DB::table('cashier_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
 	
 		return $this->showmessage('已成功切状态', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
 	}
@@ -246,7 +246,7 @@ class cashdesk_scales extends ecjia_merchant {
 		$data = array(
 				'reserve_quantile' 	=> $is_reserve_quantile,
 		);
-		RC_DB::table('cashdesk_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
+		RC_DB::table('cashier_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
 	
 		return $this->showmessage('已成功切状态', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS);
 	}
@@ -256,7 +256,7 @@ class cashdesk_scales extends ecjia_merchant {
 	 */
 	private function scales_list() {
 		$store_id = $_SESSION['store_id'];
-		$db = RC_DB::table('cashdesk_scales');
+		$db = RC_DB::table('cashier_scales');
 	
 		$filter['keywords'] = empty($_GET['keywords']) ? '' : trim($_GET['keywords']);
 	

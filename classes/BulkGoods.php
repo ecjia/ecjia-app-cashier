@@ -116,7 +116,7 @@ class BulkGoods
 	public static function get_scales_sn_arr($store_id=0) {
 		$arr = [];
 		if ($store_id) {
-			$arr = RC_DB::table('cashdesk_scales')->where('store_id', $store_id)->lists('scale_sn');
+			$arr = RC_DB::table('cashier_scales')->where('store_id', $store_id)->lists('scale_sn');
 		}
 		return $arr;
 	}
