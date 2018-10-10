@@ -49,7 +49,7 @@ defined('IN_ECJIA') or exit('No permission resources.');
 class cashier_merchant_hooks {
 
     public static function cashier_merchant_goods_menu_api($menus) {
-    	$menu = ecjia_merchant::make_admin_menu('02_bulk_goods_list', __('散装商品列表'), RC_Uri::url('cashier/mh_bulk_goods/init'), 2)->add_purview('mh_bulk_goods_manage')->add_icon('fa-calendar');
+    	$menu = ecjia_merchant::make_admin_menu('02_bulk_goods_list', __('散装商品'), RC_Uri::url('cashier/mh_bulk_goods/init'), 2)->add_purview('mh_bulk_goods_manage')->add_icon('fa-calendar');
     	
     	$menus->add_submenu($menu);
 
@@ -62,7 +62,7 @@ class cashier_merchant_hooks {
     	
     	$menu = array(
     			ecjia_merchant::make_admin_menu('08_merchant_cashdesk_scales', __('电子秤'), RC_Uri::url('cashier/mh_cashier_scales/init'), 10)->add_purview('mh_cashdesk_scales')->add_icon('fa-hdd-o'),
-    			ecjia_merchant::make_admin_menu('09_merchant_franchisee', __('收银设备管理'), RC_Uri::url('cashier/mh_cashier_device/init'), 11)->add_purview('mh_cashier_device')->add_icon('fa-codepen')
+    			ecjia_merchant::make_admin_menu('09_merchant_franchisee', __('收银设备'), RC_Uri::url('cashier/mh_cashier_device/init'), 11)->add_purview('mh_cashier_device')->add_icon('fa-codepen')
     	);
     	
     	$menus->add_submenu($menu);
