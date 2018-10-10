@@ -157,7 +157,7 @@ class mh_cashier_scales extends ecjia_merchant {
 		$this->admin_priv('mh_scales_update');
 	
 		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表', RC_Uri::url('cashier/mh_cashier_scales/init')));
-		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('电子秤列表'));
+		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('编辑电子秤'));
 	
 		$this->assign('ur_here', '编辑电子秤');
 		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/init'), 'text' => '电子秤列表'));
@@ -174,7 +174,7 @@ class mh_cashier_scales extends ecjia_merchant {
 	}
 	
 	/**
-	 * 编辑散装商品数据处理
+	 * 编辑电子秤处理
 	 */
 	public function update() {
 		$this->admin_priv('mh_scales_update', ecjia::MSGTYPE_JSON);
@@ -256,8 +256,6 @@ class mh_cashier_scales extends ecjia_merchant {
 	private function scales_list() {
 		$store_id = $_SESSION['store_id'];
 		$db = RC_DB::table('cashier_scales');
-	
-		$filter['keywords'] = empty($_GET['keywords']) ? '' : trim($_GET['keywords']);
 	
 		$db->where('store_id', $store_id);
 		

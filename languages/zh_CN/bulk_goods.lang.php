@@ -60,7 +60,12 @@ return array(
 		'weight_stock_required' => '请输入商品库存重量！',
 		'weight_stock_limit'	=> '商品重量库存最小只能为0！',
 		'category_id_select'	=> '请选择商品分类！',
-		'scale_sn_required'		=> '请输入电子秤码!',
+		'scale_sn_required'		=> '请输入电子秤码！',
+		'device_name'			=> '请填写收银设备名称！',
+		'device_mac'			=> '请填写设备MAC地址！',
+		'product_sn'			=> '请填写产品序列号！',
+		'device_type'			=> '请选择机型！',
+		'device_sn'				=> '请填写设备号！',
 	),
 );
 
