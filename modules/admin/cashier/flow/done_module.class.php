@@ -267,7 +267,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         }
         
         /* 订单中的商品 */
-        $cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id);
+        $cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id, $pendorder_id);
         if (empty($cart_goods)) {
         	return new ecjia_error('no_goods_in_cart', '购物车中没有商品');
         }
@@ -368,12 +368,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $db_order_info	= RC_Loader::load_app_model('order_info_model','orders');
         $new_order_id	= $db_order_info->insert($order);
         $order['order_id'] = $new_order_id;
-        
-        //挂单结算完成，清除挂单数据
-        if (!empty($pendorder_id) && !empty($new_order_id)) {
-        	RC_Loader::load_app_class('pendorder', 'cashier', false);
-        	pendorder::delete_pendorder($pendorder_id);
-        }
         
         /* 插入订单商品 */
 		$db_order_goods = RC_Loader::load_app_model('order_goods_model','orders');
@@ -509,8 +503,16 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         
         OrderStatusLog::remind_pay(array('order_id' => $new_order_id));
         
-        /* 清空购物车 */
-		cart_cashdesk::clear_cart($flow_type, $cart_id);
+		//挂单结算完成，清除挂单数据；挂单购物车数据和非挂单购物车数据清除区分
+		if (!empty($new_order_id)) {
+			if (!empty($pendorder_id) && !empty($new_order_id)) {
+				RC_Loader::load_app_class('pendorder', 'cashier', false);
+				pendorder::delete_pendorder($pendorder_id);
+			} else {
+				/* 清空购物车 */
+				cart_cashdesk::clear_cart($flow_type, $cart_id);
+			}
+		}
 		
         /* 插入支付日志 */
         $order['log_id'] = $payment_method->insert_pay_log($new_order_id, $order['order_amount'], PAY_ORDER);

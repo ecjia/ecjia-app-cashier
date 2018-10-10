@@ -89,14 +89,14 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 			}
 		}
 		
-// 		$addgoods = array(
+		$addgoods = array(
 // 			'goods_sn' 	=> 'ECS001311',
 // 			'number'	=> 3,
 // 			'number'	=> 1,
-// 			'goods_sn'	=> '2112345',
+// 			'goods_sn'	=> '2184879',
 // 			'weight'	=> 1500,
-// 			'price'		=> 20
-// 		);
+// 			'price'		=> 20.47
+		);
 // 		$user = array(
 // 				'user_id' => '1024',
 // 		);
@@ -164,7 +164,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 	    //}	    
 	    $flow_type = CART_CASHDESK_GOODS;
 	    
-		if (!empty($addgoods)) {
+		if (!empty($addgoods['goods_sn'])) {
 			$products_db = RC_Loader::load_app_model('products_model', 'goods');
 			$goods_db = RC_Loader::load_app_model('goods_model', 'goods');
 			$goods_spec = array();
