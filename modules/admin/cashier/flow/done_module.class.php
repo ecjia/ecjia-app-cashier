@@ -505,12 +505,12 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         
 		//挂单结算完成，清除挂单数据；挂单购物车数据和非挂单购物车数据清除区分
 		if (!empty($new_order_id)) {
-			if (!empty($pendorder_id) && !empty($new_order_id)) {
+			if (!empty($pendorder_id)) {
 				RC_Loader::load_app_class('pendorder', 'cashier', false);
 				pendorder::delete_pendorder($pendorder_id);
 			} else {
 				/* 清空购物车 */
-				cart_cashdesk::clear_cart($flow_type, $cart_id);
+				cart_cashdesk::clear_cart($flow_type, $cart_id, $pendorder_id);
 			}
 		}
 		
