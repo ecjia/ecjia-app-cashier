@@ -250,14 +250,14 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $bonus_sn = $this->requestData('bonus_sn');
         if ($order['bonus_id'] > 0) {
             $bonus = bonus_info($order['bonus_id']);
-            if (empty($bonus) || $bonus['user_id'] != $user_id || $bonus['order_id'] > 0 || $bonus['min_goods_amount'] > cart_amount(true, $flow_type, $cart_id)) {
+            if (empty($bonus) || $bonus['user_id'] != $user_id || $bonus['order_id'] > 0 || $bonus['min_goods_amount'] > cart_cashdesk::cart_amount(true, $flow_type, $cart_id)) {
                 $order['bonus_id'] = 0;
                 $order['bonus'] = 0;
             }
         } elseif (!empty($bonus_sn)) {
             $bonus = bonus_info(0, $bonus_sn);
             $now = RC_Time::gmtime();
-            if (empty($bonus) || $bonus['user_id'] > 0 || $bonus['order_id'] > 0 || $bonus['min_goods_amount'] > cart_amount(true, $flow_type, $cart_id) || $now > $bonus['use_end_date']) {} else {
+            if (empty($bonus) || $bonus['user_id'] > 0 || $bonus['order_id'] > 0 || $bonus['min_goods_amount'] > cart_cashdesk::cart_amount(true, $flow_type, $cart_id) || $now > $bonus['use_end_date']) {} else {
                 if ($user_id > 0) {
                     RC_DB::table('user_bonus')->where('bonus_id', $bonus['bonus_id'])->update(array('user_id' => $user_id));
      			}
@@ -273,7 +273,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         }
         
         /* 检查商品总额是否达到最低限购金额 */
-        if ($flow_type == CART_GENERAL_GOODS && cart_amount(true, CART_GENERAL_GOODS, $cart_id) < ecjia::config('min_goods_amount')) {
+        if ($flow_type == CART_GENERAL_GOODS && cart_cashdesk::cart_amount(true, CART_GENERAL_GOODS, $cart_id) < ecjia::config('min_goods_amount')) {
         	return new ecjia_error('insufficient_balance', '您的余额不足以支付整个订单，请选择其他支付方式。');
         }
         
