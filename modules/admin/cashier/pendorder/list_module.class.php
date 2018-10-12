@@ -55,7 +55,7 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 		$list = [];
 		$goods_list_new = [];
 		if (!empty($rows)) {
-			foreach ($rows as  $val) {
+			foreach ($rows as  $key => $val) {
 				$goods_list = cart_cashdesk::cashdesk_cart_goods($flow_type, array(), $val['pendorder_id']); // 取得商品列表，计算合计
 				
 				if (!empty($goods_list)) {
@@ -80,10 +80,9 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 								'img'						=> $v['img'],
 						);
 					}
+					$val['total'] = $total;
+					$val['goods_list'] = $goods_list_new;
 				}
-				
-				$val['total'] = $total;
-				$val['goods_list'] = $goods_list_new;
 				$list[] = $val;
 			}
 		}

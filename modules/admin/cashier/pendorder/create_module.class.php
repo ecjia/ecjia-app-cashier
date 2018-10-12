@@ -13,8 +13,7 @@ class admin_cashier_pendorder_create_module extends api_admin implements api_int
             return new ecjia_error(100, 'Invalid session');
         }
 		
-	    $rec_id = $this->requestData('rec_id', 0);
-	   
+	    $rec_id = $this->requestData('rec_id', '0');
 	    if (empty($rec_id)) {
 	        return new ecjia_error('invalid_parameter', '参数错误');
 	    }
