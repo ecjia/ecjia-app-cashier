@@ -81,7 +81,7 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 						);
 					}
 				}
-				$val['total'] = $total;
+				$rows[$key]['total'] = $total;
 			}
 		}
 		if ($rows) {
