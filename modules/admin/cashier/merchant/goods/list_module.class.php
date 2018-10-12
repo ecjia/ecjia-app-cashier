@@ -98,7 +98,6 @@ class admin_cashier_merchant_goods_list_module extends api_admin implements api_
 				'store_intro'		=> $action_type,
 				'page'				=> $page,
 				'size'				=> $size,
-				'is_cashdesk'		=> 1
 		);
 		
 		$result = RC_Api::api('goods', 'goods_list', $options);
