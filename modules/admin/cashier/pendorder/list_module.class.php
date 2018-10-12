@@ -61,7 +61,7 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 				if (!empty($goods_list)) {
 					foreach ($goods_list as $v) {
 						$total += $v['subtotal'];
-						$goods_list_new[] = array(
+						$rows[$key]['goods_items'][] = array(
 								'rec_id' 					=> intval($v['rec_id']),
 								'user_id'					=> intval($v['user_id']),
 								'store_id'					=> intval($v['ru_id']),
@@ -80,21 +80,19 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 								'img'						=> $v['img'],
 						);
 					}
-					$val['total'] = $total;
-					$val['goods_list'] = $goods_list_new;
 				}
-				$list[] = $val;
+				$val['total'] = $total;
 			}
 		}
-		if ($list) {
-			foreach ($list as $result) {
+		if ($rows) {
+			foreach ($rows as $result) {
 				$pendorder_list[] = array(
 						'pendorder_id' 		=> intval($result['pendorder_id']),
 						'pendorder_sn'		=> trim($result['pendorder_sn']),
 						'total'				=> sprintf("%.2f", $result['total']),
 						'formated_total'	=> price_format($result['total'], false),
 						'pend_time'			=> RC_Time::local_date(ecjia::config('time_format'), $result['pend_time']),
-						'goods_list'		=> $result['goods_list'] 
+						'goods_items'		=> $result['goods_items'] 
 				);
 			}
 		}
