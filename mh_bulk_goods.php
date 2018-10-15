@@ -392,6 +392,9 @@ class mh_bulk_goods extends ecjia_merchant {
 			}
 			$scales_sn = substr($goods_sn, 0, 2);
 			$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);//商家所有电子秤编码
+			if (empty($cashdesk_scales_sn_arr)) {
+				return $this->showmessage('请先添加电子秤！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			}
 			if (!in_array($scales_sn, $cashdesk_scales_sn_arr)) {
 				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为电子秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
@@ -626,6 +629,9 @@ class mh_bulk_goods extends ecjia_merchant {
 			$scales_sn = substr($goods_sn, 0, 2);
 			//商家所有电子秤编码
 			$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);
+			if (empty($cashdesk_scales_sn_arr)) {
+				return $this->showmessage('请先添加电子秤！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			}
 			if (!in_array($scales_sn, $cashdesk_scales_sn_arr)) {
 				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为电子秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
