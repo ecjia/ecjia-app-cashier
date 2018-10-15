@@ -171,7 +171,8 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         			'province'			=> empty($info['province']) ? '' : $info['province'],
         			'city'				=> empty($info['city'])     ? '' : $info['city'],
         			'district'		    => empty($info['district']) ? '' : $info['district'],
-
+        			'street'		    => empty($info['street']) ? '' : $info['street'],
+        			
 	       			'address'			=> empty($info['address'])   ? '' : $info['address'],
         			'longitude'			=> empty($info['longitude']) ? '' : $info['longitude'],
         			'latitude'			=> empty($info['latitude'])  ? '' : $info['latitude'],
@@ -227,6 +228,10 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         } else {
             $order['extension_code']	= '';
             $order['extension_id']		= 0;
+        }
+        //支付方式
+        if (empty($order['pay_id'])) {
+        	return new ecjia_error('empty_payment', '请选择支付方式');
         }
         
         /* 检查积分余额是否合法 */

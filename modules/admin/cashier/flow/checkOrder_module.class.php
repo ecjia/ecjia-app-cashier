@@ -91,9 +91,11 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		
 // 		$addgoods = array(
 // 			'goods_sn' 	=> 'ECS001311',
+// 			'goods_sn'	=> 'ECS000412',
 // 			'number'	=> 3,
 // 			'number'	=> 1,
-// 			'goods_sn'	=> '2184879',
+// 			'goods_sn'	=> '2184873004634',
+// 			'goods_sn'	=> '289036800150005863',
 // 			'weight'	=> 1500,
 // 			'price'		=> 20.47
 // 		);
@@ -168,6 +170,42 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 			$products_db = RC_Loader::load_app_model('products_model', 'goods');
 			$goods_db = RC_Loader::load_app_model('goods_model', 'goods');
 			$goods_spec = array();
+			
+			//商品区分
+			$goods_sn = trim($addgoods['goods_sn']);
+			$pre = substr($goods_sn, 0, 1);
+			if ($pre == '2') {
+				$bulk_goods_sn = substr($goods_sn, 0, 7);
+				$bulk_goods_info = RC_DB::table('goods')->where('store_id', $_SESSION['store_id'])->where('is_on_sale', 1)->where('is_delete', 0)->where('goods_sn', $bulk_goods_sn)->first();
+				if ($bulk_goods_info['extension_code'] == 'bulk') {
+					$addgoods['goods_sn'] = $bulk_goods_sn;				
+					$scale_sn = substr($goods_sn, 0, 2);
+					$cashier_scales_info = cart_cashdesk::get_scales_info(array('store_id' => $_SESSION['store_id'], 'scale_sn' => $scale_sn));
+					$goods_sn_length = strlen($goods_sn);
+					if ($goods_sn_length == '13') {
+						$string = substr($goods_sn, 0, 12);
+						$string = substr($string, -5);
+						$string = preg_replace('/^0*/', '', $string);
+						if ($cashier_scales_info['barcode_mode'] == '1') {
+							//金额模式
+							$price_string = sprintf('%.2f', $string/1000);
+							$addgoods['price'] =  $price_string;
+						} elseif ($cashier_scales_info['barcode_mode'] == '2') {
+							//重量模式
+							$addgoods['weight'] =  $string;
+						}
+					} elseif ($goods_sn_length == '18' && $cashier_scales_info['barcode_mode'] == '3') {
+						//重量模式+金额模式
+						$string = substr($goods_sn, 0, 17);//去除最后一位校验码
+						//重量码
+						$weight_string = substr($string, -5);
+						$weight_string = preg_replace('/^0*/', '', $weight_string);
+						$addgoods['weight'] =  $weight_string;
+					}
+				} else {
+					$addgoods['goods_sn'] = $goods_sn;
+				}
+			}
 			
 			$products_goods = $products_db->where(array('product_sn' => $addgoods['goods_sn']))->find();
 			if (!empty($products_goods)) {
