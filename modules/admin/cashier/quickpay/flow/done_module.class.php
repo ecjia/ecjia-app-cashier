@@ -72,7 +72,6 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
     	
     	$activity_id		= $this->requestData('activity_id', 0);
     	$goods_amount 		= $this->requestData('goods_amount', '0.00');
-    	$is_exclude_amount  = $this->requestData('is_exclude_amount', 0);
     	$exclude_amount 	= $this->requestData('exclude_amount', '0.00');
     	$store_id			= $this->requestData('store_id', 0);
     	
@@ -80,6 +79,9 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
     		if ($exclude_amount > $goods_amount) {
     			return new ecjia_error('exclude_amount_error', '不可参与活动金额不能大于消费金额！');
     		}
+    	}
+    	if (empty($store_id)) {
+    		$store_id = $_SESSION['store_id'];
     	}
     	
 		if (empty($goods_amount) || empty($store_id)) {
