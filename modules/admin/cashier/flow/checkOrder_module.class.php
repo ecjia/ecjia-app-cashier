@@ -207,7 +207,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				}
 			}
 			
-			$products_goods = $products_db->where(array('product_sn' => $addgoods['goods_sn']))->find();
+			$products_goods = $products_db->where(array('product_sn' => trim($addgoods['goods_sn'])))->find();
 			if (!empty($products_goods)) {
 				$goods_spec = explode('|', $products_goods['goods_attr']);
 				$where = array('goods_id' => $products_goods['goods_id']);
@@ -216,7 +216,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				}
 				$goods = $goods_db->where($where)->find();
 			} else {
-				$where = array('goods_sn' => $addgoods['goods_sn']);
+				$where = array('goods_sn' => trim($addgoods['goods_sn']), 'is_on_sale' => 1, 'is_delete' => 0);
 				if (isset($_SESSION['store_id']) && $_SESSION['store_id'] > 0) {
 					$where['store_id'] = $_SESSION['store_id'];
 				}
