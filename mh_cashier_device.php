@@ -123,6 +123,7 @@ class mh_cashier_device extends ecjia_merchant {
 		$status 			= empty($_POST['status']) ? 0 : $_POST['status'];
 		$cashier_type 		= empty($_POST['cashier_type']) ? 'cashier-desk' : trim($_POST['cashier_type']);
 		
+		
 		if (empty($device_name)) {
 			return $this->showmessage('请输入设备名称！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
@@ -150,7 +151,7 @@ class mh_cashier_device extends ecjia_merchant {
 				'device_mac'	   	=> $device_mac,
 				'product_sn'		=> $product_sn,
 				'device_type'		=> $device_type,
-				'cashier_type'		=> $$cashier_type,
+				'cashier_type'		=> $cashier_type,
 				'device_sn'			=> $device_sn,
 				'keyboard_sn'		=> $keyboard_sn,
 				'status'			=> $status,
