@@ -65,6 +65,7 @@ return array(
 		'device_mac'			=> '请填写设备MAC地址！',
 		'product_sn'			=> '请填写产品序列号！',
 		'device_type'			=> '请选择机型！',
+		'cashier_type'			=> '收银设备类型',
 		'device_sn'				=> '请填写设备号！',
 	),
 );

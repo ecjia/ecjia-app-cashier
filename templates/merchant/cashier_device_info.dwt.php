@@ -5,6 +5,11 @@
 <script type="text/javascript">
 	ecjia.merchant.cashier_device.init();
 </script>
+<style>
+.ecjia-dn{
+	display:none;
+}
+</style>
 <!-- {/block} -->
 
 <!-- {block name="home-content"} -->
@@ -52,16 +57,36 @@
                             <span class="input-must">{lang key='system::system.require_field'}</span>
                         </div>
                         
-                        <div class="form-group">
+                         <div class="form-group">
+                            <label class="control-label col-lg-2">{t}收银设备类型：{/t}</label>
+                            <div class="col-lg-6">
+                                <select class="form-control w510" name="cashier_type" device_id="{$cashier_device_info}">
+                                	<option value="">{t}请选择收银设备类型...{/t}</option>
+									<option value="cashier-desk" {if $cashier_device_info.cashier_type eq "cashier-desk"}selected{/if}>收银台</option>
+									<option value="cashier-pos" {if $cashier_device_info.cashier_type eq "cashier-pos"}selected{/if}>收银POS机</option>
+					            </select>
+                            </div>
+                            <span class="input-must">{lang key='system::system.require_field'}</span>
+                        </div>
+                        
+                        <div class="form-group kooldesk-type {if $cashier_device_info.cashier_type neq 'cashier-pos'}ecjia-dn{/if}">
                             <label class="control-label col-lg-2">{t}机型：{/t}</label>
                             <div class="col-lg-6">
                                 <select class="form-control w510" name="device_type">
                                 	<option value="">{t}请选择机型...{/t}</option>
-									<option value="koolpos-N910" {if $cashier_device_info.device_type eq "koolpos-N910"}selected{/if}>koolpos-N910</option>
-									<option value="koolpos-kool11" {if $cashier_device_info.device_type eq 'koolpos-kool11'}selected{/if}>koolpos-kool11</option>
+									<option class="kooldesk-type" value="koolpos-kool11" {if $cashier_device_info.device_type eq 'koolpos-kool11'}selected{/if}>koolpos-kool11</option>
 					            </select>
                             </div>
-                            <span class="input-must">{lang key='system::system.require_field'}</span>
+                        </div>
+                        
+                         <div class="form-group koolpos-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">
+                            <label class="control-label col-lg-2">{t}机型：{/t}</label>
+                            <div class="col-lg-6">
+                                <select class="form-control w510" name="device_type">
+                                	<option value="">{t}请选择机型...{/t}</option>
+					            	<option class="koolpos-type" value="koolpos-N910" {if $cashier_device_info.device_type eq "koolpos-N910"}selected{/if}>koolpos-N910</option>
+					            </select>
+                            </div>
                         </div>
                         
                         <div class="form-group">

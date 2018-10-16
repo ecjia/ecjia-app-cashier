@@ -15,6 +15,7 @@
 			});
             app.cashier_device.toggle_status();
             app.cashier_device.cashier_device_info();
+            app.cashier_device.change_cashier_type();
         },
         toggle_status: function() {
 			$('[data-trigger="toggle_status"]').on('click', function(e) {
@@ -82,6 +83,9 @@
     	                product_sn: {
     	            		required: js_lang.product_sn
     	                },
+    	                cashier_type: {
+    	            		required: js_lang.cashier_type
+    	                },
     	                device_type: {
     	            		required: js_lang.device_type
     	                },
@@ -101,6 +105,31 @@
             var options = $.extend(ecjia.merchant.defaultOptions.validate, option);
             $form.validate(options);
 		},
+		
+        change_cashier_type: function () {
+            $('select[name="cashier_type"]').off('change').on('change', function () {
+                var $this = $(this),
+                    val = $this.val(),
+                    device_id = $this.attr('device_id');
+                	
+                //添加页面机型
+                if (device_id == '') {
+                	if (val == '') {
+                		$('.koolpos-type').addClass('ecjia-dn');
+                		$('.kooldesk-type').addClass('ecjia-dn');
+                	}
+                	if (val == 'cashier-desk') {
+                        $('.kooldesk-type').removeClass('ecjia-dn');
+                        $('.koolpos-type').addClass('ecjia-dn');
+                	}
+                	if (val == 'cashier-pos') {
+                        $('.kooldesk-type').addClass('ecjia-dn');
+                        $('.koolpos-type').removeClass('ecjia-dn');
+                	}
+                	
+                }
+            })
+        }
     };
     
 })(ecjia.merchant, jQuery);
