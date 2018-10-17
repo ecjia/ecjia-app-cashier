@@ -105,6 +105,8 @@ class list_module extends api_admin implements api_interface {
 					'order_amount'				=> $rows['order_amount'],
 					'formated_order_amount'		=> price_format($rows['order_amount']),
 					'formated_add_time'			=> RC_Time::local_date(ecjia::config('time_format'), $rows['add_time']),
+					'pay_code'					=> empty($rows['pay_code']) ? '' : $rows['pay_code'],
+					'pay_name'					=> empty($rows['pay_name']) ? '' : $rows['pay_name'],
 				);
 			}
 		}
