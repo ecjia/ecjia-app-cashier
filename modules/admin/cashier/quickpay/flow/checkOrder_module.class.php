@@ -75,7 +75,7 @@ class admin_cashier_quickpay_flow_checkOrder_module extends api_admin implements
 			$store_id = $_SESSION['store_id'];
 		}
 		
-		if (empty($store_id) || empty($goods_amount)) {
+		if (empty($store_id) || $goods_amount <= 0) {
 			return new ecjia_error('invalid_parameter', RC_Lang::get('system::system.invalid_parameter'));
 		}
 		
