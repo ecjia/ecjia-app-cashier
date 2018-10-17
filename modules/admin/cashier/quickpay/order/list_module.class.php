@@ -61,12 +61,23 @@ class list_module extends api_admin implements api_interface {
 		$size = $this->requestData('pagination.count', 15);
 		$page = $this->requestData('pagination.page', 1);
 		
+		$start_date = $this->requestData('start_date');
+		$end_date 	= $this->requestData('end_date');
+		
+		$device		  = $this->device;
+		$codes = array('8001', '8011');
+		if (!is_array($device) || !isset($device['code']) || !in_array($device['code'], $codes)) {
+			return new ecjia_error('caskdesk_error', '非收银台请求！');
+		}
+		
 		$options = array(
 			'size'				=> $size,
 			'page'				=> $page,
 			'store_id'			=> $_SESSION['store_id'],
 			'order_type'		=> 'cashdesk',
-			'mobile_device_id'  => $_SESSION['device_id']
+			'mobile_device_id'  => $_SESSION['device_id'],
+			'start_date'		=> $start_date,
+			'end_date'			=> $end_date
 		);
 		
 		$quickpay_order_data = RC_Api::api('quickpay', 'cashier_quickpay_order_list', $options);

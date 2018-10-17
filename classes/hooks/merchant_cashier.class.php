@@ -51,7 +51,7 @@ class cashier_merchant_hooks {
     public static function cashier_merchant_goods_menu_api($menus) {
     	$menu = array(
     			ecjia_merchant::make_admin_menu('02_bulk_goods_list', __('散装商品'), RC_Uri::url('cashier/mh_bulk_goods/init'), 2)->add_purview('mh_bulk_goods_manage')->add_icon('fa-calendar'),
-    			//ecjia_merchant::make_admin_menu('03_cashier_goods_list', __('收银台商品'), RC_Uri::url('cashier/mh_cashier_goods/init'), 3)->add_purview('mh_cashier_goods_manage')->add_icon('fa-calendar')
+    			ecjia_merchant::make_admin_menu('03_cashier_goods_list', __('收银台商品'), RC_Uri::url('cashier/mh_cashier_goods/init'), 3)->add_purview('mh_cashier_goods_manage')->add_icon('fa-empire')
     	);
     	$menus->add_submenu($menu);
 

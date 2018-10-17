@@ -59,6 +59,7 @@ class Helper
         ecjia_admin_log::instance()->add_object('bulk_goods', '散装商品');
         ecjia_admin_log::instance()->add_object('scales', '电子秤');
         ecjia_admin_log::instance()->add_object('cashier_device', '收银设备');
+        ecjia_admin_log::instance()->add_object('cashier_goods', '收银台商品');
         
 	    ecjia_admin_log::instance()->add_action('batch_move_cat', '批量转移分类');
 	    ecjia_admin_log::instance()->add_action('batch_on', '批量上架');
