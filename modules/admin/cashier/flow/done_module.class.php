@@ -374,6 +374,10 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $new_order_id	= $db_order_info->insert($order);
         $order['order_id'] = $new_order_id;
         
+        RC_Logger::getLogger('error')->info('test111');
+        RC_Logger::getLogger('error')->info($order);
+        RC_Logger::getLogger('error')->info('test222');
+        
         /* 插入订单商品 */
 		$db_order_goods = RC_Loader::load_app_model('order_goods_model','orders');
         $db_goods_activity = RC_Loader::load_app_model('goods_activity_model','goods');
