@@ -98,6 +98,7 @@ class admin_cashier_merchant_goods_list_module extends api_admin implements api_
 				'store_intro'		=> $action_type,
 				'page'				=> $page,
 				'size'				=> $size,
+				'need_cashier_goods'=> 1,//收银台商品显示
 		);
 		
 		$result = RC_Api::api('goods', 'goods_list', $options);
