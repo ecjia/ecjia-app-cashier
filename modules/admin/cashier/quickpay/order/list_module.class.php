@@ -70,6 +70,11 @@ class list_module extends api_admin implements api_interface {
 			return new ecjia_error('caskdesk_error', '非收银台请求！');
 		}
 		
+		if (!empty($start_date) && !empty($end_date)) {
+			$start_date = RC_Time::local_strtotime($start_date);
+			$end_date = RC_Time::local_strtotime($end_date) + 86399;
+		}
+		
 		$options = array(
 			'size'				=> $size,
 			'page'				=> $page,
