@@ -94,7 +94,7 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 						'pendorder_sn'		=> trim($result['pendorder_sn']),
 						'total'				=> sprintf("%.2f", $result['total']),
 						'formated_total'	=> price_format($result['total'], false),
-						'pend_time'			=> RC_Time::local_date(ecjia::config('time_format'), $result['pend_time']),
+						'pend_time'			=> RC_Time::local_date(ecjia::config('time_format'), $result['pendorder_time']),
 						'goods_items'		=> $result['goods_items'] 
 				);
 			}
