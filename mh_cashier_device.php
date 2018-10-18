@@ -123,7 +123,6 @@ class mh_cashier_device extends ecjia_merchant {
 		$status 			= empty($_POST['status']) ? 0 : $_POST['status'];
 		$cashier_type 		= empty($_POST['cashier_type']) ? 'cashier-desk' : trim($_POST['cashier_type']);
 		
-		
 		if (empty($device_name)) {
 			return $this->showmessage('请输入设备名称！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
@@ -155,7 +154,8 @@ class mh_cashier_device extends ecjia_merchant {
 				'device_sn'			=> $device_sn,
 				'keyboard_sn'		=> $keyboard_sn,
 				'status'			=> $status,
-				'store_id'			=> $_SESSION['store_id']
+				'store_id'			=> $_SESSION['store_id'],
+				'add_time'			=> RC_Time::gmtime()
 		);
 		
 		$id = RC_DB::table('cashier_device')->insertGetId($data);
@@ -233,7 +233,8 @@ class mh_cashier_device extends ecjia_merchant {
 				'cashier_type'		=> $cashier_type,
 				'device_sn'			=> $device_sn,
 				'keyboard_sn'		=> $keyboard_sn,
-				'status'			=> $status
+				'status'			=> $status,
+				'update_time'			=> RC_Time::gmtime()
 		);
 		RC_DB::table('cashier_device')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
 		/* 记录日志 */
@@ -253,6 +254,7 @@ class mh_cashier_device extends ecjia_merchant {
 	
 		$data = array(
 				'status' 	=> $status,
+				'update_time'			=> RC_Time::gmtime()
 		);
 		RC_DB::table('cashier_device')->where('id', $id)->where('store_id', $_SESSION['store_id'])->update($data);
 	

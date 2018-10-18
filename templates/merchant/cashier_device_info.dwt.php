@@ -71,21 +71,17 @@
                         
                         <div class="form-group kooldesk-type {if $cashier_device_info.cashier_type neq 'cashier-pos'}ecjia-dn{/if}">
                             <label class="control-label col-lg-2">{t}机型：{/t}</label>
-                            <div class="col-lg-6">
-                                <select class="form-control w510" name="device_type">
-                                	<option value="">{t}请选择机型...{/t}</option>
-									<option class="kooldesk-type" value="koolpos-kool11" {if $cashier_device_info.device_type eq 'koolpos-kool11'}selected{/if}>koolpos-kool11</option>
-					            </select>
+                            <div class="col-lg-10">
+                                <input id="koolpos-kool11" type="radio" name="device_type" value="koolpos-kool11" {if $cashier_device_info.device_type eq 'koolpos-kool11'} checked="true" {/if} />
+                                <label for="koolpos-kool11">koolpos-kool11</label>
                             </div>
                         </div>
                         
-                         <div class="form-group koolpos-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">
+                        <div class="form-group koolpos-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">
                             <label class="control-label col-lg-2">{t}机型：{/t}</label>
-                            <div class="col-lg-6">
-                                <select class="form-control w510" name="device_type">
-                                	<option value="">{t}请选择机型...{/t}</option>
-					            	<option class="koolpos-type" value="koolpos-N910" {if $cashier_device_info.device_type eq "koolpos-N910"}selected{/if}>koolpos-N910</option>
-					            </select>
+                            <div class="col-lg-10">
+                                <input id="koolpos-N910" type="radio" name="device_type" value="koolpos-N910" {if $cashier_device_info.device_type eq 'koolpos-N910'} checked="true" {/if} />
+                                <label for="koolpos-N910">koolpos-N910</label>
                             </div>
                         </div>
                         
