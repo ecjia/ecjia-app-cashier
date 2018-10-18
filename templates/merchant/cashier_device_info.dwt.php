@@ -69,7 +69,7 @@
                             <span class="input-must">{lang key='system::system.require_field'}</span>
                         </div>
                         
-                        <div class="form-group kooldesk-type {if $cashier_device_info.cashier_type neq 'cashier-pos'}ecjia-dn{/if}">
+                        <div class="form-group kooldesk-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">
                             <label class="control-label col-lg-2">{t}机型：{/t}</label>
                             <div class="col-lg-10">
                                 <input id="koolpos-kool11" type="radio" name="device_type" value="koolpos-kool11" {if $cashier_device_info.device_type eq 'koolpos-kool11'} checked="true" {/if} />
@@ -77,7 +77,7 @@
                             </div>
                         </div>
                         
-                        <div class="form-group koolpos-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">
+                        <div class="form-group koolpos-type {if $cashier_device_info.cashier_type neq 'cashier-pos'}ecjia-dn{/if}">
                             <label class="control-label col-lg-2">{t}机型：{/t}</label>
                             <div class="col-lg-10">
                                 <input id="koolpos-N910" type="radio" name="device_type" value="koolpos-N910" {if $cashier_device_info.device_type eq 'koolpos-N910'} checked="true" {/if} />
