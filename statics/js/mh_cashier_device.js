@@ -127,6 +127,15 @@
                         $('.koolpos-type').removeClass('ecjia-dn');
                 	}
                 	
+                } else {
+                	if (val == 'cashier-desk') {
+                        $('.kooldesk-type').removeClass('ecjia-dn');
+                        $('.koolpos-type').addClass('ecjia-dn');
+                	}
+                	if (val == 'cashier-pos') {
+                        $('.kooldesk-type').addClass('ecjia-dn');
+                        $('.koolpos-type').removeClass('ecjia-dn');
+                	}
                 }
             })
         }
