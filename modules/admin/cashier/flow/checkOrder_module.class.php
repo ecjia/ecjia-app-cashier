@@ -94,7 +94,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 // 			'goods_sn'	=> 'ECS000412',
 // 			'number'	=> 3,
 // 			'number'	=> 1,
-// 			'goods_sn'	=> '2184873004634',
+// 			'goods_sn'	=> '2184879005477',
 // 			'goods_sn'	=> '289036800150005863',
 // 			'weight'	=> 1500,
 // 			'price'		=> 20.47
@@ -180,6 +180,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				if ($bulk_goods_info['extension_code'] == 'bulk') {
 					$addgoods['goods_sn'] = $bulk_goods_sn;				
 					$scale_sn = substr($goods_sn, 0, 2);
+					
 					$cashier_scales_info = cart_cashdesk::get_scales_info(array('store_id' => $_SESSION['store_id'], 'scale_sn' => $scale_sn));
 					$goods_sn_length = strlen($goods_sn);
 					if ($goods_sn_length == '13') {
@@ -188,7 +189,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 						$string = preg_replace('/^0*/', '', $string);
 						if ($cashier_scales_info['barcode_mode'] == '1') {
 							//金额模式
-							$price_string = sprintf('%.2f', $string/1000);
+							$price_string = $string/100;
 							$addgoods['price'] =  $price_string;
 						} elseif ($cashier_scales_info['barcode_mode'] == '2') {
 							//重量模式
