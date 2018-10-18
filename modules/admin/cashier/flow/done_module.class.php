@@ -87,7 +87,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         //获取所需购买购物车id  will.chen
         $rec_id = $this->requestData('rec_id', 0);
         $rec_id = empty($rec_id) ? $_SESSION['cart_id'] : $rec_id;
-		$cart_id = empty($rec_id) ? '' : explode(',', $rec_id);
+		$cart_id = empty($rec_id) ? array() : explode(',', $rec_id);
 		
 		$flow_type = CART_CASHDESK_GOODS;
 		
@@ -106,7 +106,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 				if ($val['is_real']) {
 					$is_real_good = 1;
 				}
-				$cart_id[] = $val['rec_id'];
+				$cart_id[]= $val['rec_id'];
 			}
 		}
 		
