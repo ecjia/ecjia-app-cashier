@@ -92,9 +92,16 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 		$flow_type = CART_CASHDESK_GOODS;
 		
 		$pendorder_id = $this->requestData('pendorder_id', '0'); //挂单id
+		if (!empty($pendorder_id)) {
+			$cart_id = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->lists('rec_id');
+		}
 		
 		/* 订单中的商品 */
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id, $pendorder_id);
+		
+		if (!empty($pendorder_id)) {
+			$cart_id = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->lists('rec_id');
+		}
 		if (empty($cart_goods)) {
 			return new ecjia_error('no_goods_in_cart', '购物车中没有商品');
 		}
@@ -108,10 +115,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 				}
 				$cart_id[]= $val['rec_id'];
 			}
-		}
-		
-		if (!empty($pendorder_id)) {
-			$cart_id = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->lists('rec_id');
 		}
 		
         /* 检查购物车中是否有商品 */
