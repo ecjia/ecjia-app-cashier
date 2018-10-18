@@ -78,7 +78,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		$updategoods	= $this->requestData('updategoods');	//更新商品数量
 		$deletegoods	= $this->requestData('deletegoods');	//删除商品
 		$user			= $this->requestData('user');			//选择用户
-		$pendorder_id   = $this->requestData('pendorder_id');	//挂单id
+		$pendorder_id   = $this->requestData('pendorder_id', '0');	//挂单id
 		
 		
 		if (!empty($pendorder_id) && empty($user['user_id'])) {
@@ -90,7 +90,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		}
 		
 // 		$addgoods = array(
-// 			'goods_sn' 	=> 'ECS001311',
+// 			'goods_sn' 	=> 'ECS001314',
 // 			'goods_sn'	=> 'ECS000412',
 // 			'number'	=> 3,
 // 			'number'	=> 1,
@@ -259,11 +259,15 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		
 		/* 对商品信息赋值 */
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, array(), $pendorder_id); // 取得商品列表，计算合计
-		
+		if (!empty($cart_goods)) {
+			foreach ($cart_goods as $row) {
+				$cart_ids[] = $row['rec_id'];
+			}
+		}
 		/* 取得订单信息*/
 		$order = cart_cashdesk::flow_order_info();
 		/* 计算订单的费用 */
-		$total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, array(), array(), CART_CASHDESK_GOODS);
+		$total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods,  array(), $cart_ids, array(), CART_CASHDESK_GOODS, $pendorder_id);
 		if (!empty($_SESSION['user_id'])) {
 			$user_info = user_info($_SESSION['user_id']);
 			if (is_ecjia_error($user_info)) {

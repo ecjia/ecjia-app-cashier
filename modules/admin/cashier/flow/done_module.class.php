@@ -89,19 +89,31 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $rec_id = empty($rec_id) ? $_SESSION['cart_id'] : $rec_id;
 		$cart_id = empty($rec_id) ? '' : explode(',', $rec_id);
 		
-		$pendorder_id = $this->requestData('pendorder_id', 0); //挂单id
+		$flow_type = CART_CASHDESK_GOODS;
+		
+		$pendorder_id = $this->requestData('pendorder_id', '0'); //挂单id
+		
+		/* 订单中的商品 */
+		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id, $pendorder_id);
+		if (empty($cart_goods)) {
+			return new ecjia_error('no_goods_in_cart', '购物车中没有商品');
+		}
+		
+		/* 判断是不是实体商品 */
+		if (!empty($cart_goods)) {
+			foreach ($cart_goods as $val) {
+				/* 统计实体商品的个数 */
+				if ($val['is_real']) {
+					$is_real_good = 1;
+				}
+				$cart_id[] = $val['rec_id'];
+			}
+		}
+		
 		if (!empty($pendorder_id)) {
 			$cart_id = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->lists('rec_id');
 		}
 		
-        /* 取得购物类型 */
-        //$flow_type = isset($_SESSION['flow_type']) ? intval($_SESSION['flow_type']) : CART_GENERAL_GOODS;
-        //$codes = array('8001', '8011');
-        //if (!empty($device) && in_array($device['code'], $codes)) {
-        //	$flow_type = CART_CASHDESK_GOODS;
-        //}
-        
-        $flow_type = CART_CASHDESK_GOODS;
         /* 检查购物车中是否有商品 */
 		$db_cart = RC_Loader::load_app_model('cart_model', 'cart');
 		
@@ -109,7 +121,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 		if (!empty($cart_id)) {
 			$cart_where = array_merge($cart_where, array('rec_id' => $cart_id));
 		}
-		if (!empty($pendorder_id)) {
+		if (isset($pendorder_id)) {
 			$cart_where = array_merge($cart_where, array('pendorder_id' => $pendorder_id));
 		}
 		if ($_SESSION['user_id']) {
@@ -271,12 +283,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
             }
         }
         
-        /* 订单中的商品 */
-        $cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id, $pendorder_id);
-        if (empty($cart_goods)) {
-        	return new ecjia_error('no_goods_in_cart', '购物车中没有商品');
-        }
-        
         /* 检查商品总额是否达到最低限购金额 */
         if ($flow_type == CART_GENERAL_GOODS && cart_cashdesk::cart_amount(true, CART_GENERAL_GOODS, $cart_id) < ecjia::config('min_goods_amount')) {
         	return new ecjia_error('insufficient_balance', '您的余额不足以支付整个订单，请选择其他支付方式。');
@@ -287,13 +293,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
             $order[$key] = addslashes($value);
         }
         
-        /* 判断是不是实体商品 */
-        foreach ($cart_goods as $val) {
-            /* 统计实体商品的个数 */
-            if ($val['is_real']) {
-                $is_real_good = 1;
-            }
-        }
+       
 
         /* 订单中的总额 *///$order['bonus_id']
         $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_id, CART_CASHDESK_GOODS);
@@ -513,6 +513,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 			if (!empty($pendorder_id)) {
 				RC_Loader::load_app_class('pendorder', 'cashier', false);
 				pendorder::delete_pendorder($pendorder_id);
+				cart_cashdesk::clear_cart($flow_type, $cart_id, $pendorder_id);
 			} else {
 				/* 清空购物车 */
 				cart_cashdesk::clear_cart($flow_type, $cart_id, $pendorder_id);
