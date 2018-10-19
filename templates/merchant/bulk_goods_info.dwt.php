@@ -117,7 +117,7 @@
 					              			<div class="form-group">
 					              				<label class="control-label col-lg-2 p_l0">保质期：</label>
 					              				<div class="col-lg-7 p_l0">
-					                            	<input class="form-control limitday" name="limit_days" action='{url path="cashier/mh_bulk_goods/get_expire_date"}' type="text" value="{$goods.limitdays}" />
+					                            	<input class="form-control limitday" name="limit_days" action='{url path="cashier/mh_bulk_goods/get_expire_date"}' type="text" value="{if $goods.limitdays}{$goods.limitdays}{else}1{/if}" />
 					                          	</div>
 				                          		<div class="col-lg-2 p_l0">
 						                          	<select name="limit_days_unit" class="form-control day-unit" action='{url path="cashier/mh_bulk_goods/get_expire_date"}'>
