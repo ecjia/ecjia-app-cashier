@@ -96,6 +96,7 @@ class admin_cashier_merchant_goods_list_module extends api_admin implements api_
 				'store_id'  		=> $store_id,
 				'sort'				=> $order_by,
 				'store_intro'		=> $action_type,
+				'product'   		=> 1,
 				'page'				=> $page,
 				'size'				=> $size,
 		);
@@ -114,7 +115,7 @@ class admin_cashier_merchant_goods_list_module extends api_admin implements api_
 		        $data['list'][] = array(
                     'id' 						=> $val['goods_id'],
                     'name' 						=> $val['name'],
-		        	'goods_sn' 					=> $val['goods_sn'],
+		        	'goods_sn' 					=> empty($val['product_sn']) ? $val['goods_sn'] : $val['product_sn'],
                     'market_price' 				=> $val['market_price'],
 		            'unformatted_market_price' 	=> $val['unformatted_market_price'],
                     'shop_price' 				=> $val['shop_price'],
