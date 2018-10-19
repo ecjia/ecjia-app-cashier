@@ -296,7 +296,7 @@ class mh_cashier_goods extends ecjia_merchant {
 		$this->admin_priv('mh_cashier_goods_update');
 	
 		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('收银台商品'));
-		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_bulk_goods/init'), 'text' => '收银台商品'));
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_goods/init'), 'text' => '收银台商品'));
 	
 		
 		$this->assign('ur_here', '基本信息');
