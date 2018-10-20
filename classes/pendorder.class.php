@@ -69,6 +69,19 @@ class pendorder {
 			RC_DB::table('cashier_pendorder')->where('pendorder_id', $pendorder_id)->delete();
 		}
 	}
+	
+	
+	/**
+	 * 挂单商品数
+	 */
+	
+	public static function pendorder_goods_count($pendorder_id = 0) {
+		$count = 0;
+		if (!empty($pendorder_id)) {
+			$count = RC_DB::table('cashier_pendorder')->where('pendorder_id', $pendorder_id)->count();
+		}
+		return $count;
+	}
 }	
 
 

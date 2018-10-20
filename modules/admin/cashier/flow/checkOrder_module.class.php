@@ -380,10 +380,17 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 	}	
 	
 	//删除购物车商品(购物车可以批量删除)
-	private function deletecart($deletegoods){
+	private function deletecart($deletegoods, $pendorder_id){
 		$db_cart = RC_Loader::load_app_model('cart_model', 'cart');
 		$rec_id = explode(',', $deletegoods['rec_id']);
 		$db_cart->in(array('rec_id'=> $rec_id))->delete();
+		if (!empty($pendorder_id)) {
+			RC_Loader::load_app_class('pendorder', 'cashier', false);
+			$count = pendorder::pendorder_goods_count($pendorder_id);
+			if ($count == 0) {
+				pendorder::delete_pendorder($pendorder_id);
+			}
+		}
 	}
 }
 
