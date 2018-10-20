@@ -128,7 +128,7 @@
 												</div>
 					              			</div>
 					              			<div class="form-group">
-					              				<label class="control-label col-lg-2 p_l0">到期日期：</label>
+					              				<label class="control-label col-lg-2 p_l0">过期日期：</label>
 					              				<div class="col-lg-9 p_l0">
 					                            	<input class="form-control date" name="expiry_date" type="text" value="{$goods.expiry_date}"/>
 					                          	</div>
