@@ -40,6 +40,7 @@
 					<table class="table table-striped table-hover table-hide-edit">
 						<thead>
 							<tr>
+							    <th>缩略图</th>
 								<th>设备名称</th>
 								<th class="w250">设备MAC地址</th>
 								<th>设备号</th>
@@ -51,6 +52,11 @@
 						<tbody>
 							<!-- {foreach from=$cashier_device_list.list item=list} -->
 							<tr>
+								<td>
+									<a href='{url path="cashier/mh_cashier_device/edit" args="id={$list.id}"}'>
+										<img class="w60 h60" alt="{if $list.cashier_type eq 'cashier-desk'}收银台{else}收银POS机{/if}" src="{if $list.cashier_type eq 'cashier-desk'}{$app_url}/cashdesk.png{else}{$app_url}/pos.png{/if}">
+									</a>
+								</td>
 								<td>
 		                           {$list.device_name}
 		                           <div class="edit-list">
@@ -69,7 +75,7 @@
 								</td>
 							</tr>
 							<!-- {foreachelse} -->
-							   <tr><td class="no-records" colspan="6">{lang key='system::system.no_records'}</td></tr>
+							   <tr><td class="no-records" colspan="7">{lang key='system::system.no_records'}</td></tr>
 							<!-- {/foreach} -->
 						</tbody>
 					</table>

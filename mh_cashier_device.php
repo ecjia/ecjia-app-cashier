@@ -84,6 +84,9 @@ class mh_cashier_device extends ecjia_merchant {
         
 		$cashier_device_list = $this->cashier_device_list();
 		
+		$app_url =  RC_App::apps_url('statics/images', __FILE__);
+		$this->assign('app_url', $app_url);
+		
 		$this->assign('search_action', RC_Uri::url('cashier/mh_cashier_device/init'));
 		$this->assign('cashier_device_list', $cashier_device_list);
 		
