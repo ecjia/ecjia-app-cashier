@@ -250,7 +250,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		}
 		//删除购物车商品
 		if (!empty($deletegoods)) {
-			$result = $this->deletecart($deletegoods);
+			$result = $this->deletecart($deletegoods, $pendorder_id);
 		}
 		
 		if (is_ecjia_error($result)) {
@@ -380,7 +380,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 	}	
 	
 	//删除购物车商品(购物车可以批量删除)
-	private function deletecart($deletegoods, $pendorder_id){
+	private function deletecart($deletegoods, $pendorder_id = 0){
 		$db_cart = RC_Loader::load_app_model('cart_model', 'cart');
 		$rec_id = explode(',', $deletegoods['rec_id']);
 		$db_cart->in(array('rec_id'=> $rec_id))->delete();
