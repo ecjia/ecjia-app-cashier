@@ -388,6 +388,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 			RC_Loader::load_app_class('pendorder', 'cashier', false);
 			$count = pendorder::pendorder_goods_count($pendorder_id);
 			if ($count == 0) {
+				RC_Logger::getLogger('error')->info('testaaa');
 				pendorder::delete_pendorder($pendorder_id);
 			}
 		}

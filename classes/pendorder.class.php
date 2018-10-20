@@ -78,7 +78,7 @@ class pendorder {
 	public static function pendorder_goods_count($pendorder_id = 0) {
 		$count = 0;
 		if (!empty($pendorder_id)) {
-			$count = RC_DB::table('cashier_pendorder')->where('pendorder_id', $pendorder_id)->count();
+			$count = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->count();
 		}
 		return $count;
 	}
