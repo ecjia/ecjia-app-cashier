@@ -107,6 +107,9 @@ class mh_cashier_device extends ecjia_merchant {
 	
 		$this->assign('form_action', RC_Uri::url('cashier/mh_cashier_device/insert'));
 	
+		$app_url =  RC_App::apps_url('statics/images', __FILE__);
+		$this->assign('app_url', $app_url);
+		
 		$this->display('cashier_device_info.dwt');
 	}
 	
@@ -185,6 +188,9 @@ class mh_cashier_device extends ecjia_merchant {
 	
 		$this->assign('cashier_device_info', $cashier_device_info);
 		$this->assign('id', $id);
+		
+		$app_url =  RC_App::apps_url('statics/images', __FILE__);
+		$this->assign('app_url', $app_url);
 		
 		$this->assign('form_action', RC_Uri::url('cashier/mh_cashier_device/update'));
 		$this->display('cashier_device_info.dwt');

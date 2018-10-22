@@ -56,19 +56,24 @@
                             </div>
                             <span class="input-must">{lang key='system::system.require_field'}</span>
                         </div>
-                        
-                         <div class="form-group">
+                      
+                        <div class="form-group ">
                             <label class="control-label col-lg-2">{t}收银设备类型：{/t}</label>
-                            <div class="col-lg-6">
-                                <select class="form-control w510" name="cashier_type" device_id="{$cashier_device_info}">
-                                	<option value="">{t}请选择收银设备类型...{/t}</option>
-									<option value="cashier-desk" {if $cashier_device_info.cashier_type eq "cashier-desk"}selected{/if}>收银台</option>
-									<option value="cashier-pos" {if $cashier_device_info.cashier_type eq "cashier-pos"}selected{/if}>收银POS机</option>
-					            </select>
+                            <div class="col-lg-10">
+                                <div>
+                                	<a href="javascript:;">
+                                		<img class="cashier-img w60 h60" style="margin-right:40px;" cashier-type="cashier-desk" alt="收银台" src="{$app_url}/cashdesk.png">
+                                	</a>
+                             		<a href="javascript:;">
+                             			<img class="cashier-img w60 h60" alt="收银POS机" cashier-type="cashier-pos" src="{$app_url}/pos.png">
+                             		</a>
+                                </div>
+                             	<input id="cashier-desk" style="margin-right:30px;margin-top:10px;" type="radio" name="cashier_type" value="cashier-desk" {if $cashier_device_info.cashier_type eq 'cashier-desk'} checked="true" {/if} />
+                                <label for="cashier-desk" style="margin-right:30px;margin-top:10px;"> 收银台</label>
+                                <input  id="cashier-pos" type="radio" name="cashier_type" value="cashier-pos" {if $cashier_device_info.cashier_type eq 'cashier-pos'} checked="true" {/if} />
+                            	<label  for="cashier-pos"> POS机</label>
                             </div>
-                            <span class="input-must">{lang key='system::system.require_field'}</span>
                         </div>
-                        
                         <div class="form-group kooldesk-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">
                             <label class="control-label col-lg-2">{t}机型：{/t}</label>
                             <div class="col-lg-10">
