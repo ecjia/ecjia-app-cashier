@@ -183,7 +183,7 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
 		
 		$order['store_id'] = $store_id;
 		/*订单编号*/
-		$order['order_sn'] = cashdesk_quickpay_activity::get_order_sn();
+		$order['order_sn'] = ecjia_order_quickpay_sn();
 		$order['order_type'] = 'cashdesk-receipt';//收银台收款
 		
 		$order['user_type'] 	= 'merchant';
