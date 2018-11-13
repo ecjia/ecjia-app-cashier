@@ -243,7 +243,7 @@ class mh_bulk_goods extends ecjia_merchant {
 			RC_DB::table('goods')->where('goods_id', $goods_id)->where('store_id', $_SESSION['store_id'])->update($data);
 			//为更新用户购物车数据加标记
 			//RC_Api::api('cart', 'mark_cart_goods', array('goods_id' => $goods_id));
-			return $this->showmessage(RC_Lang::get('goods::goods.edit_ok'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_Uri::url('cashier/mh_bulk_goods/init'), 'content' => number_format($goods_price, 2, '.', '')));
+			return $this->showmessage(RC_Lang::get('goods::goods.edit_ok'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('content' => number_format($goods_price, 2, '.', '')));
 		}
 	}
 	
@@ -299,7 +299,7 @@ class mh_bulk_goods extends ecjia_merchant {
 		);
 		RC_DB::table('goods')->where('goods_id', $goods_id)->where('store_id', $_SESSION['store_id'])->update($data);
 	
-		return $this->showmessage('修改成功!', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('pjaxurl' => RC_uri::url('cashier/mh_bulk_goods/init', '&page='.$_GET['page'].'&sort_by='.$_GET['sort_by'].'&sort_order='.$_GET['sort_order']), 'content' => $sort_order));
+		return $this->showmessage('修改成功!', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_SUCCESS, array('content' => $sort_order));
 	}
 	
 	/**
@@ -456,8 +456,8 @@ class mh_bulk_goods extends ecjia_merchant {
 				'promote_price'         => $promote_price,
 				'promote_start_date'    => $promote_start_date,
 				'promote_end_date'      => $promote_end_date,
-				'keywords'              => $_POST['keywords'],
-				'goods_brief'           => $_POST['goods_brief'],
+// 				'keywords'              => $_POST['keywords'],
+// 				'goods_brief'           => $_POST['goods_brief'],
 				'seller_note'           => $_POST['seller_note'],
 				'goods_weight'          => 0.000,
 				'goods_number'          => 1000,

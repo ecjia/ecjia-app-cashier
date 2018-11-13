@@ -159,7 +159,9 @@
 									</span>
 								</td>
 								<td align="center">
-									<i class="cursor_pointer fa {if $goods.is_on_sale}fa-check {else}fa-times{/if}" data-trigger="toggle_on_sale" data-url="{RC_Uri::url('cashier/mh_bulk_goods/toggle_on_sale')}" refresh-url="{RC_Uri::url('cashier/mh_bulk_goods/init')}" data-id="{$goods.goods_id}"></i>
+									<i class="cursor_pointer fa {if $goods.is_on_sale}fa-check {else}fa-times{/if}" data-trigger="toggle_on_sale" data-url="{RC_Uri::url('cashier/mh_bulk_goods/toggle_on_sale')}" 
+									refresh-url="{RC_Uri::url('cashier/mh_bulk_goods/init')}{if $filter.type}&type={$filter.type}{/if}{if $filter.cat_id}&cat_id={$filter.cat_id}{/if}{if $filter.keywords}&keywords={$filter.keywords}{/if}{if $smarty.get.page}&page={$smarty.get.page}{/if}" 
+									data-id="{$goods.goods_id}"></i>
 								</td>
 								<td align="center">
 									<span class="cursor_pointer" data-trigger="editable" data-placement="left" data-url="{RC_Uri::url('cashier/mh_bulk_goods/edit_sort_order')}" data-name="sort_order" data-pk="{$goods.goods_id}" data-title="请输入排序序号"> 
