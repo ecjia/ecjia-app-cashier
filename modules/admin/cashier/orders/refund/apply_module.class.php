@@ -89,7 +89,6 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		);
 		
 		//生成退款申请单
-		//$generate_refund = 32;
 		$generate_refund = RC_Api::api('refund', 'refund_apply', $options);
 		
 		if (is_ecjia_error($generate_refund)) {
@@ -179,8 +178,9 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 													'action_back_type'			=>	$back_type,
 													'action_back_time'			=>	RC_Time::gmtime(),
 													'action_back_content'		=>	$action_back_content,
-													'action_user_id'			=>	0,
-													'action_user_name'			=>	''
+													'action_user_type'			=>  'merchant',
+													'action_user_id'			=>	$_SESSION['staff_id'],
+													'action_user_name'			=>	$_SESSION['staff_name'],
 											);
 											
 											RC_DB::table('refund_payrecord')->where('id', $refund_merchant_confirm)->update($data);
@@ -193,7 +193,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 											RC_DB::table('refund_order')->where('refund_id', $generate_refund)->update($data);
 
 											//更新订单操作表
-											$action_note = '退款金额已退回余额'.$back_money_total.'元，退回积分为：'.$back_integral;
+											$action_note = '退款金额已退回'.$back_money_total.'元，退回积分为：'.$back_integral;
 											$data = array(
 												'refund_id' 		=> $generate_refund,
 												'action_user_type'	=>	'merchant',
@@ -215,24 +215,9 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 											//普通订单状态变动日志表
 											$order_id = RC_DB::table('refund_order')->where('refund_id', $generate_refund)->pluck('order_id');
 											OrderStatusLog::refund_payrecord(array('order_id' => $order_id, 'back_money' => $back_money_total));
-
-											//短信告知用户退款退货成功 
-											if ($refund_info['user_id'] > 0) {
-												$user_info = RC_DB::table('users')->where('user_id', $refund_info['user_id'])->select('user_name', 'pay_points', 'user_money', 'mobile_phone')->first();
-												if (!empty($user_info['mobile_phone'])) {
-													$options = array(
-															'mobile' => $user_info['mobile_phone'],
-															'event'	 => 'sms_refund_balance_arrived',
-															'value'  =>array(
-																	'user_name' 	=> $user_info['user_name'],
-																	'amount' 		=> $back_money_total,
-																	'user_money' 	=> $user_info['user_money'],
-															),
-													);
-													RC_Api::api('sms', 'send_event_sms', $options);
-												}
-													
-												//更新商家会员
+											
+											//更新商家会员
+											if ($refund_info['user_id'] > 0 && $refund_info['store_id'] > 0) {
 												RC_Api::api('customer', 'store_user_buy', array('store_id' => $refund_info['store_id'], 'user_id' => $refund_info['user_id']));
 											}
 										}
