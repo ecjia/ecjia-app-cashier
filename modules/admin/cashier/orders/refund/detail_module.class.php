@@ -50,54 +50,62 @@ defined('IN_ECJIA') or exit('No permission resources.');
  * 收银台退款记录
  * @author zrl
  */
-class admin_cashier_orders_refund_record_module extends api_admin implements api_interface {
+class admin_cashier_orders_refund_detail_module extends api_admin implements api_interface {
     public function handleRequest(\Royalcms\Component\HttpKernel\Request $request) {
-
 		$this->authadminSession();
         if ($_SESSION['staff_id'] <= 0) {
             return new ecjia_error(100, 'Invalid session');
         }
-		/* 获取数量 */
-		$size 		= $this->requestData('pagination.count', 15);
-		$page 		= $this->requestData('pagination.page', 1);
-		$start_date = $this->requestData('start_date', '');
-		$end_date	= $this->requestData('end_date', '');
+		$refund_sn	= trim($this->requestData('refund_sn', ''));
+    	if (empty($refund_sn)) {
+			return new ecjia_error('invalid_parameter', RC_Lang::get('orders::order.invalid_parameter'));
+		}
 		
-		$options = array(
-			'size'			=> $size,
-			'page'			=> $page,
-			'store_id'		=> $_SESSION['store_id'],
-			'start_date'	=> $start_date,
-			'end_date'		=> $end_date,
-			'referer'		=> 'ecjia-cashdesk',
+		RC_Loader::load_app_class('order_refund', 'refund', false);
+		/* 退款详情 */
+		$options = array('refund_sn' => $refund_sn);
+		$refund_order_info = order_refund::get_refundorder_detail($options);
+		if (empty($refund_order_info)) {
+			return new ecjia_error('not_exsist', '售后申请信息不存在');
+		}
+		//售后申请是否属于当前店铺
+		if ($refund_order_info['store_id'] != $_SESSION['store_id']) {
+			return new ecjia_error('refund_order_error', '未找到相应的售后申请单！');
+		}
+		
+		/*退款状态处理*/
+		if ($refund_order_info['refund_status'] == Ecjia\App\Refund\RefundStatus::UNTRANSFER) {
+			$refund_status 		= 'checked';
+			$label_refund_status= '已审核';
+		} elseif ($refund_order_info['refund_status'] == Ecjia\App\Refund\RefundStatus::TRANSFERED) {
+			$refund_status 		= 'refunded';
+			$label_refund_status= '已退款';
+		} else {
+			$refund_status 		= 'await_check';
+			$label_refund_status= '待审核';
+		}
+		
+		$goods_item = order_refund::get_order_goods_list($refund_order_info['order_id']);
+		
+		$refund_total_amount = $refund_order_info['money_paid'] + $refund_order_info['surplus'];
+		$total_discount = $refund_order_info['discount'] + $refund_order_info['bonus'] + $refund_order_info['integral_money'];
+		
+		$result = array(
+				'refund_sn' 					=> trim($refund_order_info['refund_sn']),
+				'refund_type'					=> $refund_order_info['refund_type'],
+				'label_refund_type'				=> $refund_order_info['refund_type'] == 'return' ? '退货退款' : '仅退款',
+				'refund_status'					=> $refund_status,
+				'label_refund_status'			=> $label_refund_status,
+				'refund_total_amount'			=> $refund_total_amount > 0 ? sprintf("%.2f", $refund_total_amount) : 0,
+				'formatted_refund_total_amount'	=> $refund_total_amount > 0 ? price_format($refund_total_amount, false) : '',
+				'money_paid_amount'				=> $refund_order_info['money_paid'],
+				'formatted_money_paid_amount'	=> $refund_order_info['money_paid'] > 0 ? price_format($refund_order_info['money_paid'], false) : '',
+				'total_discount'				=> $total_discount > 0 ? sprintf("%.2f", $total_discount) : 0,
+				'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
+				'goods_list'					=> $goods_item
 		);
 		
-		$refund_order_data = RC_Api::api('refund', 'merchant_refund_order', $options);
-		
-		if (is_ecjia_error($refund_order_data)) {
-			return $refund_order_data;
-		}
-		
-		$arr = array();
-		if(!empty($refund_order_data['list'])) {
-			foreach ($refund_order_data['list'] as $val) {
-				$total_refund_amount = $val['surplus'] + $val['money_paid'];
-				$arr[] = array(
-					'order_sn' 							=> $val['order_sn'],
-					'refund_sn'							=> $val['refund_sn'],	
-					'refund_type'						=> $val['refund_type'],
-					'label_refund_type' 				=> $val['label_refund_type'],
-					'service_status_code'				=> $val['service_status_code'],
-					'label_service_status'				=> $val['label_service_status'],
-					'formated_add_time'					=> $val['formated_add_time'],
-					'formated_refund_time'				=> $val['formated_refund_time'],
-					'total_refund_amount'				=> $total_refund_amount > 0 ? $total_refund_amount : 0,
-					'formatted_total_refund_amount'		=> $total_refund_amount > 0 ? price_format($total_refund_amount, false) : '',
-					'goods_list'						=> $val['goods_list'],
-				);
-			}
-		}
-		return array('data' => $arr, 'pager' => $refund_order_data['page']);
+		return $result;
 	}
 }
 // end
