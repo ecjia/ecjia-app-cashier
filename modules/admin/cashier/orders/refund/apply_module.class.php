@@ -85,7 +85,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 				'device'				=> $device,
 				'refund_reason'			=> $refund_reason,
 				'order_id'				=> $order_id,
-				'order_info'			=> $order_info
+				'order_info'			=> $order_info,
+				'is_cashdesk'			=> 1,
 		);
 		
 		//生成退款申请单
