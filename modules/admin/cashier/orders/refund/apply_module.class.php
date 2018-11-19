@@ -79,6 +79,12 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		if (empty($order_info)) {
 			return new ecjia_error('not_exists_info', '订单信息不存在！');
 		}
+		
+		//订单是否属于当前店铺
+		if ($order_info['store_id'] != $_SESSION['store_id']) {
+			return new ecjia_error('order_error', '该订单不属于此店铺！');
+		}
+		
 		$options = array(
 				'refund_type' 			=> 'return',
 				'refund_content'		=> $refund_content,
