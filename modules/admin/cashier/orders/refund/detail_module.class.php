@@ -74,12 +74,14 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 		}
 		
 		/*退款状态处理*/
+		$cashier_name = '';
 		if ($refund_order_info['refund_status'] == Ecjia\App\Refund\RefundStatus::UNTRANSFER) {
 			$refund_status 		= 'checked';
 			$label_refund_status= '已审核';
 		} elseif ($refund_order_info['refund_status'] == Ecjia\App\Refund\RefundStatus::TRANSFERED) {
 			$refund_status 		= 'refunded';
 			$label_refund_status= '已退款';
+			$cashier_name = RC_DB::table('refund_payrecord')->where('refund_id', $refund_order_info['refund_id'])->pluck('action_user_name');
 		} else {
 			$refund_status 		= 'await_check';
 			$label_refund_status= '待审核';
@@ -96,6 +98,7 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 				'label_refund_type'				=> $refund_order_info['refund_type'] == 'return' ? '退货退款' : '仅退款',
 				'refund_status'					=> $refund_status,
 				'label_refund_status'			=> $label_refund_status,
+				'cashier_name'					=> $cashier_name,
 				'refund_total_amount'			=> $refund_total_amount > 0 ? sprintf("%.2f", $refund_total_amount) : 0,
 				'formatted_refund_total_amount'	=> $refund_total_amount > 0 ? price_format($refund_total_amount, false) : '',
 				'money_paid_amount'				=> $refund_order_info['money_paid'],

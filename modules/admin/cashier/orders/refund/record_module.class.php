@@ -90,8 +90,17 @@ class admin_cashier_orders_refund_record_module extends api_admin implements api
 		if(!empty($refund_order_data['list'])) {
 			foreach ($refund_order_data['list'] as $val) {
 				$total_refund_amount = $val['surplus'] + $val['money_paid'];
+				//退款打款操作员
+				if ($val['service_status_code'] == 'refunded') {
+					$cashier_name = RC_DB::table('refund_payrecord')->where('refund_id', $val['refund_id'])->pluck('action_user_name');
+				} else {
+					$cashier_name = '';
+				}
 				$arr[] = array(
 					'order_sn' 							=> $val['order_sn'],
+					'pay_id'							=> empty($val['pay_id']) ? 0 : $val['pay_id'],
+					'pay_name'							=> empty($val['pay_name']) ? '' : $val['pay_name'],
+					'cashier_name'						=> $cashier_name,
 					'refund_sn'							=> $val['refund_sn'],	
 					'refund_type'						=> $val['refund_type'],
 					'label_refund_type' 				=> $val['label_refund_type'],
