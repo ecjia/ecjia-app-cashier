@@ -105,7 +105,9 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 				'formatted_money_paid_amount'	=> $refund_order_info['money_paid'] > 0 ? price_format($refund_order_info['money_paid'], false) : '',
 				'total_discount'				=> $total_discount > 0 ? sprintf("%.2f", $total_discount) : 0,
 				'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
-				'goods_list'					=> $goods_item
+				'goods_number'					=> count($goods_item),
+				'goods_list'					=> $goods_item,
+				
 		);
 		
 		return $result;
