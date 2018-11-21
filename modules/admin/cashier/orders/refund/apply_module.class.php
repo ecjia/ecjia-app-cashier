@@ -113,7 +113,6 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 				if (is_ecjia_error($refund_agree)) {
 					return $refund_agree;
 				} else {
-				$refund_agree = true;
 					if ($refund_agree) {
 						$returnway_shop_options = array(
 								'refund_id' 	=> $generate_refund, 
@@ -123,7 +122,6 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 						if (is_ecjia_error($refund_returnway_shop)) {
 							return $refund_returnway_shop;
 						} else {
-						$refund_returnway_shop = true;
 							if ($refund_returnway_shop) {
 								$merchant_confirm_options = array(
 										'refund_id'		=> $generate_refund,
@@ -136,11 +134,15 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 								);
 								//商家确认收货
 								$refund_merchant_confirm = RC_Api::api('refund', 'merchant_confirm', $merchant_confirm_options);
+								RC_Logger::getLogger('error')->info('test111');
+								RC_Logger::getLogger('error')->info($refund_merchant_confirm);
+								RC_Logger::getLogger('error')->info('test222');
 								if (is_ecjia_error($refund_merchant_confirm)) {
 									return $refund_merchant_confirm;
 								} else {
 									//去退款
-									if ($refund_merchant_confirm) {
+									RC_Logger::getLogger('error')->info('testaaa');
+									if (!empty($refund_merchant_confirm)) {
 										//原路退回
 										if ($refund_way == 'original') { 
 											//TODO
