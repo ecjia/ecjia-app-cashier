@@ -61,6 +61,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         
 		$order_id			= $this->requestData('order_id', 0);
 		$refund_way			= $this->requestData('refund_way', ''); //original原路退回,cash退现金，balance退回余额
+		$refund_money		= $this->requestData('refund_money', 0);
 		$refund_way_arr 	= array('original', 'cash', 'balance');
 		
 		$device 			=  $this->device;
@@ -130,6 +131,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 										'store_id'      => $_SESSION['store_id'],
 										'staff_id'		=> $_SESSION['staff_id'],
 										'staff_name'	=> $_SESSION['staff_name'],
+										'refund_way'	=> $refund_way,
+										'refund_money'	=> $refund_money
 								);
 								//商家确认收货
 								$refund_merchant_confirm = RC_Api::api('refund', 'merchant_confirm', $merchant_confirm_options);
