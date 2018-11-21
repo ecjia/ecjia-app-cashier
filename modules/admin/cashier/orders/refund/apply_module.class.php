@@ -134,9 +134,6 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 								);
 								//商家确认收货
 								$refund_merchant_confirm = RC_Api::api('refund', 'merchant_confirm', $merchant_confirm_options);
-								RC_Logger::getLogger('error')->info('test111');
-								RC_Logger::getLogger('error')->info($refund_merchant_confirm);
-								RC_Logger::getLogger('error')->info('test222');
 								if (is_ecjia_error($refund_merchant_confirm)) {
 									return $refund_merchant_confirm;
 								} else {
@@ -151,9 +148,9 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 											$back_type = 'cash';
 										}
 										//现金和原路退款成功后，后续操作
-										if ($refund_way == 'original' || $refund_way == 'cash') {
-											RC_Loader::load_app_class('RefundOrderInfo', 'refund', false);
-											$refund_info = RefundOrderInfo::get_refund_order_info($generate_refund);
+										if (($refund_way == 'original') || ($refund_way == 'cash')) {
+// 											RC_Loader::load_app_class('RefundOrderInfo', 'refund', false);
+											$refund_info =  RC_DB::table('refund_order')->where('refund_id', $generate_refund)->first();
 											
 											$back_money_total = $refund_info['surplus'] + ['money_paid'];
 											$back_integral = $refund_info['integral'];
