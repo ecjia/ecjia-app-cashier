@@ -97,6 +97,13 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 			}
 		}
 		
+		//余额支付的订单，只支持退余额和现金
+		if (!empty($pay_code) && pay_code == 'pay_balance') {
+			if (($refund_way == 'original')) {
+				return new ecjia_error('refund_way_error', '余额支付的订单只支持退回余额或退现金！');
+			}
+		}
+		
 		$options = array(
 				'refund_type' 			=> 'return',
 				'refund_content'		=> $refund_content,
