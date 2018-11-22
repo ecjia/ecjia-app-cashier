@@ -138,7 +138,6 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 									return $refund_merchant_confirm;
 								} else {
 									//去退款
-									RC_Logger::getLogger('error')->info('testaaa');
 									if (!empty($refund_merchant_confirm)) {
 										//原路退回
 										if ($refund_way == 'original') { 
@@ -149,10 +148,9 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 										}
 										//现金和原路退款成功后，后续操作
 										if (($refund_way == 'original') || ($refund_way == 'cash')) {
-// 											RC_Loader::load_app_class('RefundOrderInfo', 'refund', false);
 											$refund_info =  RC_DB::table('refund_order')->where('refund_id', $generate_refund)->first();
 											
-											$back_money_total = $refund_info['surplus'] + ['money_paid'];
+											$back_money_total = $refund_info['surplus'] + $refund_info['money_paid'];
 											$back_integral = $refund_info['integral'];
 											
 											if ($refund_info['user_id'] > 0) {
