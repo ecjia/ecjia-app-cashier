@@ -86,6 +86,17 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 			return new ecjia_error('order_error', '该订单不属于此店铺！');
 		}
 		
+		//现金支付的订单，只支持退现金
+		$pay_code = '';
+		if ($order_info['pay_id'] > 0) {
+			$pay_code = RC_DB::table('payment')->where('pay_id', $order_info['pay_id'])->pluck('pay_code');
+		}
+		if (!empty($pay_code) && pay_code == 'pay_cash') {
+			if (($refund_way == 'original') || ($refund_way == 'balance')) {
+				return new ecjia_error('refund_way_error', '现金支付的订单只支持退现金！');
+			}
+		}
+		
 		$options = array(
 				'refund_type' 			=> 'return',
 				'refund_content'		=> $refund_content,
@@ -145,7 +156,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 											$back_type = 'original';
 										} elseif ($refund_way == 'cash') { //退现金
 											$back_type = 'cash';
-										}
+										} 
 										//现金和原路退款成功后，后续操作
 										if (($refund_way == 'original') || ($refund_way == 'cash')) {
 											$refund_info =  RC_DB::table('refund_order')->where('refund_id', $generate_refund)->first();
