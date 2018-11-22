@@ -57,31 +57,39 @@ class admin_cashier_secondscreen_adsense_module extends api_admin implements api
         if ($_SESSION['staff_id'] <= 0) {
             return new ecjia_error(100, 'Invalid session');
         }
-
-        $city_id	= $this->requestData('city_id', '0');
-        $city_id	= empty($city_id) ? 0 : $city_id;
-        $device_client = $request->header('device-client', 'iphone');
-        
-        $device = $this->device;
-        $device_client = !empty($device['device-client']) ? $device['device-client'] : 'iphone'; 
-        $response = [];
-        
-        if ($device_client == 'android') {
-        	$client = Ecjia\App\Adsense\Client::ANDROID;
-        } elseif ($device_client == 'h5') {
-        	$client = Ecjia\App\Adsense\Client::H5;
-        } else {
-        	$client = Ecjia\App\Adsense\Client::IPHONE;
-        }
-        
-        $adsense_list = RC_Api::api('adsense', 'adsense', [
-        		'code'     => 'cashier_screen_adsense',
-        		'client'   => $client,
-        		'city'     => $city_id
-        		]);
-      
-        $response = $adsense_list;
-        
+		$store_id = $_SESSION['store_id'];
+		$response = [];
+		$time = RC_Time::gmtime();
+		$merchant_positon_info = RC_DB::table('merchants_ad_position')
+								->where('store_id', $store_id)
+								->where('type', 'adsense')
+								->where('position_code', 'cashier_screen_adsense')->first();
+		
+     	if (!empty($merchant_positon_info['position_id'])) {
+     		$ad = RC_DB::table('merchants_ad');
+     		if (!empty($merchant_positon_info['max_number'])) {
+     			$ad->take($merchant_positon_info['max_number']);
+     		}
+     		$list = $ad->where('start_time', '<=', $time)
+     				   ->where('end_time', '>=', $time)
+     				   ->where('enabled', 1)
+     				   ->where('position_id', $merchant_positon_info['position_id'])
+     				   ->orderBy('sort_order', 'asc')
+     				   ->get();
+     		
+     		if (!empty($list)) {
+     			foreach ($list as $row) {
+     				$response[] = array(
+     						'ad_id' 		=> intval($row['ad_id']),
+     						'ad_name'		=> trim($row['ad_name']),
+     						'ad_link'		=> !empty($row['ad_link']) ? trim($row['ad_link']) : '',
+     						'ad_img'		=> !empty($row['ad_code']) ? RC_Upload::upload_url($row['ad_code']) : '',
+     						'start_time'	=> !empty($row['start_time']) ? RC_Time::local_date(ecjia::config('date_format'), $row['start_time']) : '',
+     						'end_time'		=> !empty($row['end_time']) ? RC_Time::local_date(ecjia::config('date_format'), $row['end_time']) : '',
+     				);
+     			}
+     		}
+     	}
         return $response;
 	}
 }
