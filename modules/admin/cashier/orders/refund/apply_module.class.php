@@ -184,8 +184,11 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                             return $result;
                         }
 
-                        $this->refundWithUpdateData($generate_refund, $refund_merchant_confirm, $refund_way, $back_type, $order_info, $result);
-
+                        $print_data = $this->refundWithUpdateData($generate_refund, $refund_merchant_confirm, $refund_way, $back_type, $order_info, $result);
+						if (is_ecjia_error($print_data)) {
+							return $print_data;
+						}
+                        return $print_data;
                     }
 
                 }
