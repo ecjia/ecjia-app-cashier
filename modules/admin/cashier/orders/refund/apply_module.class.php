@@ -224,7 +224,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         $pay_time = $order_info['pay_time'];
         
         if ($start_time <= $pay_time && $pay_time <= $end_time) {
-            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->cancel();
+            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->refund();
         } else {
             return (new Ecjia\App\Payment\Refund\RefundManager($order_sn))->refund();
         }
