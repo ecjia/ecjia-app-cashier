@@ -119,141 +119,283 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		
 		if (is_ecjia_error($generate_refund)) {
 			return $generate_refund;
-		} else {
-			if (!empty($generate_refund)) {
-				//商家同意退款申请
-				$agree_options = array(
-						'refund_id' => $generate_refund,
-						'staff_id'	=> $_SESSION['staff_id'],
-						'staff_name'=> $_SESSION['staff_name']
-				);
-				$refund_agree = RC_Api::api('refund', 'refund_agree', $agree_options);
-				if (is_ecjia_error($refund_agree)) {
-					return $refund_agree;
-				} else {
-					if ($refund_agree) {
-						$returnway_shop_options = array(
-								'refund_id' 	=> $generate_refund, 
-						);
-						//买家退货给商家
-						$refund_returnway_shop = RC_Api::api('refund', 'refund_returnway_shop', $returnway_shop_options);
-						if (is_ecjia_error($refund_returnway_shop)) {
-							return $refund_returnway_shop;
-						} else {
-							if ($refund_returnway_shop) {
-								$merchant_confirm_options = array(
-										'refund_id'		=> $generate_refund,
-										'action_note'	=> '审核通过',
-										'store_id'      => $_SESSION['store_id'],
-										'staff_id'		=> $_SESSION['staff_id'],
-										'staff_name'	=> $_SESSION['staff_name'],
-										'refund_way'	=> $refund_way,
-										'refund_money'	=> $refund_money
-								);
-								//商家确认收货
-								$refund_merchant_confirm = RC_Api::api('refund', 'merchant_confirm', $merchant_confirm_options);
-								if (is_ecjia_error($refund_merchant_confirm)) {
-									return $refund_merchant_confirm;
-								} else {
-									//去退款
-									if (!empty($refund_merchant_confirm)) {
-										//原路退回
-										if ($refund_way == 'original') { 
-											//TODO
-											$back_type = 'original';
-										} elseif ($refund_way == 'cash') { //退现金
-											$back_type = 'cash';
-										} 
-										//现金和原路退款成功后，后续操作
-										if (($refund_way == 'original') || ($refund_way == 'cash')) {
-											$refund_info =  RC_DB::table('refund_order')->where('refund_id', $generate_refund)->first();
-											
-											$back_money_total = $refund_info['surplus'] + $refund_info['money_paid'];
-											$back_integral = $refund_info['integral'];
-											
-											if ($refund_info['user_id'] > 0) {
-												if ($refund_info['integral'] > 0) { //下单有没使用积分
-													//退还下单使用的积分
-													RC_DB::table('users')->where('user_id', $refund_info['user_id'])->increment('pay_points', $refund_info['integral']);
-												}
-												/*所退款订单，有没赠送积分；有赠送的话，赠送的积分扣除*/
-												$order_give_integral_info = RC_DB::table('account_log')->where('user_id', $refund_info['user_id'])->where('from_type', 'order_give_integral')->where('from_value', $refund_info['order_sn'])->first();
-												if (!empty($order_give_integral_info)) {
-													$options = array(
-															'user_id'			=> $order_give_integral_info['user_id'],
-															'rank_points'		=> intval($order_give_integral_info['rank_points'])*(-1),
-															'pay_points'		=> intval($order_give_integral_info['pay_points'])*(-1),
-															'change_desc'		=> '订单退款，扣除订单'.$refund_info['order_sn'].'下单时赠送的积分',
-															'change_type'		=> ACT_REFUND,
-															'from_type'			=> 'refund_deduct_integral',
-															'from_value'		=> $refund_info['order_sn']
-													);
-													RC_Api::api('user', 'account_change_log',$options);
-												}
-											}
-											
-											if ($refund_way == 'cash') {
-												$action_back_content = '收银台申请退款，现金退款成功';
-											} else {
-												$action_back_content = '收银台申请退款，原路退回成功';
-											}
-											
-											//更新打款表
-											$data = array(
-													'action_back_type'			=>	$back_type,
-													'action_back_time'			=>	RC_Time::gmtime(),
-													'action_back_content'		=>	$action_back_content,
-													'action_user_type'			=>  'merchant',
-													'action_user_id'			=>	$_SESSION['staff_id'],
-													'action_user_name'			=>	$_SESSION['staff_name'],
-											);
-											
-											RC_DB::table('refund_payrecord')->where('id', $refund_merchant_confirm)->update($data);
-
-											//更新售后订单表
-											$data = array(
-												'refund_status'	=> Ecjia\App\Refund\RefundStatus::TRANSFERED,
-												'refund_time'	=> RC_Time::gmtime(),
-											);
-											RC_DB::table('refund_order')->where('refund_id', $generate_refund)->update($data);
-
-											//更新订单操作表
-											$action_note = '退款金额已退回'.$back_money_total.'元，退回积分为：'.$back_integral;
-											$data = array(
-												'refund_id' 		=> $generate_refund,
-												'action_user_type'	=>	'merchant',
-												'action_user_id'	=>  $_SESSION['staff_id'],
-												'action_user_name'	=>	$_SESSION['staff_name'],
-												'status'		    =>  Ecjia\App\Refund\RefundStatus::AGREE,
-												'refund_status'		=>  Ecjia\App\Refund\RefundStatus::TRANSFERED,
-												'return_status'		=>  Ecjia\App\Refund\RefundStatus::CONFIRM_RECV,
-												'action_note'		=>  $action_note,
-												'log_time'			=>  RC_Time::gmtime(),
-											);
-											RC_DB::table('refund_order_action')->insertGetId($data);
-
-											RC_Api::api('commission', 'add_bill_queue', array('order_type' => 'refund', 'order_id' => $refund_info['refund_id']));
-
-											//售后订单状态变动日志表
-											RefundStatusLog::refund_payrecord(array('refund_id' => $generate_refund, 'back_money' => $back_money_total));
-											
-											//普通订单状态变动日志表
-											$order_id = RC_DB::table('refund_order')->where('refund_id', $generate_refund)->pluck('order_id');
-											OrderStatusLog::refund_payrecord(array('order_id' => $order_id, 'back_money' => $back_money_total));
-											
-											//更新商家会员
-											if ($refund_info['user_id'] > 0 && $refund_info['store_id'] > 0) {
-												RC_Api::api('customer', 'store_user_buy', array('store_id' => $refund_info['store_id'], 'user_id' => $refund_info['user_id']));
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
 		}
+
+        if (!empty($generate_refund)) {
+            //商家同意退款申请
+            $agree_options = array(
+                    'refund_id' => $generate_refund,
+                    'staff_id'	=> $_SESSION['staff_id'],
+                    'staff_name'=> $_SESSION['staff_name']
+            );
+            $refund_agree = RC_Api::api('refund', 'refund_agree', $agree_options);
+            if (is_ecjia_error($refund_agree)) {
+                return $refund_agree;
+            }
+
+            if ($refund_agree) {
+                $returnway_shop_options = array(
+                    'refund_id' => $generate_refund,
+                );
+                //买家退货给商家
+                $refund_returnway_shop = RC_Api::api('refund', 'refund_returnway_shop', $returnway_shop_options);
+                if (is_ecjia_error($refund_returnway_shop)) {
+                    return $refund_returnway_shop;
+                }
+
+                if ($refund_returnway_shop) {
+                    $merchant_confirm_options = array(
+                        'refund_id' => $generate_refund,
+                        'action_note' => '审核通过',
+                        'store_id' => $_SESSION['store_id'],
+                        'staff_id' => $_SESSION['staff_id'],
+                        'staff_name' => $_SESSION['staff_name'],
+                        'refund_way' => $refund_way,
+                        'refund_money' => $refund_money
+                    );
+
+                    //商家确认收货
+                    $refund_merchant_confirm = RC_Api::api('refund', 'merchant_confirm', $merchant_confirm_options);
+                    if (is_ecjia_error($refund_merchant_confirm)) {
+                        return $refund_merchant_confirm;
+                    }
+
+                    //去退款
+                    if (!empty($refund_merchant_confirm)) {
+                        //原路退回
+                        if ($refund_way == 'original') {
+
+                            $result = $this->processRefundOriginalWay($order_info);
+
+                            //TODO
+                            $back_type = 'original';
+                        } elseif ($refund_way == 'cash') { //退现金
+
+                            $result = $this->processRefundCashWay($order_info);
+
+                            $back_type = 'cash';
+                        } else {
+                            $back_type = '';
+
+                            $result = new ecjia_error('not_support_refund_way', '不支持的退款方式');
+                        }
+
+                        if (is_ecjia_error($result)) {
+                            return $result;
+                        }
+
+                        $this->refundWithUpdateData($back_type, $result);
+
+                    }
+
+                }
+
+            }
+        }
+
 	}
+
+    /**
+     * 现金退款处理
+     */
+	protected function processRefundCashWay($order_info)
+    {
+        //无退款处理
+        return true;
+    }
+
+
+    /**
+     * 原路退款处理
+     */
+    protected function processRefundOriginalWay($order_info)
+    {
+        /**
+         * 需要判断走撤单还是走退款
+         * 支付失败，立即走撤单接口，当日订单退款也可以走撤单接口
+         * 三个月以内都可以进行退款。
+         */
+
+        $order_sn = $order_info['order_sn'];
+        //判断订单是否是当天订单
+        if (xx) {
+            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->cancel();
+        } else {
+            return (new Ecjia\App\Payment\Refund\RefundManager($order_sn))->refund();
+        }
+
+    }
+
+    /**
+     * 退款后更新各项数据
+     */
+    protected function refundWithUpdateData($refund_way, $result)
+    {
+        /**
+         * 现金和原路退款成功后，后续操作
+         * 每一个步骤写一个方法
+         * 1、退积分 (RC_Api)
+         * 2、更新打款表 _updateRefundPayrecord()
+         * 3、更新订单日志状态 & 操作记录表 _updateOrderStatus()
+         * 4、更新售后订单状态日志 & 操作记录表 _updateRefundOrderStatus()
+         * 5、更新结算记录 _updateBillOrder()
+         * 6、更新商家会员 _updateMerchantUser()
+         * 7、退款短信通知 _sendSmsNotice()
+         * 8、返回打印数据 _printData()
+         */
+
+        $this->_updateRefundPayrecord();
+
+        $this->_updateOrderStatus();
+
+        $this->_updateRefundOrderStatus();
+
+        $this->_updateBillOrder();
+
+        $this->_updateMerchantUser();
+
+        $this->_sendSmsNotice();
+
+        $printData = $this->_printData();
+
+        return $printData;
+
+        if (($refund_way == 'original') || ($refund_way == 'cash')) {
+            $refund_info = RC_DB::table('refund_order')->where('refund_id', $generate_refund)->first();
+
+            $back_money_total = $refund_info['surplus'] + $refund_info['money_paid'];
+            $back_integral = $refund_info['integral'];
+
+            if ($refund_info['user_id'] > 0) {
+                if ($refund_info['integral'] > 0) { //下单有没使用积分
+                    //退还下单使用的积分
+                    RC_DB::table('users')->where('user_id', $refund_info['user_id'])->increment('pay_points', $refund_info['integral']);
+                }
+                /*所退款订单，有没赠送积分；有赠送的话，赠送的积分扣除*/
+                $order_give_integral_info = RC_DB::table('account_log')->where('user_id', $refund_info['user_id'])->where('from_type', 'order_give_integral')->where('from_value', $refund_info['order_sn'])->first();
+                if (!empty($order_give_integral_info)) {
+                    $options = array(
+                        'user_id' => $order_give_integral_info['user_id'],
+                        'rank_points' => intval($order_give_integral_info['rank_points']) * (-1),
+                        'pay_points' => intval($order_give_integral_info['pay_points']) * (-1),
+                        'change_desc' => '订单退款，扣除订单' . $refund_info['order_sn'] . '下单时赠送的积分',
+                        'change_type' => ACT_REFUND,
+                        'from_type' => 'refund_deduct_integral',
+                        'from_value' => $refund_info['order_sn']
+                    );
+                    RC_Api::api('user', 'account_change_log', $options);
+                }
+            }
+            
+
+        }
+    }
+
+    /**
+     * 更新打款表
+     */
+    private function _updateRefundPayrecord()
+    {
+        if ($refund_way == 'cash') {
+            $action_back_content = '收银台申请退款，现金退款成功';
+        } else {
+            $action_back_content = '收银台申请退款，原路退回成功';
+        }
+
+        //更新打款表
+        $data = array(
+            'action_back_type' => $back_type,
+            'action_back_time' => RC_Time::gmtime(),
+            'action_back_content' => $action_back_content,
+            'action_user_type' => 'merchant',
+            'action_user_id' => $_SESSION['staff_id'],
+            'action_user_name' => $_SESSION['staff_name'],
+        );
+
+        RC_DB::table('refund_payrecord')->where('id', $refund_merchant_confirm)->update($data);
+
+    }
+
+    /**
+     * 更新订单日志状态 & 操作记录表
+     */
+    private function _updateOrderStatus()
+    {
+        //普通订单状态变动日志表
+        $order_id = RC_DB::table('refund_order')->where('refund_id', $generate_refund)->pluck('order_id');
+        OrderStatusLog::refund_payrecord(array('order_id' => $order_id, 'back_money' => $back_money_total));
+
+
+    }
+
+    /**
+     * 更新售后订单状态日志 & 操作记录表
+     */
+    private function _updateRefundOrderStatus()
+    {
+        //更新售后订单表
+        $data = array(
+            'refund_status' => Ecjia\App\Refund\RefundStatus::TRANSFERED,
+            'refund_time' => RC_Time::gmtime(),
+        );
+        RC_DB::table('refund_order')->where('refund_id', $generate_refund)->update($data);
+
+        //更新售后订单操作表
+        $action_note = '退款金额已退回' . $back_money_total . '元，退回积分为：' . $back_integral;
+        $data = array(
+            'refund_id' => $generate_refund,
+            'action_user_type' => 'merchant',
+            'action_user_id' => $_SESSION['staff_id'],
+            'action_user_name' => $_SESSION['staff_name'],
+            'status' => Ecjia\App\Refund\RefundStatus::AGREE,
+            'refund_status' => Ecjia\App\Refund\RefundStatus::TRANSFERED,
+            'return_status' => Ecjia\App\Refund\RefundStatus::CONFIRM_RECV,
+            'action_note' => $action_note,
+            'log_time' => RC_Time::gmtime(),
+        );
+        RC_DB::table('refund_order_action')->insertGetId($data);
+
+        //售后订单状态变动日志表
+        RefundStatusLog::refund_payrecord(array('refund_id' => $generate_refund, 'back_money' => $back_money_total));
+    }
+
+    /**
+     * 更新结算记录
+     */
+    private function _updateBillOrder()
+    {
+        //更新结算记录
+        RC_Api::api('commission', 'add_bill_queue', array('order_type' => 'refund', 'order_id' => $refund_info['refund_id']));
+
+    }
+
+    /**
+     * 更新商家会员
+     */
+    private function _updateMerchantUser()
+    {
+        //更新商家会员
+        if ($refund_info['user_id'] > 0 && $refund_info['store_id'] > 0) {
+            RC_Api::api('customer', 'store_user_buy', array('store_id' => $refund_info['store_id'], 'user_id' => $refund_info['user_id']));
+        }
+
+    }
+
+    /**
+     * 退款短信通知
+     */
+    private function _sendSmsNotice()
+    {
+
+    }
+
+    /**
+     * 返回打印数据
+     */
+    private function _printData()
+    {
+
+    }
+
 }
 // end
