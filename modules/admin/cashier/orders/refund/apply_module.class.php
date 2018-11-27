@@ -335,7 +335,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         RC_DB::table('refund_order')->where('refund_id', $refund_id)->update($data);
 		$refund_info = $this->get_refund_info($refund_id);
 		
-		$back_money_total 	= $refund_info['surplus'] + $refund_info['money_paid'];
+		$back_money_total = Ecjia\App\Refund\RefundOrder::get_back_total_money($refund_info);
 		$back_integral 		= $refund_info['integral'];
         
         //更新售后订单操作表
@@ -405,7 +405,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     		$order_goods 			= $this->get_order_goods();
     		$total_discount 		= $order_info['discount'] + $order_info['integral_money'] + $order_info['bonus'];
     		$money_paid 			= $refund_info['money_paid'] + $refund_info['surplus'];
-    		$refund_total_amount	= $refund_info['money_paid'] + $refund_info['surplus'];
+    		$refund_total_amount	= $back_money_total = Ecjia\App\Refund\RefundOrder::get_back_total_money($refund_info);
     		
     		$user_info = [];
     		//有没用户
@@ -493,6 +493,5 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     	
     	return array('list' => $list, 'total_goods_number' => $total_goods_number, 'taotal_goods_amount' => $taotal_goods_amount);
     }
-
 }
 // end
