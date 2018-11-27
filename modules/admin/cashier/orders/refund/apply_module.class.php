@@ -181,7 +181,16 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                         }
 
                         if (is_ecjia_error($result)) {
-                            return $result;
+                            $error_code = $result->get_error_code();
+                            //该订单撤销正在处理中，请稍候；钱已退；但退款状态未更新
+                            if ( $error_code == 'pay_wait_manual_confirm') {
+                            	$find_result = (new Ecjia\App\Payment\Query\FindManager($order_info['order_sn']))->find();
+                            	if (is_ecjia_error($find_result)) {
+                            		return $result;
+                            	} 
+                            } else {
+                            	return $result;
+                            }
                         }
 
                         $print_data = $this->refundWithUpdateData($generate_refund, $refund_merchant_confirm, $refund_way, $back_type, $order_info, $result);
@@ -227,11 +236,10 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         $pay_time = $order_info['pay_time'];
         
         if ($start_time <= $pay_time && $pay_time <= $end_time) {
-            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->refund();
+            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->cancel();
         } else {
             return (new Ecjia\App\Payment\Refund\RefundManager($order_sn))->refund();
         }
-
     }
 
     /**
