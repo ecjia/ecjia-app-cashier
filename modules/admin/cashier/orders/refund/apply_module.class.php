@@ -400,7 +400,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     	$print_data = [];
     	if (!empty($refund_id)) {
     		$refund_info 			= $this->get_refund_info($refund_id);
-    		$payment_record_info 	= $this->payment_record_info($refund_info['order_sn']);
+    		$payment_record_info 	= $this->_payment_record_info($refund_info['order_sn']);
     		
     		$order_goods 			= $this->get_order_goods();
     		$total_discount 		= $order_info['discount'] + $order_info['integral_money'] + $order_info['bonus'];
@@ -492,6 +492,17 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     	}
     	
     	return array('list' => $list, 'total_goods_number' => $total_goods_number, 'taotal_goods_amount' => $taotal_goods_amount);
+    }
+    
+    /**
+     * 支付记录
+     */
+    private function _payment_record_info($order_sn = '') {
+    	$payment_revord_info = [];
+    	if (!empty($order_sn)) {
+    		$payment_revord_info = RC_DB::table('payment_record')->where('order_sn', $order_sn)->first();
+    	}
+    	return $payment_revord_info;
     }
 }
 // end
