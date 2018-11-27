@@ -219,7 +219,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         $order_sn = $order_info['order_sn'];
         //判断订单是否是当天订单
         if (xx) {
-            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->cancel();
+            return (new Ecjia\App\Payment\Refund\CancelManager($order_sn))->refund();
         } else {
             return (new Ecjia\App\Payment\Refund\RefundManager($order_sn))->refund();
         }
