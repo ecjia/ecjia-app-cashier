@@ -432,7 +432,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     				'pay_time'						=> empty($order_info['pay_time']) ? '' : RC_Time::local_date(ecjia::config('date_format'), $order_info['pay_time']),
     				'goods_list'					=> $order_goods['list'],
     				'total_goods_number' 			=> $order_goods['total_goods_number'],
-    				'taotal_goods_amount'			=> $order_goods['taotal_goods_amount'],
+    				'total_goods_amount'			=> $order_goods['taotal_goods_amount'],
     				'formatted_total_goods_amount'	=> $order_goods['taotal_goods_amount'] > 0 ? price_format($order_goods['taotal_goods_amount'], false) : '',
     				'total_discount'				=> $total_discount,
     				'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
