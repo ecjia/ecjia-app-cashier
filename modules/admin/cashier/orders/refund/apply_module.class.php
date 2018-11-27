@@ -185,9 +185,10 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                             //该订单撤销正在处理中，请稍候；钱已退；但退款状态未更新
                             if ( $error_code == 'pay_wait_manual_confirm') {
                             	$find_result = (new Ecjia\App\Payment\Query\FindManager($order_info['order_sn']))->find();
-                            	if (is_ecjia_error($find_result)) {
-                            		return $result;
-                            	} 
+//                             	if (is_ecjia_error($find_result)) {
+//                             		return $result;
+//                             	} 
+								return $find_result;
                             } else {
                             	return $result;
                             }
