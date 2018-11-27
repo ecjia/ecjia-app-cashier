@@ -405,7 +405,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     		$refund_info 			= $this->get_refund_info($refund_id);
     		$payment_record_info 	= $this->_payment_record_info($refund_info['order_sn']);
     		
-    		$order_goods 			= $this->get_order_goods();
+    		$order_goods 			= $this->get_order_goods($refund_info['order_id']);
     		$total_discount 		= $order_info['discount'] + $order_info['integral_money'] + $order_info['bonus'];
     		$money_paid 			= $refund_info['money_paid'] + $refund_info['surplus'];
     		$refund_total_amount	= $back_money_total = Ecjia\App\Refund\RefundOrder::get_back_total_money($refund_info);
