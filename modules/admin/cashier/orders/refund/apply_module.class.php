@@ -303,7 +303,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 
         $this->_sendSmsNotice();
 
-        $printData = $this->_printData($refund_id, $order_info);
+        $printData = $this->_printData($refund_id, $order_info, $refund_payrecord_id);
 
         return $printData;
         
@@ -421,12 +421,14 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     /**
      * 返回打印数据
      */
-    private function _printData($refund_id = 0, $order_info = array())
+    private function _printData($refund_id = 0, $order_info = array(), $refund_payrecord_id = 0)
     {
     	$print_data = [];
     	if (!empty($refund_id)) {
     		$refund_info 			= $this->get_refund_info($refund_id);
     		$payment_record_info 	= $this->_payment_record_info($refund_info['order_sn']);
+    		
+    		$refund_payrecord_info  = RC_DB::table('refund_payrecord')->where('id', $refund_payrecord_id)->first();
     		
     		$order_goods 			= $this->get_order_goods($refund_info['order_id']);
     		$total_discount 		= $order_info['discount'] + $order_info['integral_money'] + $order_info['bonus'];
@@ -469,7 +471,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     				'user_info'						=> $user_info,
     				'refund_sn'						=> $refund_info['refund_sn'],
     				'refund_total_amount'			=> $refund_total_amount,
-    				'formatted_refund_total_amount' => $refund_total_amount > 0 ? price_format($refund_total_amount, false) : ''
+    				'formatted_refund_total_amount' => $refund_total_amount > 0 ? price_format($refund_total_amount, false) : '',
+    				'cashier_name'					=> empty($refund_payrecord_info['action_user_name']) ? '' : $refund_payrecord_info['action_user_name']
     		);
     	}
     	
