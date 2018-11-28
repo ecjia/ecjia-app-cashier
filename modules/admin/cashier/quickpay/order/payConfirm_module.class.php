@@ -104,11 +104,89 @@ class payConfirm_module extends api_admin implements api_interface
 						'pay_status'				=> 'success',
 						'desc'						=> '订单支付成功！'
 				);
-				return array('payment' => $data);
+				$print_data = $this->_getPrint_data($quickpay_order_info);
+				
+				return array('payment' => $data, 'print_data' => $print_data);
 			}
 		} else {
 			return new ecjia_error('not_support_payment', '此充值记录对应的支付方式不支持收银台充值支付！');
 		}
+	}
+	
+	/**
+	 * 获取快捷收款买单订单打印数据
+	 */
+	private function _getPrint_data($order_info = array())
+	{
+		$quickpay_print_data = [];
+		if ($order_info) {
+			$payment_record_info 	= $this->paymentRecordInfo($order_info['order_sn'], 'quickpay');
+			$total_discount 		= $order_info['discount'] + $order_info['integral_money'] + $order_info['bonus'];
+			$money_paid 			= $order_info['order_amount'] + $order_info['surplus'];
+		
+			//下单收银员
+			$cashier_name = RC_DB::table('cashier_record as cr')
+				->leftJoin('staff_user as su', RC_DB::raw('cr.staff_id'), '=', RC_DB::raw('su.user_id'))
+				->where(RC_DB::raw('cr.order_id'), $order_info['order_id'])
+				->where('action', 'receipt')
+				->pluck('name');
+		
+			$user_info = [];
+			//有没用户
+			if ($order_info['user_id'] > 0) {
+				$userinfo = RC_DB::table('users')->where('user_id', $order_info['user_id'])->first();
+				if (!empty($userinfo)) {
+					$user_info = array(
+							'user_name' 			=> empty($userinfo['user_name']) ? '' : trim($userinfo['user_name']),
+							'mobile'				=> empty($userinfo['mobile_phone']) ? '' : trim($userinfo['mobile_phone']),
+							'user_points'			=> $userinfo['pay_points'],
+							'user_money'			=> $userinfo['user_money'],
+							'formatted_user_money'	=> $userinfo['user_money'] > 0 ? price_format($userinfo['user_money'], false) : '',
+					);
+				}
+			}
+		
+			$quickpay_print_data = array(
+					'order_sn' 						=> $order_info['order_sn'],
+					'trade_no'						=> empty($payment_record_info['trade_no']) ? '' : $payment_record_info['trade_no'],
+					'trade_type'					=> 'quickpay',
+					'goods_list'					=> [],
+					'total_goods_number' 			=> 0,
+					'total_goods_amount'			=> $order_info['goods_amount'],
+					'formatted_total_goods_amount'	=> $order_info['goods_amount'] > 0 ? price_format($order_info['goods_amount'], false) : '',
+					'total_discount'				=> $total_discount,
+					'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
+					'money_paid'					=> $money_paid,
+					'formatted_money_paid'			=> $money_paid > 0 ? price_format($money_paid, false) : '',
+					'integral'						=> intval($order_info['integral']),
+					'integral_money'				=> $order_info['integral_money'],
+					'formatted_integral_money'		=> $order_info['integral_money'] > 0 ? price_format($order_info['integral_money'], false) : '',
+					'pay_name'						=> !empty($order_info['pay_name']) ? $order_info['pay_name'] : '',
+					'payment_account'				=> '',
+					'user_info'						=> $user_info,
+					'refund_sn'						=> '',
+					'refund_total_amount'			=> 0,
+					'formatted_refund_total_amount' => '',
+					'cashier_name'					=> empty($cashier_name) ? '' : $cashier_name
+			);
+		}
+		
+		return $quickpay_print_data;
+	}
+	
+	/**
+	 * 支付交易记录信息
+	 * @param string $order_sn
+	 * @param string $trade_type
+	 * @return array
+	 */
+	private function paymentRecordInfo($order_sn = '', $trade_type = '')
+	{
+		$payment_revord_info = [];
+		if (!empty($order_sn) && !empty($trade_type)) {
+			$payment_revord_info = RC_DB::table('payment_record')->where('order_sn', $order_sn)->where('trade_type', $trade_type)->first();
+		}
+		return $payment_revord_info;
 	}
 }
 
