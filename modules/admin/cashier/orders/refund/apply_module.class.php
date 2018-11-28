@@ -426,7 +426,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     	$print_data = [];
     	if (!empty($refund_id)) {
     		$refund_info 			= $this->get_refund_info($refund_id);
-    		$payment_record_info 	= $this->_payment_record_info($refund_info['order_sn']);
+    		$payment_record_info 	= $this->_payment_record_info($refund_info['order_sn'], 'buy');
     		
     		$refund_payrecord_info  = RC_DB::table('refund_payrecord')->where('id', $refund_payrecord_id)->first();
     		
@@ -454,7 +454,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     				'order_sn' 						=> $refund_info['order_sn'],
     				'trade_no'						=> empty($payment_record_info['trade_no']) ? '' : trim($payment_record_info['trade_no']),
     				'trade_type'					=> 'refund',
-    				'pay_time'						=> empty($order_info['pay_time']) ? '' : RC_Time::local_date(ecjia::config('date_format'), $order_info['pay_time']),
+    				'pay_time'						=> empty($order_info['pay_time']) ? '' : RC_Time::local_date(ecjia::config('time_format'), $order_info['pay_time']),
     				'goods_list'					=> $order_goods['list'],
     				'total_goods_number' 			=> $order_goods['total_goods_number'],
     				'total_goods_amount'			=> $order_goods['taotal_goods_amount'],
@@ -526,10 +526,10 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     /**
      * 支付记录
      */
-    private function _payment_record_info($order_sn = '') {
+    private function _payment_record_info($order_sn = '', $trade_type = '') {
     	$payment_revord_info = [];
-    	if (!empty($order_sn)) {
-    		$payment_revord_info = RC_DB::table('payment_record')->where('order_sn', $order_sn)->first();
+    	if (!empty($order_sn) && !empty($trade_type)) {
+    		$payment_revord_info = RC_DB::table('payment_record')->where('order_sn', $order_sn)->where('trade_type', $trade_type)->first();
     	}
     	return $payment_revord_info;
     }
