@@ -104,6 +104,13 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 			}
 		}
 		
+		//如果订单没有添加会员的话；不支持退回余额
+		if (empty($order_info['user_id'])) {
+			if ($refund_way == 'balance') {
+				return new ecjia_error('refund_way_error', '该订单未添加会员，不支持退回余额！');
+			}
+		}
+		
 		$options = array(
 				'refund_type' 			=> 'return',
 				'refund_content'		=> $refund_content,
