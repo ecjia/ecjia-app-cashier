@@ -179,7 +179,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 
                             $result = new ecjia_error('not_support_refund_way', '不支持的退款方式');
                         }
-
+                        return $result;
                         if (is_ecjia_error($result)) {
                             return $result;
                         }
@@ -234,7 +234,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
             $result = (new Ecjia\App\Payment\Refund\RefundManager($order_sn))->refund(null, $refund_amount, $operator);
         }
 //        return $result;
-        return new ecjia_error('test_error', 'test');
+//        return new ecjia_error('test_error', 'test');
         if (is_ecjia_error($result)) {
             //该订单撤销正在处理中，请稍候；钱已退；但退款状态未更新
             if ( $result->get_error_code() == 'pay_wait_manual_confirm') {
@@ -242,8 +242,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 //                             	if (is_ecjia_error($find_result)) {
 //                             		return $result;
 //                             	}
-                return new ecjia_error('test_error', 'test', $find_result);
-//                return $find_result;
+//                return new ecjia_error('test_error', 'test', $find_result);
+                return $find_result;
             }
         }
 
