@@ -165,21 +165,20 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                         //原路退回
                         if ($refund_way == 'original') {
 
+                            $back_type = 'original';
                             $result = $this->processRefundOriginalWay($order_info);
 
-                            //TODO
-                            $back_type = 'original';
                         } elseif ($refund_way == 'cash') { //退现金
 
+                            $back_type = 'cash';
                             $result = $this->processRefundCashWay($order_info);
 
-                            $back_type = 'cash';
                         } else {
-                            $back_type = '';
 
+                            $back_type = '';
                             $result = new ecjia_error('not_support_refund_way', '不支持的退款方式');
                         }
-
+                        
                         if (is_ecjia_error($result)) {
                             return $result;
                         }
@@ -238,10 +237,11 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         if (is_ecjia_error($result)) {
             //该订单撤销正在处理中，请稍候；钱已退；但退款状态未更新
             if ( $result->get_error_code() == 'pay_wait_manual_confirm') {
-                $find_result = (new Ecjia\App\Payment\Query\FindManager($order_info['order_sn']))->find();
-//                             	if (is_ecjia_error($find_result)) {
-//                             		return $result;
-//                             	}
+                $find_result = (new Ecjia\App\Payment\Query\FindManager($order_sn))->find();
+                if (is_ecjia_error($find_result)) {
+                    return $find_result;
+                }
+
                 return $find_result;
             }
         }
