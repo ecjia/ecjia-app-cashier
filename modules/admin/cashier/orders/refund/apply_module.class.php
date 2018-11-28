@@ -233,7 +233,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         } else {
             $result = (new Ecjia\App\Payment\Refund\RefundManager($order_sn))->refund(null, $refund_amount, $operator);
         }
-        return new ecjia_error('test_error', 'test');
+        return $result;
+//        return new ecjia_error('test_error', 'test');
         if (is_ecjia_error($result)) {
             //该订单撤销正在处理中，请稍候；钱已退；但退款状态未更新
             if ( $result->get_error_code() == 'pay_wait_manual_confirm') {
