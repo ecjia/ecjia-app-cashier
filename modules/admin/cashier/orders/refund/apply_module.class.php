@@ -223,7 +223,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         $operator = '';
 
         //判断订单是否是当天订单（按订单支付时间计算）
-        $start_time = RC_Time::local_strtotime(RC_Time::local_date(ecjia::config('date_format'), RC_Time::gmtime()));
+        $today_date = RC_Time::local_date('Y-m-d',RC_Time::gmtime());
+        $start_time = RC_Time::local_strtotime($today_date);
         $end_time = $start_time + 86399;
         $pay_time = $order_info['pay_time'];
         
