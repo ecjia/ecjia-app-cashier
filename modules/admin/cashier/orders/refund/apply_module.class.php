@@ -239,7 +239,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
             if ( $result->get_error_code() == 'pay_wait_manual_confirm') {
                 $find_result = (new Ecjia\App\Payment\Query\FindManager($order_sn))->find();
                 if (is_ecjia_error($find_result)) {
-                    return $result;
+                    return $find_result;
                 }
             }
         }
