@@ -91,14 +91,14 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		if ($order_info['pay_id'] > 0) {
 			$pay_code = RC_DB::table('payment')->where('pay_id', $order_info['pay_id'])->pluck('pay_code');
 		}
-		if (!empty($pay_code) && $pay_code == 'pay_cash') {
+		if (!empty($pay_code) && pay_code == 'pay_cash') {
 			if (($refund_way == 'original') || ($refund_way == 'balance')) {
 				return new ecjia_error('refund_way_error', '现金支付的订单只支持退现金！');
 			}
 		}
 		
 		//余额支付的订单，只支持退余额和现金
-		if (!empty($pay_code) && $pay_code == 'pay_balance') {
+		if (!empty($pay_code) && pay_code == 'pay_balance') {
 			if (($refund_way == 'original')) {
 				return new ecjia_error('refund_way_error', '余额支付的订单只支持退回余额或退现金！');
 			}
@@ -185,7 +185,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                             $back_type = '';
                             $result = new ecjia_error('not_support_refund_way', '不支持的退款方式');
                         }
-                        dd($result);
+                        
                         if (is_ecjia_error($result)) {
                             return $result;
                         }
@@ -230,8 +230,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         $operator = '';
 
         //判断订单是否是当天订单（按订单支付时间计算）
-        $today_date = RC_Time::local_date('Y-m-d', RC_Time::gmtime());
-        $start_time = RC_Time::local_strtotime($today_date);
+        $start_time = RC_Time::local_strtotime(RC_Time::local_date(ecjia::config('date_format'), RC_Time::gmtime()));
         $end_time = $start_time + 86399;
         $pay_time = $order_info['pay_time'];
         
