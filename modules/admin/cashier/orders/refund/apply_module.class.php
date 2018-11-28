@@ -122,16 +122,16 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		);
 		
 		//生成退款申请单
-		$generate_refund = RC_Api::api('refund', 'refund_apply', $options);
+		$refundOrderInfo = RC_Api::api('refund', 'refund_apply', $options);
 		
-		if (is_ecjia_error($generate_refund)) {
-			return $generate_refund;
+		if (is_ecjia_error($refundOrderInfo)) {
+			return $refundOrderInfo;
 		}
 
-        if (!empty($generate_refund)) {
+        if (!empty($refundOrderInfo)) {
             //商家同意退款申请
             $agree_options = array(
-                    'refund_id' => $generate_refund,
+                    'refund_id' => $refundOrderInfo['refund_id'],
                     'staff_id'	=> $_SESSION['staff_id'],
                     'staff_name'=> $_SESSION['staff_name']
             );
@@ -142,7 +142,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 
             if ($refund_agree) {
                 $returnway_shop_options = array(
-                    'refund_id' => $generate_refund,
+                    'refund_id' => $refundOrderInfo['refund_id'],
                 );
                 //买家退货给商家
                 $refund_returnway_shop = RC_Api::api('refund', 'refund_returnway_shop', $returnway_shop_options);
@@ -152,13 +152,13 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 
                 if ($refund_returnway_shop) {
                     $merchant_confirm_options = array(
-                        'refund_id' => $generate_refund,
-                        'action_note' => '审核通过',
-                        'store_id' => $_SESSION['store_id'],
-                        'staff_id' => $_SESSION['staff_id'],
-                        'staff_name' => $_SESSION['staff_name'],
-                        'refund_way' => $refund_way,
-                        'refund_money' => $refund_money
+                        'refund_id' 		=> $refundOrderInfo['refund_id'],
+                        'action_note' 		=> '审核通过',
+                        'store_id' 			=> $_SESSION['store_id'],
+                        'staff_id' 			=> $_SESSION['staff_id'],
+                        'staff_name' 		=> $_SESSION['staff_name'],
+                        'refund_way' 		=> $refund_way,
+                        'refund_money' 		=> $refund_money
                     );
 
                     //商家确认收货
@@ -190,7 +190,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                             return $result;
                         }
 
-                        $print_data = $this->refundWithUpdateData($generate_refund, $refund_merchant_confirm, $refund_way, $back_type, $order_info, $result);
+                        $print_data = $this->refundWithUpdateData($refundOrderInfo['refund_id'], $refund_merchant_confirm['id'], $refund_way, $back_type, $order_info, $result);
 						if (is_ecjia_error($print_data)) {
 							return $print_data;
 						}
