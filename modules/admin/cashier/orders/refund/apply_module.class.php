@@ -173,7 +173,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                         if ($refund_way == 'original') {
 
                             $back_type = 'original';
-                            $result = $this->processRefundOriginalWay($order_info);
+                            $result = $this->processRefundOriginalWay($order_info, $refund_merchant_confirm);
 
                         } elseif ($refund_way == 'cash') { //退现金
 
@@ -217,7 +217,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     /**
      * 原路退款处理
      */
-    protected function processRefundOriginalWay($order_info)
+    protected function processRefundOriginalWay($order_info, $refund_payrecord)
     {
         /**
          * 需要判断走撤单还是走退款
@@ -226,7 +226,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
          */
 
         $order_sn = $order_info['order_sn'];
-        $refund_amount = $order_info['order_sn'];
+        $refund_amount = $refund_payrecord['back_money_total'];
         $operator = $_SESSION['staff_name'];
 
         //判断订单是否是当天订单（按订单支付时间计算）
