@@ -112,13 +112,13 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		}
 		
 		$options = array(
-				'refund_type' 			=> 'return',
-				'refund_content'		=> $refund_content,
-				'device'				=> $device,
-				'refund_reason'			=> $refund_reason,
-				'order_id'				=> $order_id,
-				'order_info'			=> $order_info,
-				'is_cashdesk'			=> 1,
+            'refund_type' 			=> 'return',
+            'refund_content'		=> $refund_content,
+            'device'				=> $device,
+            'refund_reason'			=> $refund_reason,
+            'order_id'				=> $order_id,
+            'order_info'			=> $order_info,
+            'is_cashdesk'			=> 1,
 		);
 		
 		//生成退款申请单
@@ -226,8 +226,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
          */
 
         $order_sn = $order_info['order_sn'];
-        $refund_amount = '';
-        $operator = '';
+        $refund_amount = $order_info['order_sn'];
+        $operator = $_SESSION['staff_name'];
 
         //判断订单是否是当天订单（按订单支付时间计算）
         $today_date = RC_Time::local_date('Y-m-d',RC_Time::gmtime());
