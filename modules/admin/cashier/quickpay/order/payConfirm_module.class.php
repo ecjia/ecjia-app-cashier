@@ -149,6 +149,7 @@ class payConfirm_module extends api_admin implements api_interface
 			$quickpay_print_data = array(
 					'order_sn' 						=> $order_info['order_sn'],
 					'trade_no'						=> empty($payment_record_info['trade_no']) ? '' : $payment_record_info['trade_no'],
+					'order_trade_no'				=> empty($payment_record_info['order_trade_no']) ? '' : $payment_record_info['order_trade_no'],
 					'trade_type'					=> 'quickpay',
 					'pay_time'						=> empty($order_info['pay_time']) ? '' : RC_Time::local_date(ecjia::config('time_format'), $order_info['pay_time']),
 					'goods_list'					=> [],
