@@ -110,19 +110,20 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				$_SESSION['cashdesk_temp_user_id']	= $user_id;
 				$_SESSION['user_id']		= $user_id;
 				RC_DB::table('cart')->where('session_id', SESS_ID)->update(array('user_id' => $user_id));
-				$row = RC_DB::table('users')->where('user_id', $_SESSION['user_id'])->first();
+				$user_info = user_info($user_id);
 				
-				if ($row) {
+				if ($user_info) {
 					/* 取得用户等级和折扣 */
-					if ($row['user_rank'] == 0) {
+				    if ($user_info['user_rank'] == 0) {
 					    //重新计算会员等级
-					    RC_Api::api('user', 'update_user_rank', array('user_id' => $user_id));
+				        $row_rank = RC_Api::api('user', 'update_user_rank', array('user_id' => $user_id));
+					} else {
+					    $row_rank = RC_DB::table('user_rank')->where('rank_id', $user_info['user_rank'])->first();
 					}
 					
-					$row = RC_DB::table('user_rank')->where('rank_id', $row['user_rank'])->first();
-					if ($row) {
-						$_SESSION['user_rank']	= $row['rank_id'];
-						$_SESSION['discount']	= $row['discount'] / 100.00;
+					if ($row_rank) {
+					    $_SESSION['user_rank']	= $row_rank['rank_id'];
+					    $_SESSION['discount']	= $row_rank['discount'] / 100.00;
 					} else {
 						$_SESSION['user_rank']	= 0;
 						$_SESSION['discount']	= 1;
