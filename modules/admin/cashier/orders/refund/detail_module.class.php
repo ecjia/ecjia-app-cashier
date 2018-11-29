@@ -89,8 +89,11 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 		
 		$goods_item = order_refund::get_order_goods_list($refund_order_info['order_id']);
 		
-		$refund_total_amount = $refund_order_info['money_paid'] + $refund_order_info['surplus'];
+		$refund_total_amount = Ecjia\App\Refund\RefundOrder::get_back_total_money($refund_order_info);
 		$total_discount = $refund_order_info['discount'] + $refund_order_info['bonus'] + $refund_order_info['integral_money'];
+		
+		//获取退款单小票打印数据
+		$print_data = $this->getRefundPrintData($refund_order_info);
 		
 		$result = array(
 				'refund_sn' 					=> trim($refund_order_info['refund_sn']),
@@ -107,10 +110,111 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 				'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
 				'goods_number'					=> count($goods_item),
 				'goods_list'					=> $goods_item,
-				
+				'print_data'					=> $print_data
 		);
 		
 		return $result;
+	}
+	
+	
+	/**
+	 * 获取退款单小票打印数据
+	 */
+	private function getRefundPrintData ($refund_order_info = array(), $refund_total_amount = 0)
+	{
+
+		$print_data = [];
+		if (!empty($refund_order_info)) {
+			$payment_record_info 	= $this->payment_record_info($refund_order_info['order_sn'], 'buy');
+			
+			$refund_payrecord_info 	= RC_DB::table('refund_payrecord')->where('refund_id', $refund_order_info['refund_id'])->where('store_id', $refund_order_info['store_id'])->where('order_id', $refund_order_info['order_id'])->first();
+			
+			$order_goods 			= $this->_getOrderGoods($refund_order_info['order_id']);
+			$total_discount 		= $refund_order_info['discount'] + $refund_order_info['integral_money'] + $refund_order_info['bonus'];
+			$money_paid 			= $refund_order_info['money_paid'] + $refund_order_info['surplus'];
+			$refund_total_amount	= Ecjia\App\Refund\RefundOrder::get_back_total_money($refund_order_info);
+		
+			$order_info 			= RC_DB::table('order_info')->where('order_id', $refund_order_info['order_id'])->first();
+			
+			$user_info = [];
+			//有没用户
+			if ($refund_order_info['user_id'] > 0) {
+				$userinfo = RC_DB::table('users')->where('user_id', $refund_order_info['user_id'])->first();
+				if (!empty($userinfo)) {
+					$user_info = array(
+							'user_name' 			=> empty($userinfo['user_name']) ? '' : trim($userinfo['user_name']),
+							'mobile'				=> empty($userinfo['mobile_phone']) ? '' : trim($userinfo['mobile_phone']),
+							'user_points'			=> $userinfo['pay_points'],
+							'user_money'			=> $userinfo['user_money'],
+							'formatted_user_money'	=> $userinfo['user_money'] > 0 ? price_format($userinfo['user_money'], false) : '',
+					);
+				}
+			}
+		
+			$print_data = array(
+					'order_sn' 						=> $refund_order_info['order_sn'],
+					'trade_no'						=> empty($payment_record_info['trade_no']) ? '' : trim($payment_record_info['trade_no']),
+					'trade_type'					=> 'refund',
+					'pay_time'						=> empty($order_info['pay_time']) ? '' : RC_Time::local_date(ecjia::config('time_format'), $order_info['pay_time']),
+					'goods_list'					=> $order_goods['list'],
+					'total_goods_number' 			=> $order_goods['total_goods_number'],
+					'total_goods_amount'			=> $order_goods['taotal_goods_amount'],
+					'formatted_total_goods_amount'	=> $order_goods['taotal_goods_amount'] > 0 ? price_format($order_goods['taotal_goods_amount'], false) : '',
+					'total_discount'				=> $total_discount,
+					'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
+					'money_paid'					=> $money_paid,
+					'formatted_money_paid'			=> $money_paid > 0 ? price_format($money_paid, false) : '',
+					'integral'						=> intval($refund_order_info['integral']),
+					'integral_money'				=> $refund_order_info['integral_money'],
+					'formatted_integral_money'		=> $refund_order_info['integral_money'] > 0 ? price_format($refund_order_info['integral_money'], false) : '',
+					'pay_name'						=> !empty($order_info['pay_name']) ? $order_info['pay_name'] : '',
+					'payment_account'				=> '',
+					'user_info'						=> $user_info,
+					'refund_sn'						=> $refund_order_info['refund_sn'],
+					'refund_total_amount'			=> $refund_total_amount,
+					'formatted_refund_total_amount' => $refund_total_amount > 0 ? price_format($refund_total_amount, false) : '',
+					'cashier_name'					=> empty($refund_payrecord_info['action_user_name']) ? '' : $refund_payrecord_info['action_user_name']
+			);
+		}
+		 
+		return $print_data;
+	}
+	
+	/**
+	 * 支付记录
+	 */
+	private function payment_record_info($order_sn = '', $trade_type = '') {
+		$payment_revord_info = [];
+		if (!empty($order_sn) && !empty($trade_type)) {
+			$payment_revord_info = RC_DB::table('payment_record')->where('order_sn', $order_sn)->where('trade_type', $trade_type)->first();
+		}
+		return $payment_revord_info;
+	}
+	
+	/**
+	 * 订单商品
+	 */
+	private function _getOrderGoods ($order_id) {
+		$field = 'goods_id, goods_name, goods_number, (goods_number*goods_price) as subtotal';
+		$order_goods = RC_DB::table('order_goods')->where('order_id', $order_id)->select(RC_DB::raw($field))->get();
+		$total_goods_number = 0;
+		$taotal_goods_amount = 0;
+		$list = [];
+		if ($order_goods) {
+			foreach ($order_goods as $row) {
+				$total_goods_number += $row['goods_number'];
+				$taotal_goods_amount += $row['subtotal'];
+				$list[] = array(
+						'goods_id' 			=> $row['goods_id'],
+						'goods_name'		=> $row['goods_name'],
+						'goods_number'		=> $row['goods_number'],
+						'subtotal'			=> $row['subtotal'],
+						'formatted_subtotal'=> price_format($row['subtotal'], false),
+				);
+			}
+		}
+		 
+		return array('list' => $list, 'total_goods_number' => $total_goods_number, 'taotal_goods_amount' => $taotal_goods_amount);
 	}
 }
 // end
