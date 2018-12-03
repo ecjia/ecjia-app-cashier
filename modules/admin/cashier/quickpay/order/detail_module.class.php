@@ -109,12 +109,42 @@ class admin_cashier_quickpay_order_detail_module extends api_admin implements ap
 				'total_discount'			=> $order['total_discount'],
 				'formated_total_discount'	=> price_format($order['total_discount'], false),
 				'order_amount'				=> $order['order_amount'] + $order['surplus'],
-				'surplus'					=> $order['surplus'],
 				'formated_order_amount'		=> price_format(($order['order_amount'] + $order['surplus']), false),
 				'formated_add_time'			=> $order['formated_add_time'],
+				'pay_code'					=> empty($order['pay_code']) ? '' : $order['pay_code'],
+				'pay_name'					=> empty($order['pay_name']) ? '' : $order['pay_name'],
 				'cashier_name'				=> $this->get_cashier_name($order)
 		);
-		return  $arr;
+		
+		$payment_record_info 	= $this->paymentRecordInfo($order['order_sn'], 'quickpay');
+		
+		$quickpay_print_data = array(
+				'order_sn' 						=> $order['order_sn'],
+				'trade_no'						=> empty($payment_record_info['trade_no']) ? '' : $payment_record_info['trade_no'],
+				'order_trade_no'				=> empty($payment_record_info['order_trade_no']) ? '' : $payment_record_info['order_trade_no'],
+				'trade_type'					=> 'quickpay',
+				'pay_time'						=> empty($order['pay_time']) ? '' : RC_Time::local_date(ecjia::config('time_format'), $order['pay_time']),
+				'goods_list'					=> [],
+				'total_goods_number' 			=> 0,
+				'total_goods_amount'			=> $order['goods_amount'],
+				'formatted_total_goods_amount'	=> $order['goods_amount'] > 0 ? price_format($order['goods_amount'], false) : '',
+				'total_discount'				=> $order['total_discount'],
+				'formatted_total_discount'		=> $order['total_discount'] > 0 ? price_format($order['total_discount'], false) : '',
+				'money_paid'					=> $order['order_amount'] + $order['surplus'],
+				'formatted_money_paid'			=> ($order['order_amount'] + $order['surplus']) > 0 ? price_format(($order['order_amount'] + $order['surplus']), false) : '',
+				'integral'						=> intval($order['integral']),
+				'integral_money'				=> $order['integral_money'],
+				'formatted_integral_money'		=> $order['integral_money'] > 0 ? price_format($order['integral_money'], false) : '',
+				'pay_name'						=> !empty($order['pay_name']) ? $order['pay_name'] : '',
+				'payment_account'				=> '',
+				'user_info'						=> [],
+				'refund_sn'						=> '',
+				'refund_total_amount'			=> 0,
+				'formatted_refund_total_amount' => '',
+				'cashier_name'					=> $this->get_cashier_name($order)
+		);
+		
+		return  array('order_data' => $arr, 'print_data' => $quickpay_print_data);
 	}
 	
 	/**
@@ -135,6 +165,22 @@ class admin_cashier_quickpay_order_detail_module extends api_admin implements ap
 		
 		return $cashier_name;
 	}
+	
+	/**
+	 * 支付交易记录信息
+	 * @param string $order_sn
+	 * @param string $trade_type
+	 * @return array
+	 */
+	private function paymentRecordInfo($order_sn = '', $trade_type = '')
+	{
+		$payment_revord_info = [];
+		if (!empty($order_sn) && !empty($trade_type)) {
+			$payment_revord_info = RC_DB::table('payment_record')->where('order_sn', $order_sn)->where('trade_type', $trade_type)->first();
+		}
+		return $payment_revord_info;
+	}
+	
 }
 
 // end
