@@ -47,76 +47,74 @@
 defined('IN_ECJIA') or exit('No permission resources.');
 
 /**
- * 收银台收款订单记录（买单订单表）
+ * 买单订单详情
  * @author zrl
  */
-class list_module extends api_admin implements api_interface {
+class admin_cashier_quickpay_order_detail_module extends api_admin implements api_interface {
     public function handleRequest(\Royalcms\Component\HttpKernel\Request $request) {
     
     	$this->authadminSession();
         if ($_SESSION['staff_id'] <= 0) {
             return new ecjia_error(100, 'Invalid session');
         }
-		/* 获取数量 */
-		$size = $this->requestData('pagination.count', 15);
-		$page = $this->requestData('pagination.page', 1);
-		
-		$start_date = $this->requestData('start_date');
-		$end_date 	= $this->requestData('end_date');
-		
-		$device		  = $this->device;
-		$codes = array('8001', '8011');
-		if (!is_array($device) || !isset($device['code']) || !in_array($device['code'], $codes)) {
-			return new ecjia_error('caskdesk_error', '非收银台请求！');
+    	
+    	RC_Loader::load_app_class('quickpay_activity', 'quickpay', false);
+		$order_id = $this->requestData('order_id', 0);
+		if (empty($order_id)) {
+			return new ecjia_error('invalid_parameter', RC_Lang::get('orders::order.invalid_parameter'));
 		}
 		
-		if (!empty($start_date) && !empty($end_date)) {
-			$start_date = RC_Time::local_strtotime($start_date);
-			$end_date = RC_Time::local_strtotime($end_date) + 86399;
+		$options = array('order_id' => $order_id, 'store_id' => $_SESSION['store_id']);
+		
+		/* 订单详情 */
+		$order = RC_Api::api('quickpay', 'quickpay_order_info', $options);
+		
+		if(is_ecjia_error($order)) {
+			return $order;
+		}
+		if (empty($order)) {
+			return new ecjia_error('no_exsist', '订单信息不存在');
+		}
+		// 检查订单是否属于当前店铺
+		if ($_SESSION['store_id'] != $order['store_id']) {
+			return new ecjia_error('orders_error', '该订单不属于当前店铺订单！');
 		}
 		
-		$options = array(
-			'size'				=> $size,
-			'page'				=> $page,
-			'store_id'			=> $_SESSION['store_id'],
-			'order_type'		=> 'cashdesk',
-			'mobile_device_id'  => $_SESSION['device_id'],
-			'start_date'		=> $start_date,
-			'end_date'			=> $end_date
-		);
+		/*优惠活动信息*/
+		$quickpay_activity_info = RC_DB::table('quickpay_activity')->where('id', $order['activity_id'])->first();
+		$order['total_discount'] 		= $order['discount'] + $order['integral_money'] + $order['bonus'];
+		$order['formated_total_discount'] = price_format($order['total_discount']);
+		$order['formated_order_amount'] = price_format($order['order_amount']);
 		
-		$quickpay_order_data = RC_Api::api('quickpay', 'cashier_quickpay_order_list', $options);
-		if (is_ecjia_error($quickpay_order_data)) {
-			return $quickpay_order_data;
-		}
+		/*订单状态处理*/
+		$status = quickpay_activity::get_label_order_status($order['order_status'], $order['pay_status'], $order['verification_status']);
+		$order['order_status_str'] = $status['order_status_str'];
+		$order['label_order_status'] = $status['label_order_status'];
+		
+		
+		
+		$store_name = RC_DB::table('store_franchisee')->where('store_id', $order['store_id'])->pluck('merchants_name');
+		$shop_logo = RC_DB::table('merchants_config')->where('store_id', $order['store_id'])->where('code', 'shop_logo')->pluck('value');
 		
 		$arr = array();
-		if(!empty($quickpay_order_data['list'])) {
-			foreach ($quickpay_order_data['list'] as $rows) {
-				if ($rows['pay_code'] == 'pay_balance') {
-					$rows['order_amount'] = $rows['order_amount'] + $rows['surplus'];
-				}
-				$arr[] = array(
-					'store_id' 					=> intval($rows['store_id']),
-					'store_name' 				=> $rows['store_name'],
-					'store_logo'				=> empty($rows['store_logo']) ? '' : RC_Upload::upload_url($rows['store_logo']),
-					'order_id' 					=> $rows['order_id'],
-					'order_sn' 					=> $rows['order_sn'],
-					'order_status'				=> $rows['order_status'],
-					'order_status_str'			=> $rows['order_status_str'],
-					'label_order_status'		=> empty($rows['label_order_status']) ? '' : $rows['label_order_status'],
-					'total_discount'			=> $rows['total_discount'],
-					'formated_total_discount'	=> $rows['formated_total_discount'],
-					'order_amount'				=> $rows['order_amount'],
-					'formated_order_amount'		=> price_format($rows['order_amount']),
-					'formated_add_time'			=> RC_Time::local_date(ecjia::config('time_format'), $rows['add_time']),
-					'pay_code'					=> empty($rows['pay_code']) ? '' : $rows['pay_code'],
-					'pay_name'					=> empty($rows['pay_name']) ? '' : $rows['pay_name'],
-					'cashier_name'				=> $this->get_cashier_name($rows)
-				);
-			}
-		}
-		return array('data' => $arr, 'pager' => $quickpay_order_data['page']);
+		$arr = array(
+				'store_id' 					=> intval($order['store_id']),
+				'store_name' 				=> $store_name,
+				'store_logo'				=> !empty($shop_logo) ? RC_Upload::upload_url($shop_logo) : '',
+				'order_id' 					=> intval($order['order_id']),
+				'order_sn' 					=> trim($order['order_sn']),
+				'order_status'				=> $order['order_status'],
+				'order_status_str'			=> $order['order_status_str'],
+				'label_order_status'		=> $order['label_order_status'],
+				'total_discount'			=> $order['total_discount'],
+				'formated_total_discount'	=> price_format($order['total_discount'], false),
+				'order_amount'				=> $order['order_amount'] + $order['surplus'],
+				'surplus'					=> $order['surplus'],
+				'formated_order_amount'		=> price_format(($order['order_amount'] + $order['surplus']), false),
+				'formated_add_time'			=> $order['formated_add_time'],
+				'cashier_name'				=> $this->get_cashier_name($order)
+		);
+		return  $arr;
 	}
 	
 	/**
@@ -127,14 +125,16 @@ class list_module extends api_admin implements api_interface {
 		$cashier_name = '';
 		if (!empty($order)) {
 			$staff_id = RC_DB::table('cashier_record')
-			->where('order_id', $order['order_id'])
-			->where('store_id', $order['store_id'])
-			->where('action', 'receipt')->pluck('staff_id');
+									->where('order_id', $order['order_id'])
+									->where('store_id', $order['store_id'])
+									->where('action', 'receipt')->pluck('staff_id');
 			if ($staff_id) {
 				$cashier_name = RC_DB::table('staff_user')->where('user_id', $staff_id)->pluck('name');
 			}
-		}
+		}	
+		
 		return $cashier_name;
 	}
 }
+
 // end
