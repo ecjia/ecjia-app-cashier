@@ -183,7 +183,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                         } else {
 
                             $back_type = '';
-                            $result = new ecjia_error('not_support_refund_way', '不支持的退款方式');
+                            $result = new ecjia_error('refund_checking', '退款审核中');
                         }
                         
                         if (is_ecjia_error($result)) {
