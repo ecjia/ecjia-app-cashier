@@ -64,6 +64,7 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 				if (!empty($goods_list)) {
 					foreach ($goods_list as $k => $v) {
 						$rows[$key]['total'] += $v['subtotal'];
+						$rows[$key]['total_goods_number'] += $v['goods_number'];
 						$rows[$key]['goods_items'][] = array(
 								'rec_id' 					=> intval($v['rec_id']),
 								'user_id'					=> intval($v['user_id']),
@@ -96,7 +97,7 @@ class admin_cashier_pendorder_list_module  extends api_admin implements api_inte
 						'formated_total'	=> price_format($result['total'], false),
 						'pend_time'			=> RC_Time::local_date(ecjia::config('time_format'), $result['pendorder_time']),
 						'goods_items'		=> $result['goods_items'],
-						'goods_number'		=> count($result['goods_items']) 
+						'total_goods_number'=> $result['total_goods_number']
 				);
 			}
 		}
