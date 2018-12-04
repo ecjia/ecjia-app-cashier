@@ -119,6 +119,8 @@ class payConfirm_module extends api_admin implements api_interface
 	private function _getPrint_data($order_info = array())
 	{
 		$quickpay_print_data = [];
+		//获取更新后的数据
+		$order_info = RC_Api::api('quickpay', 'quickpay_order_info', array('order_id' => $order_info['order_id']));
 		if ($order_info) {
 			$payment_record_info 	= $this->paymentRecordInfo($order_info['order_sn'], 'quickpay');
 			$total_discount 		= $order_info['discount'] + $order_info['integral_money'] + $order_info['bonus'];
