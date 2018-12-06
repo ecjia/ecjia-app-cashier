@@ -38,7 +38,7 @@ class admin_cashier_orders_search_module  extends api_admin implements api_inter
         	$db = RC_DB::table('order_info as oi')->leftJoin('payment_record as pr', RC_DB::raw('oi.order_sn'), '=', RC_DB::raw('pr.order_sn'));
         	$db->where(RC_DB::raw('oi.is_delete'), 0)->where(RC_DB::raw('oi.store_id'), $_SESSION['store_id'])->where(RC_DB::raw('pr.trade_type'), 'buy')->where(RC_DB::raw('oi.pay_status'), PS_PAYED);
         	$field = 'oi.order_id, oi.order_sn, oi.add_time, oi.money_paid, (oi.goods_amount + oi.shipping_fee + oi.insure_fee + oi.pay_fee + oi.pack_fee + oi.card_fee + oi.tax - oi.integral_money - oi.bonus - oi.discount) as total_amount';
-        	$result = $db->where(RC_DB::raw('pr.trade_no'), $value)->select(RC_DB::raw($field))->first();
+        	$result = $db->where(RC_DB::raw('pr.trade_no'), $value)->orWhere(RC_DB::raw('pr.order_trade_no'), $value)->select(RC_DB::raw($field))->first();
         }
         
         $arr = [];
