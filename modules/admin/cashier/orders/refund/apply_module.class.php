@@ -125,6 +125,10 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
 		//生成退款申请单
 		$refundOrderInfo = RC_Api::api('refund', 'refund_apply', $options);
 		
+		RC_Logger::getLogger('error')->info('testaaa');
+		RC_Logger::getLogger('error')->info($refundOrderInfo);
+		RC_Logger::getLogger('error')->info('testbbb');
+        
 		if (is_ecjia_error($refundOrderInfo)) {
 			return $refundOrderInfo;
 		}
