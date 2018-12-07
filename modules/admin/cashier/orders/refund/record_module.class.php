@@ -108,8 +108,8 @@ class admin_cashier_orders_refund_record_module extends api_admin implements api
 					'label_service_status'				=> $val['label_service_status'],
 					'formated_add_time'					=> $val['formated_add_time'],
 					'formated_refund_time'				=> $val['formated_refund_time'],
-					'total_refund_amount'				=> $total_refund_amount > 0 ? $total_refund_amount : 0,
-					'formatted_total_refund_amount'		=> $total_refund_amount > 0 ? price_format($total_refund_amount, false) : '',
+					'total_refund_amount'				=> $total_refund_amount,
+					'formatted_total_refund_amount'		=> price_format($total_refund_amount, false),
 					'goods_list'						=> $val['goods_list'],
 				);
 			}

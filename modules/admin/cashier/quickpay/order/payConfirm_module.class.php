@@ -143,7 +143,7 @@ class payConfirm_module extends api_admin implements api_interface
 							'mobile'				=> empty($userinfo['mobile_phone']) ? '' : trim($userinfo['mobile_phone']),
 							'user_points'			=> $userinfo['pay_points'],
 							'user_money'			=> $userinfo['user_money'],
-							'formatted_user_money'	=> $userinfo['user_money'] > 0 ? price_format($userinfo['user_money'], false) : '',
+							'formatted_user_money'	=> price_format($userinfo['user_money'], false),
 					);
 				}
 			}
@@ -157,14 +157,14 @@ class payConfirm_module extends api_admin implements api_interface
 					'goods_list'					=> [],
 					'total_goods_number' 			=> 0,
 					'total_goods_amount'			=> $order_info['goods_amount'],
-					'formatted_total_goods_amount'	=> $order_info['goods_amount'] > 0 ? price_format($order_info['goods_amount'], false) : '',
+					'formatted_total_goods_amount'	=> price_format($order_info['goods_amount'], false),
 					'total_discount'				=> $total_discount,
-					'formatted_total_discount'		=> $total_discount > 0 ? price_format($total_discount, false) : '',
+					'formatted_total_discount'		=> price_format($total_discount, false),
 					'money_paid'					=> $money_paid,
-					'formatted_money_paid'			=> $money_paid > 0 ? price_format($money_paid, false) : '',
+					'formatted_money_paid'			=> price_format($money_paid, false),
 					'integral'						=> intval($order_info['integral']),
 					'integral_money'				=> $order_info['integral_money'],
-					'formatted_integral_money'		=> $order_info['integral_money'] > 0 ? price_format($order_info['integral_money'], false) : '',
+					'formatted_integral_money'		=> price_format($order_info['integral_money'], false),
 					'pay_name'						=> !empty($order_info['pay_name']) ? $order_info['pay_name'] : '',
 					'payment_account'				=> '',
 					'user_info'						=> $user_info,
