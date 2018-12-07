@@ -68,10 +68,10 @@
                              			<img class="cashier-img w60 h60" alt="收银POS机" cashier-type="cashier-pos" src="{$app_url}/pos.png">
                              		</a>
                                 </div>
-                             	<input id="cashier-desk" style="margin-right:30px;margin-top:10px;" type="radio" name="cashier_type" value="cashier-desk" {if $cashier_device_info.cashier_type eq 'cashier-desk'} checked="true" {/if} />
-                                <label for="cashier-desk" style="margin-right:30px;margin-top:10px;"> 收银台</label>
-                                <input  id="cashier-pos" type="radio" name="cashier_type" value="cashier-pos" {if $cashier_device_info.cashier_type eq 'cashier-pos'} checked="true" {/if} />
-                            	<label  for="cashier-pos"> POS机</label>
+                             	<input class="cashier-select" cashier-type="cashier-desk" id="cashier-desk" style="margin-right:30px;margin-top:10px;" type="radio" name="cashier_type" value="cashier-desk" {if $cashier_device_info.cashier_type eq 'cashier-desk'} checked="true" {/if} />
+                                <label class="cashier-select" cashier-type="cashier-desk" for="cashier-desk" style="margin-right:30px;margin-top:10px;"> 收银台</label>
+                                <input class="cashier-select" cashier-type="cashier-pos" id="cashier-pos" type="radio" name="cashier_type" value="cashier-pos" {if $cashier_device_info.cashier_type eq 'cashier-pos'} checked="true" {/if} />
+                            	<label class="cashier-select" cashier-type="cashier-pos" for="cashier-pos"> POS机</label>
                             </div>
                         </div>
                         <div class="form-group kooldesk-type {if $cashier_device_info.cashier_type neq 'cashier-desk'}ecjia-dn{/if}">

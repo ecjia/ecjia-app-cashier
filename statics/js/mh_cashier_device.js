@@ -108,7 +108,6 @@
 		change_cashier_type: function() {
 			$('.cashier-img').on('click', function() {				
 				var $this = $(this),
-				device_id = $this.attr('device_id');
 				cashier_type = $this.attr('cashier-type');				
 				if (cashier_type == 'cashier-desk') {
 					$('#cashier-desk').attr("checked",true); 
@@ -121,7 +120,22 @@
 					$('.kooldesk-type').addClass('ecjia-dn');
                     $('.koolpos-type').removeClass('ecjia-dn');
 				}
-			})
+			});
+            $('.cashier-select').on('click', function() {              
+                var $this = $(this),
+                cashier_type = $this.attr('cashier-type');              
+                if (cashier_type == 'cashier-desk') {
+                    $('#cashier-desk').attr("checked",true); 
+                    $('#cashier-pos').removeAttr("checked"); 
+                    $('.kooldesk-type').removeClass('ecjia-dn');
+                    $('.koolpos-type').addClass('ecjia-dn');
+                } else {
+                    $('#cashier-pos').attr("checked",true); 
+                    $('#cashier-desk').removeAttr("checked"); 
+                    $('.kooldesk-type').addClass('ecjia-dn');
+                    $('.koolpos-type').removeClass('ecjia-dn');
+                }
+            });
 		},
     };
     
