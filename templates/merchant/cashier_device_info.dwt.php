@@ -79,6 +79,8 @@
                             <div class="col-lg-10">
                                 <input id="koolpos-kool11" type="radio" name="device_type" value="koolpos-kool11" {if $cashier_device_info.device_type eq 'koolpos-kool11'} checked="true" {/if} />
                                 <label for="koolpos-kool11">koolpos-kool11</label>
+                                <input id="sunmi-T2" type="radio" name="device_type" value="sunmi-T2" {if $cashier_device_info.device_type eq 'sunmi-T2'} checked="true" {/if} />
+                                <label for="sunmi-T2">sunmi-T2</label>
                             </div>
                         </div>
                         
@@ -87,6 +89,8 @@
                             <div class="col-lg-10">
                                 <input id="koolpos-N910" type="radio" name="device_type" value="koolpos-N910" {if $cashier_device_info.device_type eq 'koolpos-N910'} checked="true" {/if} />
                                 <label for="koolpos-N910">koolpos-N910</label>
+                                <input id="sunmi-V1S" type="radio" name="device_type" value="sunmi-V1S" {if $cashier_device_info.device_type eq 'sunmi-V1S'} checked="true" {/if} />
+                                <label for="sunmi-V1S">sunmi-V1S</label>
                             </div>
                         </div>
                         
