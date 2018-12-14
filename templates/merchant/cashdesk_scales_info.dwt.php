@@ -46,10 +46,10 @@
                         </div>
                         
                          <div class="form-group">
-                            <label class="control-label col-lg-2">{t}电子秤码：{/t}</label>
+                            <label class="control-label col-lg-2">{t}条码秤码：{/t}</label>
                             <div class="controls col-lg-6">
                                 <input class="form-control" name="scale_sn" type="text" value="{$scales_info.scale_sn}"/>
-                                <span class="help-block">电子秤码既电子秤条码标识位（通常有21，22，24，29等）</span>
+                                <span class="help-block">条码秤码既条码秤条码标识位（通常有21，22，24，29等）</span>
                             </div>
                             <span class="input-must">{lang key='system::system.require_field'}</span>
                         </div>

@@ -38,7 +38,7 @@
 					<table class="table table-striped table-hover table-hide-edit">
 						<thead>
 							<tr>
-								<th class="w100">电子秤编码</th>
+								<th class="w100">条码秤编码</th>
 								<th class="w200">条码模式</th>
 								<th class="w150">日期格式</th>
 								<th class="w100">净重单位</th>
