@@ -201,7 +201,7 @@ class mh_bulk_goods extends ecjia_merchant {
 	
 		/* 检查是否重复 */
 		if ($goods_sn) {
-			$count = RC_DB::table('goods')->where('goods_sn', $goods_sn)->where('goods_id', '!=', $goods_id)->count();
+			$count = RC_DB::table('goods')->where('goods_sn', $goods_sn)->where('goods_id', '!=', $goods_id)->where('store_id', $_SESSION['store_id'])->count();
 			if ($count > 0) {
 				return $this->showmessage('您输入的货号已存在，请换一个', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
@@ -382,7 +382,7 @@ class mh_bulk_goods extends ecjia_merchant {
 				return $this->showmessage('散装商品货号必须为7位', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 			/* 检查货号是否重复 */
-			$count = RC_DB::table('goods')->where('goods_sn', $goods_sn)->count();
+			$count = RC_DB::table('goods')->where('goods_sn', $goods_sn)->where('store_id', $_SESSION['store_id'])->count();
 			if ($count > 0) {
 				return $this->showmessage('您输入的货号已存在，请换一个', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
@@ -618,7 +618,7 @@ class mh_bulk_goods extends ecjia_merchant {
 				return $this->showmessage('散装商品货号必须为7位', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 			/* 检查货号是否重复 */
-			$count = RC_DB::table('goods')->where('goods_sn', $goods_sn)->where('goods_id', '!=', $goods_id)->count();
+			$count = RC_DB::table('goods')->where('goods_sn', $goods_sn)->where('goods_id', '!=', $goods_id)->where('store_id', $_SESSION['store_id'])->count();
 			if ($count > 0) {
 				return $this->showmessage('您输入的货号已存在，请换一个', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
