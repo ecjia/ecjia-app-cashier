@@ -110,6 +110,8 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 				'formatted_total_discount'		=> price_format($total_discount, false),
 				'goods_number'					=> count($goods_item),
 				'goods_list'					=> $goods_item,
+				'pay_code'						=> !empty($refund_order_info['pay_code']) ? $refund_order_info['pay_code'] : '',
+				'pay_name'						=> !empty($refund_order_info['pay_name']) ? $refund_order_info['pay_name'] : '',
 				'print_data'					=> $print_data
 		);
 		
