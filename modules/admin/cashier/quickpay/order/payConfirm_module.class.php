@@ -61,7 +61,7 @@ class payConfirm_module extends api_admin implements api_interface
 		$device = $this->device;
 		
     	/* 获取请求当前数据的device信息*/
-        $codes = array('8001', '8011');
+        $codes = RC_Loader::load_app_config('cashier_device_code', 'cashier');
         if (!is_array($device) || !isset($device['code']) || !in_array($device['code'], $codes)) {
             return new ecjia_error('caskdesk_error', '非收银台请求！');
         }

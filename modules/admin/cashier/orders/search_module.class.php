@@ -17,7 +17,7 @@ class admin_cashier_orders_search_module  extends api_admin implements api_inter
         $value 	= $this->requestData('value', '');
         $type_arr = array('order_sn', 'trade_no');
         
-        $codes = array('8001', '8011');
+        $codes = RC_Loader::load_app_config('cashier_device_code', 'cashier');
       
         if (!in_array($device['code'], $codes)) {
         	return new ecjia_error('not_cashdesk_requst', '非收银台请求！');

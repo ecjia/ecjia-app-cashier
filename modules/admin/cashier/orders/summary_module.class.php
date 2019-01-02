@@ -18,7 +18,7 @@ class admin_cashier_orders_summary_module  extends api_admin implements api_inte
         $time			= RC_Time::gmtime();
         $format_time	= RC_Time::local_date(ecjia::config('date_format'), $time);
         
-        $codes = array('8001', '8011');
+       	$codes = RC_Loader::load_app_config('cashier_device_code', 'cashier');
       
         if (!in_array($device['code'], $codes)) {
         	return new ecjia_error('not_cashdesk_requst', '非收银台请求！');
