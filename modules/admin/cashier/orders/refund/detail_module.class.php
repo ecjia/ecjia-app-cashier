@@ -89,7 +89,8 @@ class admin_cashier_orders_refund_detail_module extends api_admin implements api
 		
 		$goods_item = order_refund::get_order_goods_list($refund_order_info['order_id']);
 		
-		$refund_total_amount = Ecjia\App\Refund\RefundOrder::get_back_total_money($refund_order_info);
+		$refund_payrecord 		= order_refund::get_refund_payrecord($refund_order_info['refund_id']);
+		$refund_total_amount	= $refund_payrecord['back_money_total'];
 		$total_discount = $refund_order_info['discount'] + $refund_order_info['bonus'] + $refund_order_info['integral_money'];
 		
 		//获取退款单小票打印数据
