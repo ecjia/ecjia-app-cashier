@@ -227,7 +227,8 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
          */
 
         $order_sn = $order_info['order_sn'];
-        $refund_amount = $refund_payrecord['back_money_total'];
+        //原路退回支付手续费退还,录入打款表时不确定是否原路退回，所以录入时back_money_total支付手续费按不退计算的
+        $refund_amount = $refund_payrecord['back_money_total'] + $refund_payrecord['back_pay_fee'];
         $operator = $_SESSION['staff_name'];
 
         //判断订单是否是当天订单（按订单支付时间计算）
@@ -254,7 +255,9 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
                 return $find_result;
             }
         }
-
+		//更新打款表，实际退款金额，原路退回支付手续费退还
+		RC_DB::table('refund_payrecord')->where('id', $refund_payrecord['id'])->update(array('back_money_total' => $refund_amount));
+		
         return $result;
     }
 
@@ -302,7 +305,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
         	return $update_store_user;
         }
 
-        $this->_sendSmsNotice();
+        $this->_sendSmsNotice($refund_payrecord_id, $refund_way, $order_info);
 
         $printData = $this->_printData($refund_id, $order_info, $refund_payrecord_id);
 
@@ -414,9 +417,27 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
     /**
      * 退款短信通知
      */
-    private function _sendSmsNotice()
+    private function _sendSmsNotice($refund_payrecord_id, $refund_way, $order_info)
     {
-	
+		if ($order_info['user_id'] > 0) {
+			//原路退款短信通知
+			if ($refund_way == 'original') {
+				$user_info = RC_Api::api('user', 'user_info', array('user_id' => $order_info['user_id']));
+				$refund_payrecord_info = RC_DB::table('refund_payrecord')->where('id', $refund_payrecord_id)->first();
+				if (!empty($user_info['mobile_phone'])) {
+					$back_pay_name = $refund_payrecord_info['back_pay_name'];
+					$options = array(
+							'mobile' => $user_info['mobile_phone'],
+							'event'	 => 'sms_refund_original_arrived',
+							'value'  =>array(
+									'user_name' 	=> $user_info['user_name'],
+									'back_pay_name' => $back_pay_name,
+							),
+					);
+					RC_Api::api('sms', 'send_event_sms', $options);
+				}
+			}
+		}
     }
 
     /**
