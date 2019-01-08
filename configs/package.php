@@ -11,7 +11,7 @@ return array(
 	'author' 		=> 'ECJIA TEAM',			/* 作者 */
 	'website' 		=> 'http://www.ecjia.com',	/* 网址 */
 	'version' 		=> '1.18.0',					/* 版本号 */
-	'copyright' 	=> 'ECJIA Copyright 2014 ~ 2018.',
+	'copyright' 	=> 'ECJIA Copyright 2014 ~ 2019.',
     'namespace'     => 'Ecjia\App\Cashier',
     'provider'      => 'CashierServiceProvider',
 );
