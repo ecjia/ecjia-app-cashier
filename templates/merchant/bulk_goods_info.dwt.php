@@ -47,7 +47,7 @@
 	              				<label class="control-label col-lg-2">商品货号：</label>
 	              				<div class="col-lg-7">
 	                            	<input class="form-control" name="goods_sn" type="text" value="{$goods.goods_sn|escape}" />
-	                            	<span class="help-block">散装商品货号共7位，前2位必须填写电子秤编码</span>
+	                            	<span class="help-block">散装商品货号共7位，前2位必须填写条码秤编码</span>
 	                          	</div>
 	                          	<span class="input-must m_l15">{lang key='system::system.require_field'}</span>
 	              			</div>

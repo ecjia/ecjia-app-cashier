@@ -96,7 +96,7 @@ class mh_cashier_scales extends ecjia_merchant {
 		$this->admin_priv('mh_scales_update');
 	
 		ecjia_merchant_screen::get_current_screen()->add_nav_here(new admin_nav_here('条码秤列表'));
-		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/init'), 'text' => '电子秤列表'));
+		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/init'), 'text' => '条码秤列表'));
 	
 		$this->assign('ur_here', '添加条码秤');
 	
@@ -123,7 +123,7 @@ class mh_cashier_scales extends ecjia_merchant {
 		if (empty($scale_sn)) {
 			return $this->showmessage('请输入条码秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
-		//电子秤码是否重复
+		//条码秤码是否重复
 		$count = RC_DB::table('cashier_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->count();
 		if ($count > 0) {
 			return $this->showmessage('条码秤码已存在，请重新输入！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
@@ -162,7 +162,7 @@ class mh_cashier_scales extends ecjia_merchant {
 		$this->assign('ur_here', '编辑条码秤');
 		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_scales/init'), 'text' => '条码秤列表'));
 		$id = $_GET['id'];
-		/* 电子秤信息 */
+		/* 条码秤信息 */
 		$scales_info = RC_DB::table('cashier_scales')->where('id', $id)->where('store_id', $_SESSION['store_id'])->first();
 	
 		$this->assign('scales_info', $scales_info);
@@ -191,7 +191,7 @@ class mh_cashier_scales extends ecjia_merchant {
 		if (empty($scale_sn)) {
 			return $this->showmessage('请输入条码秤码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
-		//电子秤码重复判断
+		//条码秤码重复判断
 		$count = RC_DB::table('cashier_scales')->where('store_id', $_SESSION['store_id'])->where('scale_sn', $scale_sn)->where('id', '!=', $id)->count();
 		if ($count > 0) {
 			return $this->showmessage('条码秤码已存在！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);

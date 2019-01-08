@@ -213,9 +213,9 @@ class mh_bulk_goods extends ecjia_merchant {
 			return $this->showmessage('散装商品货号必须为7位', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		$scales_sn = substr($goods_sn, 0, 2);
-		$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);//商家所有电子秤编码
+		$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);//商家所有条码秤编码
 		if (!in_array($scales_sn, $cashdesk_scales_sn_arr)) {
-			return $this->showmessage('请检查商品货号，散装商品货号前2位必须为电子秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+			return $this->showmessage('请检查商品货号，散装商品货号前2位必须为条码秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 		}
 		
 		RC_DB::table('goods')->where('goods_id', $goods_id)->where('store_id', $_SESSION['store_id'])->update(array('goods_sn' => $goods_sn, 'last_update' => RC_Time::gmtime()));
@@ -387,12 +387,12 @@ class mh_bulk_goods extends ecjia_merchant {
 				return $this->showmessage('您输入的货号已存在，请换一个', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 			$scales_sn = substr($goods_sn, 0, 2);
-			$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);//商家所有电子秤编码
+			$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);//商家所有条码秤编码
 			if (empty($cashdesk_scales_sn_arr)) {
-				return $this->showmessage('请先添加电子秤！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+				return $this->showmessage('请先添加条码秤！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 			if (!in_array($scales_sn, $cashdesk_scales_sn_arr)) {
-				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为电子秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为条码秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 		}
 	
@@ -623,13 +623,13 @@ class mh_bulk_goods extends ecjia_merchant {
 				return $this->showmessage('您输入的货号已存在，请换一个', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 			$scales_sn = substr($goods_sn, 0, 2);
-			//商家所有电子秤编码
+			//商家所有条码秤编码
 			$cashdesk_scales_sn_arr = Ecjia\App\Cashier\BulkGoods::get_scales_sn_arr($_SESSION['store_id']);
 			if (empty($cashdesk_scales_sn_arr)) {
-				return $this->showmessage('请先添加电子秤！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+				return $this->showmessage('请先添加条码秤！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 			if (!in_array($scales_sn, $cashdesk_scales_sn_arr)) {
-				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为电子秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
+				return $this->showmessage('请检查商品货号，散装商品货号前2位必须为条码秤编码！', ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
 			}
 		}
 		

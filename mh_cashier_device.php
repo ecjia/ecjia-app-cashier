@@ -114,7 +114,7 @@ class mh_cashier_device extends ecjia_merchant {
 	}
 	
 	/**
-	 * 添加电子秤数据处理
+	 * 添加条码秤数据处理
 	 */
 	public function insert() {
 		// 检查权限
@@ -183,7 +183,7 @@ class mh_cashier_device extends ecjia_merchant {
 		$this->assign('ur_here', '编辑收银设备');
 		$this->assign('action_link', array('href' => RC_Uri::url('cashier/mh_cashier_device/init'), 'text' => '收银设备列表'));
 		$id = $_GET['id'];
-		/* 电子秤信息 */
+		/* 条码秤信息 */
 		$cashier_device_info = RC_DB::table('cashier_device')->where('id', $id)->where('store_id', $_SESSION['store_id'])->first();
 	
 		$this->assign('cashier_device_info', $cashier_device_info);

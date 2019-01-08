@@ -60,8 +60,8 @@ class cashier_merchant_purview_api extends Component_Event_Api {
         	array('action_name' => '收银台商品管理', 'action_code' => 'mh_cashier_goods_manage', 'relevance' => ''),
         	array('action_name' => '收银台商品更新', 'action_code' => 'mh_cashier_goods_update', 'relevance' => ''),
         		
-        	array('action_name' => '电子秤管理', 'action_code' => 'mh_scales_manage', 'relevance' => ''),
-        	array('action_name' => '电子秤更新', 'action_code' => 'mh_scales_update', 'relevance' => ''),
+        	array('action_name' => '条码秤管理', 'action_code' => 'mh_scales_manage', 'relevance' => ''),
+        	array('action_name' => '条码秤更新', 'action_code' => 'mh_scales_update', 'relevance' => ''),
         		
         	array('action_name' => '收银设备管理', 'action_code' => 'mh_cashier_device_manage', 'relevance' => ''),
         	array('action_name' => '收银设备更新', 'action_code' => 'mh_cashier_device_update', 'relevance' => ''),
