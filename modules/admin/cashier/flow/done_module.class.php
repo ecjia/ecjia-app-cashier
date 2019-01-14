@@ -554,7 +554,9 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
                 						'order_id' 		=> $order['order_id'],
                 						'subject' 		=> $subject,
                 						'desc' 			=> $subject,
-                						'order_sn' 		=> $order['order_sn']
+                						'order_sn' 		=> $order['order_sn'],
+            							'pay_fee'		=> $order['pay_fee'],
+            							'formatted_pay_fee'		=> ecjia_price_format($order['pay_fee'], false),
             )
         );
         
