@@ -239,7 +239,9 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
     					'order_amount'           => $order['order_amount'],
     					'formatted_order_amount' => price_format($order['order_amount']),
     					'order_id'               => $order['order_id'],
-    					'order_sn'               => $order['order_sn']
+    					'order_sn'               => $order['order_sn'],
+    					'pay_fee'				 => '',
+    					'formatted_pay_fee'		 => '',
     			)
     	);
     	
