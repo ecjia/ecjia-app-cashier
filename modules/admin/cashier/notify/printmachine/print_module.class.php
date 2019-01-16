@@ -103,9 +103,7 @@ class admin_cashier_notify_printmachine_print_module extends api_admin implement
 			
 		} elseif ($pre == Ecjia\System\Business\Orders\OrderSnGeneration::ORDER_REFUND) {
 			
-			$refund_sn = RC_DB::table('refund_order')->where('order_sn', $order_sn)->where('status', '!=', Ecjia\App\Refund\RefundStatus::ORDER_CANCELED)->pluck('refund_sn');
-			
-			$order_info = RC_Api::api('refund', 'refund_order_info', array('refund_sn' => $refund_sn));
+			$order_info = RC_Api::api('refund', 'refund_order_info', array('refund_sn' => $order_sn));
 			
 		} else {
 			$order_info = [];
