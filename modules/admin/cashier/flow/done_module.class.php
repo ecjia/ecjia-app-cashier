@@ -92,9 +92,9 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 			$cart_id = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->lists('rec_id');
 		}
 		
-		if (empty($cart_id)) {
-			return new ecjia_error('invalid_parameter', '调用接口admin_cashier_flow_done_module参数无效');
-		}
+// 		if (empty($cart_id)) {
+// 			return new ecjia_error('invalid_parameter', '调用接口admin_cashier_flow_done_module参数无效');
+// 		}
 		
 		/* 订单中的商品 */
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id, $pendorder_id);
