@@ -758,7 +758,7 @@ class mh_cashier_goods extends ecjia_merchant {
 		
 		/* 关键字 */
 		if (!empty ($filter ['keywords'])) {
-			$db_goods->whereRaw("goods_name LIKE '%" . mysql_like_quote($filter ['keywords']) . "%' OR goods_sn LIKE '%" . mysql_like_quote($filter ['keywords']) . "%'");
+			$db_goods->where(RC_DB::raw("(goods_name LIKE '%" . mysql_like_quote($filter ['keywords']) . "%' OR goods_sn LIKE '%" . mysql_like_quote($filter ['keywords']) . "%')"));
 		}
 	
 		//筛选全部 已上架 未上架 商家
@@ -778,8 +778,8 @@ class mh_cashier_goods extends ecjia_merchant {
 		
 		/* 关键字 */
 		if (!empty ($filter ['keywords'])) {
-			$dbgoods->whereRaw("goods_name LIKE '%" . mysql_like_quote($filter ['keywords']) . "%' OR goods_sn LIKE '%" . mysql_like_quote($filter ['keywords']) . "%'");
-		}
+            $db_goods->where(RC_DB::raw("(goods_name LIKE '%" . mysql_like_quote($filter ['keywords']) . "%' OR goods_sn LIKE '%" . mysql_like_quote($filter ['keywords']) . "%')"));
+        }
 		/* 记录总数 */
 		$count = $dbgoods->count('goods_id');
 		$page = new ecjia_merchant_page ($count, 10, 3);
