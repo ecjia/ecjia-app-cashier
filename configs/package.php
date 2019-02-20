@@ -6,8 +6,8 @@ defined('IN_ECJIA') or exit('No permission resources.');
 return array(
 	'identifier' 	=> 'ecjia.cashier',
 	'directory' 	=> 'cashier',
-	'name'			=> 'cashier',
-	'description' 	=> 'cashier_desc',			/* 描述对应的语言项 */
+	'name'			=> __('收银', 'cashier'),
+	'description' 	=> __('线下收银设备管理，收银记录管理。', 'cashier'),			/* 描述对应的语言项 */
 	'author' 		=> 'ECJIA TEAM',			/* 作者 */
 	'website' 		=> 'http://www.ecjia.com',	/* 网址 */
 	'version' 		=> '1.27.1',					/* 版本号 */
