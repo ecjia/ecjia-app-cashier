@@ -314,16 +314,24 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $order['order_id'] = $new_order_id;
         
         /* 插入订单商品 */
-        $field = 'store_id, goods_id, goods_name, goods_sn, product_id, goods_number, goods_buy_weight, market_price, goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id';
+//         $field = 'store_id, goods_id, goods_name, goods_sn, product_id, goods_number, goods_buy_weight, market_price, goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id';
 
-        $db_cart = RC_DB::table('cart');
-        $db_cart->where('rec_type', $flow_type)->where('user_id', $_SESSION['user_id']);
-        if (is_array($cart_id) && !empty($cart_id)) {
-        	$db_cart->whereIn('rec_id', $cart_id);
-        }
-        $data_row = $db_cart->select(RC_DB::raw($field))->get();
-        if (!empty($data_row)) {
-        	foreach ($data_row as $row) {
+//         $db_cart = RC_DB::table('cart');
+//         $db_cart->where('rec_type', $flow_type)->where('user_id', $_SESSION['user_id']);
+//         if (is_array($cart_id) && !empty($cart_id)) {
+//         	$db_cart->whereIn('rec_id', $cart_id);
+//         }
+//         if ($_SESSION['device_id']) {
+//         	$db_cart->where('session_id', $_SESSION['device_id']);
+//         }
+//         if (!empty($_SESSION['store_id'])) {
+//         	$db_cart->where('store_id', $_SESSION['store_id']);
+//         }
+        
+//         $data_row = $db_cart->select(RC_DB::raw($field))->get();
+        
+        if (!empty($cart_goods)) {
+        	foreach ($cart_goods as $row) {
         		$arr = array(
         				'order_id'			=> $new_order_id,
         				'goods_id'			=> $row['goods_id'],
