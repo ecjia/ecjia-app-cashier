@@ -314,22 +314,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $order['order_id'] = $new_order_id;
         
         /* 插入订单商品 */
-//         $field = 'store_id, goods_id, goods_name, goods_sn, product_id, goods_number, goods_buy_weight, market_price, goods_price, goods_attr, is_real, extension_code, parent_id, is_gift, goods_attr_id';
-
-//         $db_cart = RC_DB::table('cart');
-//         $db_cart->where('rec_type', $flow_type)->where('user_id', $_SESSION['user_id']);
-//         if (is_array($cart_id) && !empty($cart_id)) {
-//         	$db_cart->whereIn('rec_id', $cart_id);
-//         }
-//         if ($_SESSION['device_id']) {
-//         	$db_cart->where('session_id', $_SESSION['device_id']);
-//         }
-//         if (!empty($_SESSION['store_id'])) {
-//         	$db_cart->where('store_id', $_SESSION['store_id']);
-//         }
-        
-//         $data_row = $db_cart->select(RC_DB::raw($field))->get();
-        
         if (!empty($cart_goods)) {
         	foreach ($cart_goods as $row) {
         		$arr = array(
@@ -400,41 +384,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
                     'num' => $row['num']
                 );
             }
-            
-//             if ($virtual_goods and $flow_type != CART_GROUP_BUY_GOODS) {
-//                 /* 虚拟卡发货 */
-//                 if (virtual_goods_ship($virtual_goods, $msg, $order['order_sn'], true)) {
-//                     /* 如果没有实体商品，修改发货状态，送积分和红包 */
-//                     $count = $db_order_goods->where(array('order_id' => $order['order_id'] , 'is_real' => 1))->count();
-//                		if ($count <= 0) {
-//                     /* 修改订单状态 */
-//                         update_order($order['order_id'], array(
-//                             'shipping_status' => SS_SHIPPED,
-//                             'shipping_time' => RC_Time::gmtime()
-//                         ));
-                        
-//                         /* 如果订单用户不为空，计算积分，并发给用户；发红包 */
-//                         if ($order['user_id'] > 0) {
-//                             /* 取得用户信息 */
-//                             $user = user_info($order['user_id']);
-//                             /* 计算并发放积分 */
-//                             $integral = integral_to_give($order);
-//                             $options = array(
-//                             		'user_id' =>$order['user_id'],
-//                             		'rank_points' => intval($integral['rank_points']),
-//                             		'pay_points' => intval($integral['custom_points']),
-//                             		'change_desc' =>sprintf(RC_Lang::lang('order_gift_integral'), $order['order_sn'])
-//                             );
-//                             $result = RC_Api::api('user', 'account_change_log',$options);
-//                             if (is_ecjia_error($result)) {
-//                             	return new ecjia_error('fail_error', '处理失败');
-//                             }
-//                             /* 发放红包 */
-//                             send_order_bonus($order['order_id']);
-//                         }
-//                     }
-//                 }
-//             }
         }
         
         /*记录订单状态日志*/
