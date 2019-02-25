@@ -52,7 +52,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
     {	
 		
 		/**
-         * bonus 0 //红包
+         * bonus_id 0 //红包
          * how_oos 0 //缺货处理
          * integral 0 //积分
          * payment 3 //支付方式
