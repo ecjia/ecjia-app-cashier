@@ -95,7 +95,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 		/* 订单中的商品 */
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, $cart_id, $pendorder_id);
 		if (empty($cart_goods) || count($cart_goods) == 0) {
-			return new ecjia_error('no_goods_in_cart', '购物车中没有商品');
+			return new ecjia_error('no_goods_in_cart', __('购物车中没有商品', 'cashier'));
 		}
 		
         /* 如果使用库存，且下订单时减库存，检查库存*/
@@ -107,7 +107,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
             }
             $result = cart_goods_stock::flow_cart_stock($_cart_goods_stock);
             if (is_ecjia_error($result)) {            	
-            	return new ecjia_error('Inventory shortage', '库存不足');
+            	return new ecjia_error('Inventory_shortage', __('库存不足', 'cashier'));
             }
             unset($cart_goods_stock, $_cart_goods_stock);
         }        
@@ -115,7 +115,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         /* 判断是否是会员 */
         $consignee = array();
         $consignee = array(
-        		'consignee'	=> '匿名用户',
+        		'consignee'	=> __('匿名用户', 'cashier'),
         		'mobile'	=> '',
         		'tel'		=> '',
         		'email'		=> '',
@@ -163,7 +163,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $inv_payee			 	= $this->requestData('inv_payee', '');
         $inv_content 			= $this->requestData('inv_content', '');
         $postscript			 	= $this->requestData('postscript', '');
-        $how_oosLang 			= RC_Lang::lang("oos/$how_oos");
         
         $order = array(
         	'shipping_id' 		=> $this->requestData('shipping_id', 0),
@@ -178,7 +177,6 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         	'inv_payee' 		=> trim($inv_payee),
         	'inv_content' 		=> $inv_content,
         	'postscript' 		=> trim($postscript),
-        	'how_oos' 			=> isset($how_oosLang) ? addslashes($how_oosLang) : '',
             'user_id'			=> $_SESSION['user_id'],
             'add_time'			=> RC_Time::gmtime(),
             'order_status'		=> OS_UNCONFIRMED,
@@ -192,7 +190,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         
         //支付方式
         if (empty($order['pay_id'])) {
-        	return new ecjia_error('empty_payment', '请选择支付方式');
+        	return new ecjia_error('empty_payment', __('请选择支付方式', 'cashier'));
         }
         
         /* 检查积分余额是否合法 */
@@ -264,7 +262,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         } else {
             //无需物流
         	$order['shipping_id'] = 0;
-        	$order['shipping_name'] = '无需物流';
+        	$order['shipping_name'] = __('无需物流', 'cashier');
         }
         $order['shipping_fee']	= $total['shipping_fee'];
         $order['insure_fee']	= $total['shipping_insure'];
@@ -346,13 +344,13 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         	$options = array(
         			'user_id'=>$order['user_id'],
         			'pay_points'=> $order['integral'] * (- 1),
-        			'change_desc'=>sprintf(RC_Lang::get('cart::shopping_flow.pay_order'), $order['order_sn']),
+        			'change_desc'  => sprintf(__('支付订单 %s', 'cashier'), $order['order_sn']),
         			'from_type'		=> 'order_use_integral',
         			'from_value'	=> $order['order_sn']
         	);
         	$result = RC_Api::api('user', 'account_change_log', $options);
         	if (is_ecjia_error($result)) {
-        		return new ecjia_error('fail_error', '处理失败');
+        		return new ecjia_error('fail_error', __('处理失败', 'cashier'));
         	}
         }
         if ($order['bonus_id'] > 0 && $temp_amout > 0) {
