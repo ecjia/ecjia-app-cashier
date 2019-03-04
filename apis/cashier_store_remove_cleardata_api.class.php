@@ -66,6 +66,7 @@ class cashier_store_remove_cleardata_api extends Component_Event_Api
         return [
             new \Ecjia\App\Cashier\StoreCleanHandlers\StoreCashierPendorderClear($store_id),
             new \Ecjia\App\Cashier\StoreCleanHandlers\StoreCashierDeviceClear($store_id),
+            new \Ecjia\App\Cashier\StoreCleanHandlers\StoreCashierScalesClear($store_id),
         ];
     }
 
