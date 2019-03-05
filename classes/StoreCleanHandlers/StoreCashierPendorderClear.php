@@ -33,7 +33,7 @@ class StoreCashierPendorderClear extends StoreCleanAbstract
      * 排序
      * @var int
      */
-    protected $sort = 102;
+    protected $sort = 22;
 
     /**
      * 数据描述及输出显示内容

@@ -33,7 +33,7 @@ class StoreCashierDeviceClear extends StoreCleanAbstract
      * 排序
      * @var int
      */
-    protected $sort = 103;
+    protected $sort = 23;
 
     /**
      * 数据描述及输出显示内容
