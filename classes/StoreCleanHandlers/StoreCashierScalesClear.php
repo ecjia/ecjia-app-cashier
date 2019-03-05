@@ -42,9 +42,7 @@ class StoreCashierScalesClear extends StoreCleanAbstract
     {
         $text = __('店铺内所有添加的电子秤设备全部删除', 'cashier');
         return <<<HTML
-
-<span class="controls-info w300">$text</span>
-
+<span class="controls-info w300">{$text}</span>
 HTML;
 
     }

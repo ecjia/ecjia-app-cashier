@@ -42,9 +42,7 @@ class StoreCashierPendorderClear extends StoreCleanAbstract
     {
         $text = __('将当前店铺内，收银台上的挂单数据全部删除', 'cashier');
         return <<<HTML
-
-<span class="controls-info w300">$text</span>
-
+<span class="controls-info w300">{$text}</span>
 HTML;
 
     }
