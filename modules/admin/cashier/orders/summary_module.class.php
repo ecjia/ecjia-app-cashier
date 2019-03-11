@@ -69,7 +69,7 @@ class admin_cashier_orders_summary_module  extends api_admin implements api_inte
 		$dbview_receipt->where(RC_DB::raw('cr.store_id'), $_SESSION['store_id'])
 												->where(RC_DB::raw('cr.action'), '=', 'receipt')
 												->where(RC_DB::raw('qo.order_type'), '=', 'cashdesk-receipt')
-												->where(RC_DB::raw('qo.pay_status'), \Ecjia\App\Quickpay\Enums\QuickpayEnum::PAID);
+												->where(RC_DB::raw('qo.pay_status'), \Ecjia\App\Quickpay\Enums\QuickpayPayEnum::PAID);
 		
 		if ($device['code'] == Ecjia\App\Cashier\CashierDevice::CASHIERCODE) {
 			$dbview_billing->where(RC_DB::raw('cr.device_type'), $device_type);
