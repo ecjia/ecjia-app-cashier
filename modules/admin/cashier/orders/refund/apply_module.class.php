@@ -375,7 +375,7 @@ class admin_cashier_orders_refund_apply_module extends api_admin implements api_
             'action_user_type' 		=> 'merchant',
             'action_user_id' 		=> $_SESSION['staff_id'],
             'action_user_name' 		=> $_SESSION['staff_name'],
-            'status' 				=> Ecjia\App\Refund\RefundStatus::ORDER_AGREE,
+            'status' 				=> \Ecjia\App\Refund\Enums\RefundOrderEnum::ORDER_AGREE,
             'refund_status' 		=> Ecjia\App\Refund\RefundStatus::PAY_TRANSFERED,
             'return_status' 		=> Ecjia\App\Refund\RefundStatus::SHIP_CONFIRM_RECV,
             'action_note' 			=> $action_note,
