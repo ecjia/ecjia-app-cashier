@@ -138,13 +138,14 @@ class admin_cashier_orders_summary_module  extends api_admin implements api_inte
 	{
 		//收款，订单数据来源买单表quickpay_orders；且ordertype为cashdesk-receipt的
 		$field_receipt = 'count(qo.order_id) as count,
-			SUM(qo.goods_amount - qo.discount) AS total_fee';
+			SUM(qo.goods_amount - qo.discount - qo.integral_money - qo.bonus) AS total_fee';
 		
 		$dbview_receipt 	= RC_DB::table('cashier_record as cr')->leftJoin('quickpay_orders as qo', RC_DB::raw('cr.order_id'), '=', RC_DB::raw('qo.order_id'));
 		
 		$dbview_receipt->where(RC_DB::raw('cr.store_id'), $_SESSION['store_id'])
 			->where(RC_DB::raw('cr.action'), '=', 'receipt')
 			->where(RC_DB::raw('qo.order_type'), '=', 'cashdesk-receipt')
+			->where(RC_DB::raw('qo.referer'), '=', 'ecjia-cashdesk')
 			->where(RC_DB::raw('qo.pay_status'), \Ecjia\App\Quickpay\Enums\QuickpayPayEnum::PAID);
 		
 		//统计条件，收银通不区分设备，收银台和POS区分设备
