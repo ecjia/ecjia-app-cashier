@@ -35,10 +35,10 @@ class admin_cashier_orders_summary_module  extends api_admin implements api_inte
         
         $device_type  = Ecjia\App\Cashier\CashierDevice::get_device_type($device['code']);
         
-        //开单
+        //开单，不包含已申请退款的
         $result_billing 	= $this->_billing($device, $device_type, $start_date, $end_date);
         
-        //验单
+        //验单，不包含已申请退款的
         $result_checkorder 	= $this->_checkorder($device, $device_type, $start_date, $end_date);
         
         //收款，订单数据来源买单表quickpay_orders；且ordertype为cashdesk-receipt的
@@ -78,6 +78,7 @@ class admin_cashier_orders_summary_module  extends api_admin implements api_inte
 		
 		$dbview_billing->where(RC_DB::raw('cr.store_id'), $_SESSION['store_id'])
 			->where(RC_DB::raw('cr.action'), 'billing')
+			->where(RC_DB::raw('oi.order_status'), '!=', OS_RETURNED) //不包含已申请退款订单
 			->where(RC_DB::raw('oi.pay_status'), PS_PAYED);
 		
 		//统计条件，收银通不区分设备，收银台和POS区分设备
@@ -111,6 +112,7 @@ class admin_cashier_orders_summary_module  extends api_admin implements api_inte
 	
 		$dbview_checkorder->where(RC_DB::raw('cr.store_id'), $_SESSION['store_id'])
 		->where(RC_DB::raw('cr.action'), 'check_order')
+		->where(RC_DB::raw('oi.order_status'), '!=', OS_RETURNED) //不包含已申请退款订单
 		->where(RC_DB::raw('oi.pay_status'), PS_PAYED);
 	
 		//统计条件，收银通不区分设备，收银台和POS区分设备
