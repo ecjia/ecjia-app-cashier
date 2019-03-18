@@ -179,7 +179,7 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
 		$order['store_id'] = $store_id;
 		/*订单编号*/
 		$order['order_sn'] = ecjia_order_quickpay_sn();
-		$order['order_type'] = 'cashdesk-receipt';//收银台收款
+		$order['order_type'] = 'quickpay';//收银台收款
 		
 		$order['user_type'] 	= 'merchant';
 		
@@ -211,7 +211,8 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
     			'store_id' 			=> $_SESSION['store_id'],
     			'staff_id'			=> $_SESSION['staff_id'],
     			'order_id'	 		=> $new_order_id,
-    			'order_type' 		=> 'ecjia-cashdesk',
+    			'order_sn'			=> $order['order_sn'],
+    			'order_type' 		=> 'quickpay',
     			'mobile_device_id'	=> empty($_SESSION['device_id']) ? 0 : $_SESSION['device_id'],
     			'device_sn'			=> empty($device_info['device_udid']) ? '' : $device_info['device_udid'],
     			'device_type'		=> $device_type,

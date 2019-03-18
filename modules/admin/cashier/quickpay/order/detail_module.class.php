@@ -158,6 +158,7 @@ class admin_cashier_quickpay_order_detail_module extends api_admin implements ap
 		if (!empty($order)) {
 			$staff_id = RC_DB::table('cashier_record')
 									->where('order_id', $order['order_id'])
+									->where('order_type', 'quickpay')
 									->where('store_id', $order['store_id'])
 									->where('action', 'receipt')->pluck('staff_id');
 			if ($staff_id) {
