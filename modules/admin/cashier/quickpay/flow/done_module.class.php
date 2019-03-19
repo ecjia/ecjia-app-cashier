@@ -136,7 +136,7 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
 					return $bonus_info;
 				}
 				if (empty($bonus_info)){
-					return new ecjia_error('bonus_error', '红包信息不存在！');
+					return new ecjia_error('bonus_error', __('红包信息不存在！', 'cashier'));
 				}
 				$time = RC_Time::gmtime();
 				if (($time < $bonus_info['use_start_date']) || ($bonus_info['use_end_date'] < $time) || ($bonus_info['store_id'] != 0 && $bonus_info['store_id'] != $quickpay_activity_info['store_id']) || $bonus_info['user_id'] != $user_id || $bonus_info['order_id'] > 0) {
@@ -153,7 +153,7 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
 				/*会员可用积分数*/
 				$user_integral = RC_DB::table('users')->where('user_id', $user_id)->pluck('pay_points');
 				if ($integral > $user_integral) {
-					return new ecjia_error('integral_error', '使用积分不可超过会员总积分数！');
+					return new ecjia_error('integral_error', __('使用积分不可超过会员总积分数！', 'cashier'));
 				}
 				$order['integral_money'] = quickpay_activity::integral_of_value($integral);
 			}
@@ -204,7 +204,6 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
 		$order['from_ad'] = ! empty($_SESSION['from_ad']) ? $_SESSION['from_ad'] : '0';
 		$order['referer'] = 'ecjia-cashdesk';
 		
-		
     	/*实付金额*/
 		$order['order_amount'] = $goods_amount - ($discount + $order['integral_money'] + $order['bonus']);
     	
@@ -220,6 +219,25 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
     	$new_order_id	= $db_order_info->insertGetId($order);
     	
     	$order['order_id'] = $new_order_id;
+    	
+    	/* 处理积分、红包 */
+    	if ($order['user_id'] > 0 && $order['integral'] > 0) {
+    		$params = array(
+    				'user_id'		=> $order['user_id'],
+    				'pay_points'	=> $order['integral'] * (- 1),
+    				'change_desc'	=> sprintf(__('支付订单 %s', 'cashier'), $order['order_sn']),
+    				'from_type'		=> 'order_use_integral',
+    				'from_value'	=> $order['order_sn']
+    		);
+    		$result = RC_Api::api('user', 'account_change_log', $params);
+    		if (is_ecjia_error($result)) {
+    			return new ecjia_error('integral_error', __('积分使用失败！', 'cashier'));
+    		}
+    	}
+    	 
+    	if ($order['bonus_id'] > 0 && $order['bonus'] > 0) {
+    		RC_Api::api('bonus', 'use_bonus', array('bonus_id' => $order['bonus_id'], 'order_id' => $new_order_id, 'order_sn' => $order['order_sn']));
+    	}
     	
     	//清除买单结算添加的会员
     	unset($_SESSION['temp_quickpay_user_id']);
