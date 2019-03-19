@@ -165,7 +165,9 @@ class admin_cashier_quickpay_flow_done_module extends api_admin implements api_i
 			if ($quickpay_activity_info['limit_time_type'] == 'customize') {
 				if (!quickpay_activity::customize_activity_is_available($quickpay_activity_info)) {
 					$discount = 0.00;
+					$order['integral'] = 0;
 					$order['integral_money'] = 0.00;
+					$order['bonus_id'] = 0;
 					$order['bonus'] = 0.00;
 				}
 			}
