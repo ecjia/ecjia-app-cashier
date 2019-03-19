@@ -47,7 +47,7 @@
 defined('IN_ECJIA') or exit('No permission resources.');
 
 /**
- * 手机启动页广告
+ * 商家收银台副屏广告
  * @author zrl
  */
 class admin_cashier_secondscreen_adsense_module extends api_admin implements api_interface {
