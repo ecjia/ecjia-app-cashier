@@ -58,7 +58,7 @@ class admin_cashier_orders_refund_summary_module  extends api_admin implements a
 		$result  = $db->where(RC_DB::raw('ro.store_id'), $_SESSION['store_id'])
 										 ->where(RC_DB::raw('cr.order_type'), 'refund')
 										 ->where(RC_DB::raw('cr.action'), 'refund')
-										 ->where(RC_DB::raw('ro.refund_time'), '!=', '0')
+										 ->where(RC_DB::raw('ro.refund_time'), '!=', 0)
 										 ->where(RC_DB::raw('ro.refund_status'), \Ecjia\App\Refund\Enums\RefundPayEnum::PAY_TRANSFERED)
 										 ->where(RC_DB::raw('ro.status'), \Ecjia\App\Refund\Enums\RefundOrderEnum::ORDER_AGREE)
 										 ->where(RC_DB::raw('ro.referer'), 'ecjia-cashdesk')
