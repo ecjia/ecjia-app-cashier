@@ -16,7 +16,7 @@ class admin_cashier_orders_refund_summary_module  extends api_admin implements a
         $start_date 	= $this->requestData('start_date', '');
         $end_date 		= $this->requestData('end_date', '');
         $time			= RC_Time::gmtime();
-        $format_time	= RC_Time::local_date(ecjia::config('date_format'), $time);
+        $format_time	= RC_Time::local_date('Y-m-d', $time);
         
         $codes = RC_Loader::load_app_config('cashier_device_code', 'cashier');
        
@@ -26,8 +26,7 @@ class admin_cashier_orders_refund_summary_module  extends api_admin implements a
         
         if (empty($start_date) && empty($end_date)) {
         	$start_date = $format_time;
-        	$end_time	= RC_Time::local_strtotime($start_date) + 86399;
-        	$end_date	= RC_Time::local_date(ecjia::config('date_format'), $end_time);
+        	$end_date	= $start_date;
         }
         
         if (empty($start_date) || empty($end_date)) {
