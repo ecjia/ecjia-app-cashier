@@ -241,6 +241,11 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         /* 订单中的总额 */
         $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_id, CART_CASHDESK_GOODS, $pendorder_id, $_SESSION['store_id']);
         
+        RC_Logger::getLogger('error')->info('testccc');
+        RC_Logger::getLogger('error')->info($total);
+        RC_Logger::getLogger('error')->info('testddd');
+        
+        
         $order['bonus']			= $total['bonus'];
         $order['goods_amount']	= $total['goods_price'];
         $order['discount']		= $total['discount'];
@@ -310,6 +315,12 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         /* 插入订单表 */
         $order['order_sn'] = ecjia_order_buy_sn(); // 获取新订单号
         $new_order_id	= RC_DB::table('order_info')->insertGetId($order);
+        
+        RC_Logger::getLogger('error')->info('testxxx');
+        RC_Logger::getLogger('error')->info($order);
+        RC_Logger::getLogger('error')->info('testyyy');
+        
+        
         $order['order_id'] = $new_order_id;
         
         /* 插入订单商品 */
@@ -453,9 +464,9 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         );
         RC_DB::table('cashier_record')->insert($cashier_record);
         
-        RC_Logger::getLogger('error')->info('testccc');
+        RC_Logger::getLogger('error')->info('testzzz');
         RC_Logger::getLogger('error')->info($out);
-        RC_Logger::getLogger('error')->info('testddd');
+        RC_Logger::getLogger('error')->info('testrrr');
         
         
         return $out;
