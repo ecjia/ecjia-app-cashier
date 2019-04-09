@@ -119,6 +119,9 @@ class admin_cashier_merchant_goods_list_module extends api_admin implements api_
 		if ($order_by) {
 			$filters['sort_by'] = $order_by;
 		}
+		//会员等级价格
+		$filters['user_rank'] = $_SESSION['user_rank'];
+		$filters['user_rank_discount'] = $_SESSION['discount'];
 		
 		//分页信息
 		$filters['size'] = $size;
