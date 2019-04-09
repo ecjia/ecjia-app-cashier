@@ -97,6 +97,11 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
 		if (empty($cart_goods) || count($cart_goods) == 0) {
 			return new ecjia_error('no_goods_in_cart', __('购物车中没有商品', 'cashier'));
 		}
+		if (!empty($cart_goods)) {
+			foreach ($cart_goods as $row) {
+				$cart_ids[] = $row['rec_id'];
+			}
+		}
 		
         /* 如果使用库存，且下订单时减库存，检查库存*/
         if (ecjia::config('use_storage') == '1' && ecjia::config('stock_dec_time') == SDT_PLACE) {
@@ -239,7 +244,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         }
         
         /* 订单中的总额 */
-        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_id, CART_CASHDESK_GOODS, $pendorder_id, $_SESSION['store_id']);
+        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_ids, CART_CASHDESK_GOODS, $pendorder_id, $_SESSION['store_id']);
         
         RC_Logger::getLogger('error')->info('testccc');
         RC_Logger::getLogger('error')->info($total);
