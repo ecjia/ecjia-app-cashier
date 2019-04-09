@@ -239,7 +239,7 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         }
         
         /* 订单中的总额 */
-        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_id, CART_CASHDESK_GOODS, 0, $_SESSION['store_id']);
+        $total = cart_cashdesk::cashdesk_order_fee($order, $cart_goods, $consignee, $cart_id, CART_CASHDESK_GOODS, $pendorder_id, $_SESSION['store_id']);
         
         $order['bonus']			= $total['bonus'];
         $order['goods_amount']	= $total['goods_price'];
@@ -248,10 +248,9 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         $order['tax']			= $total['tax'];
         
         // 购物车中的商品能享受红包支付的总额
-        $discount_amout = cart_cashdesk::compute_discount_amount($cart_id, CART_CASHDESK_GOODS, $_SESSION['store_id']);
 
         // 红包和积分最多能支付的金额为商品总额
-        $temp_amout = $order['goods_amount'] - $discount_amout;
+        $temp_amout = $order['goods_amount'] - $total['discount'];
         if ($temp_amout <= 0) {
             $order['bonus_id'] = 0;
             $order['bonus'] = 0;
