@@ -212,6 +212,10 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				}
 			}
 		}
+		RC_Logger::getLogger('error')->info('testaaa');
+		RC_Logger::getLogger('error')->info($out);
+		RC_Logger::getLogger('error')->info('testbbb');
+		
 		return $out;
 	}	
 	

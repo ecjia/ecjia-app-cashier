@@ -453,6 +453,11 @@ class admin_cashier_flow_done_module extends api_admin implements api_interface
         );
         RC_DB::table('cashier_record')->insert($cashier_record);
         
+        RC_Logger::getLogger('error')->info('testccc');
+        RC_Logger::getLogger('error')->info($out);
+        RC_Logger::getLogger('error')->info('testddd');
+        
+        
         return $out;
 	}
 }
