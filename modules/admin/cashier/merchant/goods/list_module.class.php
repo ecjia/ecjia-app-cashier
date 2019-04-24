@@ -107,9 +107,10 @@ class admin_cashier_merchant_goods_list_module extends api_admin implements api_
 		if (!empty($store_id)) {
 			$filters['store_id'] = $store_id;
 		}
-    	//商家商品分类
+		//商家商品分类
 		if ($category > 0 && !empty($store_id)) {
-			$filters['store_id_and_merchant_cat_id'] = [[$category], $store_id];
+		    $children_cat = Ecjia\App\Goods\GoodsSearch\MerchantGoodsCategory::getChildrenCategoryId($category, $store_id);
+		    $filters['store_id_and_merchant_cat_id'] = [$children_cat, $store_id];
 		}
 		//关键字
 		if (!empty($keyword)) {
