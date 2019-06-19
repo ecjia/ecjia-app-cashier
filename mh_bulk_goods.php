@@ -431,7 +431,7 @@ class mh_bulk_goods extends ecjia_merchant {
 		}
 		//到期日期
 		if (!empty($generate_date) && !empty($limit_days)) {
-			$exppire_date = Ecjia\App\Cashier\BulkGoods::expiry_date($generate_date, $limit_days, $limit_days_unit);
+			$expiry_date = Ecjia\App\Cashier\BulkGoods::expiry_date($generate_date, $limit_days, $limit_days_unit);
 		}
 		if (empty($merchant_cat_id)) {
 			return $this->showmessage(__('请选择店铺商品分类', 'cashier'), ecjia::MSGTYPE_JSON | ecjia::MSGSTAT_ERROR);
@@ -662,7 +662,7 @@ class mh_bulk_goods extends ecjia_merchant {
 		}
 		//到期日期
 		if (!empty($generate_date) && !empty($limit_days)) {
-			$exppire_date = Ecjia\App\Cashier\BulkGoods::expiry_date($generate_date, $limit_days, $limit_days_unit);
+			$expiry_date = Ecjia\App\Cashier\BulkGoods::expiry_date($generate_date, $limit_days, $limit_days_unit);
 		}
 		$is_on_sale 	= isset($_POST['is_on_sale']) 		? 1 : 0;
 		$warn_number 	= isset($_POST['warn_number']) 		? remove_xss($_POST['warn_number']) 	: 0;
