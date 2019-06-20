@@ -50,7 +50,7 @@ defined('IN_ECJIA') or exit('No permission resources.');
  * @author zrl
  *
  */
-class payConfirm_module extends api_admin implements api_interface
+class admin_cashier_quickpay_order_payConfirm_module extends api_admin implements api_interface
 {
     public function handleRequest(\Royalcms\Component\HttpKernel\Request $request)
     {	
