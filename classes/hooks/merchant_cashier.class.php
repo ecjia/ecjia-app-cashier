@@ -63,8 +63,8 @@ class cashier_merchant_hooks {
     public static function cashier_merchant_merchant_menu_api($menus) {
     	
     	$menu = array(
-    			ecjia_merchant::make_admin_menu('08_merchant_cashdesk_scales', __('条码秤', 'cashier'), RC_Uri::url('cashier/mh_cashier_scales/init'), 10)->add_purview('mh_cashdesk_scales')->add_icon('fa-hdd-o'),
-    			ecjia_merchant::make_admin_menu('09_merchant_franchisee', __('收银设备', 'cashier'), RC_Uri::url('cashier/mh_cashier_device/init'), 11)->add_purview('mh_cashier_device')->add_icon('fa-codepen')
+    			ecjia_merchant::make_admin_menu('13_merchant_cashdesk_scales', __('条码秤', 'cashier'), RC_Uri::url('cashier/mh_cashier_scales/init'), 13)->add_purview('mh_cashdesk_scales')->add_icon('fa-hdd-o'),
+    			ecjia_merchant::make_admin_menu('14_merchant_franchisee', __('收银设备', 'cashier'), RC_Uri::url('cashier/mh_cashier_device/init'), 14)->add_purview('mh_cashier_device')->add_icon('fa-codepen')
     	);
     	
     	$menus->add_submenu($menu);
