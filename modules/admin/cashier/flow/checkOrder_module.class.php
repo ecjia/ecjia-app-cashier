@@ -107,12 +107,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 			if ($user['user_id'] >= 0) {
 				$result = $this->_processAddUser($user, $api_version, $pendorder_id, $device, $_SESSION['store_id']);
 			}
-		} else {
-			unset($_SESSION['cashdesk_temp_user_id']);
-			unset($_SESSION['user_id']);
-			$_SESSION['user_rank']	= 0;
-			$_SESSION['discount']	= 1;
-		}
+		} 
 		
 		//有添加商品
 		if (!empty($addgoods['goods_sn'])) {
@@ -130,9 +125,6 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		if (is_ecjia_error($result)) {
 		    return $result;
 		}
-		
-		//重新计算购物车价格
-		cart_cashdesk::recalculate_price($device, $_SESSION['store_id'], $_SESSION['user_id']);
 		
 		/* 对商品信息赋值 */
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, array(), $pendorder_id); // 取得商品列表，计算合计
@@ -293,6 +285,8 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				$_SESSION['user_rank']	= 0;
 				$_SESSION['discount']	= 1;
 			}
+			//重新计算购物车价格
+			cart_cashdesk::recalculate_price($device, $store_id, $user_id);
 		}
 	}
 	
