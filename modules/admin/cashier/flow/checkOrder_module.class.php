@@ -314,12 +314,6 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		}
 			
 		$products_goods	  = RC_DB::table('products')->where('product_sn', trim($addgoods['goods_sn']))->first();
-		
-		RC_Logger::getLogger('error')->info('test111');
-		RC_Logger::getLogger('error')->info($products_goods);
-		RC_Logger::getLogger('error')->info('test222');
-		
-		
 		if (!empty($products_goods)) {
 			$goods_spec = explode('|', $products_goods['goods_attr']);
 			$goods = RC_DB::table('goods')->where('goods_id', $products_goods['goods_id'])->where('store_id', $store_id)->where('is_on_sale', 1)->where('is_delete', 0)->first();
