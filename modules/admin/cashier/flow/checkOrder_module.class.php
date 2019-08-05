@@ -97,7 +97,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 // 			'goods_sn'	=> '289036800150005863',
 // 			'weight'	=> 1500,
 // 			'price'		=> 20.47
-		);
+// 		);
 // 		$user = array(
 // 				'user_id' => '1024',
 // 		);
