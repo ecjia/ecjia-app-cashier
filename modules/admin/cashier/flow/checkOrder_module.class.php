@@ -97,16 +97,21 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 // 			'goods_sn'	=> '289036800150005863',
 // 			'weight'	=> 1500,
 // 			'price'		=> 20.47
-// 		);
+		);
 // 		$user = array(
 // 				'user_id' => '1024',
 // 		);
 
 		//有添加用户
-		if (array_key_exists($user['user_id'], $user)) {
+		if (array_key_exists('user_id', $user)) {
 			if ($user['user_id'] >= 0) {
 				$result = $this->_processAddUser($user, $api_version, $pendorder_id, $device, $_SESSION['store_id']);
 			}
+		} else {
+			unset($_SESSION['cashdesk_temp_user_id']);
+			unset($_SESSION['user_id']);
+			$_SESSION['user_rank']	= 0;
+			$_SESSION['discount']	= 1;
 		}
 		
 		//有添加商品
