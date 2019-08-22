@@ -78,7 +78,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		$pendorder_id   = $this->requestData('pendorder_id', '0');	//挂单id
 		
 		/*收银台商品购物车类型*/
-		$flow_type = Ecjia\App\Cart\Enums\CartEnum::CART_CASHDESK_GOODS;
+		$flow_type = \Ecjia\App\Cart\Enums\CartEnum::CART_CASHDESK_GOODS;
 		
 		if (!empty($pendorder_id) && empty($user['user_id'])) {
 			$user_id = RC_DB::table('cart')->where('pendorder_id', $pendorder_id)->lists('user_id');
@@ -89,7 +89,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		}
 		
 // 		$addgoods = array(
-// 			'goods_sn' 	=> 'ECS001333',
+// 			'goods_sn' 	=> 'ECS001314',
 // 			'goods_sn'	=> 'ECS000412',
 // 			'number'	=> 3,
 // 			'number'	=> 1,
@@ -101,13 +101,11 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 // 		$user = array(
 // 				'user_id' => '1024',
 // 		);
-
+		
 		//有添加用户
-		if (array_key_exists('user_id', $user)) {
-			if ($user['user_id'] >= 0) {
-				$result = $this->_processAddUser($user, $api_version, $pendorder_id, $device, $_SESSION['store_id']);
-			}
-		} 
+		if (isset($user['user_id'])) {
+			$result = $this->_processAddUser($user, $api_version, $pendorder_id, $device, $_SESSION['store_id']);
+		}
 		
 		//有添加商品
 		if (!empty($addgoods['goods_sn'])) {
@@ -125,6 +123,7 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 		if (is_ecjia_error($result)) {
 		    return $result;
 		}
+		
 		
 		/* 对商品信息赋值 */
 		$cart_goods = cart_cashdesk::cashdesk_cart_goods($flow_type, array(), $pendorder_id); // 取得商品列表，计算合计
@@ -285,7 +284,6 @@ class admin_cashier_flow_checkOrder_module extends api_admin implements api_inte
 				$_SESSION['user_rank']	= 0;
 				$_SESSION['discount']	= 1;
 			}
-			//重新计算购物车价格
 			cart_cashdesk::recalculate_price($device, $store_id, $user_id);
 		}
 	}
